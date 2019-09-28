@@ -1,0 +1,1548 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    
+<head>          
+            <link rel="canonical" href="http://blog.csdn.net/u010977122/article/details/53020006"/> 
+
+   
+
+  
+ <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848"> 
+       
+    <title>QR code二维码简介及Qrencode库的移植与使用 - Captain--Jack
+        - CSDN博客</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="description" content="现在生活中，二维码可以说是无处不在，微信扫码支付，支付宝扫码支付，就连贴小广告的都带上了二维码了。之前一直想去了解一下，还是太懒了，就没去，现在项目中需要用到这东西，正好借此机会了解一下。&#160;&#160;上网一查，原来二维码的还有很多种。下表是一个简单的介绍：二维码的优点突出，所以大有取代条形码的趋势，二维码的特点：1、高密度，容量大，可容纳多达1850个大写字母（字符）或27" />
+
+    <meta name="keywords" content="qrcode,qrencode,qrencode移植与使用" />
+
+   
+    <script src="http://static.blog.csdn.net/scripts/blog_static_head.min.js" type="text/javascript"></script>
+
+    
+        <!--new top-->
+       
+       
+        <!--new top-->
+    
+      <!-- ad begin -->
+         
+    <!-- ad end-->
+
+    <link rel="Stylesheet" type="text/css" href="http://static.blog.csdn.net/skin/skin-yellow/css/style.css?v=1.1" />
+
+    
+
+    <link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="/u010977122/rss/list" />
+    <link rel="shortcut icon" href="http://c.csdnimg.cn/public/favicon.ico" />
+    <link type="text/css" rel="stylesheet" href="http://static.blog.csdn.net/scripts/SyntaxHighlighter/styles/default.css" />
+ 
+
+
+
+    <link href="http://c.csdnimg.cn/blog/csdn_public_blog_detail.min.css" type="text/css" rel="stylesheet" />
+     
+         <link rel="stylesheet" href="http://static.blog.csdn.net/css/csdn_blog_detail.min.css" />
+
+  
+
+
+    <!-- 请置于所有广告位代码之前 --> 
+            <script src="http://dup.baidustatic.com/js/ds.js"></script>
+
+</head>
+
+
+<body>
+     
+        <div class="tracking-ad" data-view="true" data-mod="ad_popu_72"  data-mtp="62" data-order="40" data-con="ad_content_2072" >
+                     <script id="popuLayer_js_q" src="http://ads.csdn.net/js/popuLayer.js" defer="defer"  type="text/javascript"></script>
+                <div id="layerd" style="position: fixed;bottom:0px;right:0px;line-height:0px;z-index:1000">
+    	                <div class="J_close layer_close" style="display:;background-color:#efefef;padding:0px;color:#333;font:12px/24px Helvetica,Tahoma,Arial,sans-serif;text-align:right;">关闭</div><!-- 广告占位容器 -->
+                    <div id="cpro_u2895327">
+                        <!-- 投放代码 -->
+                        <script src="http://dup.baidustatic.com/js/ds.js"></script>
+                       <!-- 广告位：PC端-博客详情页右侧弹窗-300*250 -->
+                            <script>
+                                (function () {
+                                    var s = "_" + Math.random().toString(36).slice(2);
+                                    document.write('<div id="' + s + '"></div>');
+                                    (window.slotbydup = window.slotbydup || []).push({
+                                        id: '4740870',
+                                        container: s,
+                                        size: '300,250',
+                                        display: 'inlay-fix'
+                                    });
+                                })();
+                            </script>
+                    </div></div>
+                <script>  document.getElementById("popuLayer_js_q").onload = function () {
+      var styObjd = styObj = { width: "300px", "height": parseInt(250) + 28 };
+      window.CSDN.Layer.PopuLayer("#layerd", { storageName: "layerd", styleObj: styObjd, total: 50, expoire: 1000 * 60 });
+  }</script>
+            
+     
+        </div>
+
+    <!-- 广告位开始 -->
+        
+    <!-- 广告位结束 -->
+
+    
+   
+      <!--new top-->
+    <script id="toolbar-tpl-scriptId" fixed="true" prod="blog" skin="black" src="http://c.csdnimg.cn/public/common/toolbar/js/html.js" type="text/javascript"></script>
+     <!--new top-->
+    <div id="container">
+        <div id="header">
+    <div class="header">
+        <div id="blog_title">
+            <h2>
+                <a href="http://blog.csdn.net/u010977122">Captain--Jack</a></h2>
+            <h3>程序猿修行之路</h3>
+            <div class="clear">
+            </div>
+        </div>
+        <div class="clear">
+        </div>
+        
+     
+    </div>
+</div>
+<div id="navigator">
+    <div class="navigator_bg">
+    </div>
+    <div class="navigator">
+        <ul>           
+                <li id="btnContents"><a href="http://blog.csdn.net/u010977122?viewmode=contents"><span onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_mulu'])">
+                    <img src="http://static.blog.csdn.net/images/ico_list.gif">目录视图</span></a></li>
+                <li id="btnView"><a href="http://blog.csdn.net/u010977122?viewmode=list"><span onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_zhaiyao'])">
+                    <img src="http://static.blog.csdn.net/images/ico_summary.gif">摘要视图</span></a></li>
+                <li id="btnRss"><a href="http://blog.csdn.net/u010977122/rss/list"><span onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_RSS'])">
+                    <img src="http://static.blog.csdn.net/images/ico_rss.gif">订阅</span></a></li>                   
+            
+
+            </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    var username = "u010977122";
+    var _blogger = username;
+    var blog_address = "http://blog.csdn.net/u010977122";
+    var static_host = "http://static.blog.csdn.net";
+    var currentUserName = "";  
+</script>
+
+        <div id="body">
+            <div id="main">
+                <div class="main">
+                        <div class="ad_class">
+<div class="notice tracking-ad" data-mod='popu_3' > 
+
+
+<a href="http://blog.csdn.net/epubit17/article/details/78210459">
+<font color=red><strong>异步赠书：10月Python畅销书升级</strong></font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp
+
+
+<a href="http://edu.csdn.net/topic/web1?utm_source=blog4">
+<font color=blue><strong>【力荐】写给想成为前端工程师的同学们！</strong></font></a>
+&nbsp;&nbsp;&nbsp;&nbsp
+
+<a href="http://blog.csdn.net/turingbooks/article/details/78316013">
+<font color=blue><strong>程序员10月书讯</strong></font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp
+
+
+<a href="http://blog.csdn.net/broadview2006/article/details/78392859">
+<font color=red><strong>每周荐书：高可用架构、解忧程序员、财富自由之路（评论送书）</strong></font></a>
+
+
+
+</div>                        </div>
+
+                        
+
+
+
+  
+
+
+
+
+
+
+<script   type="text/javascript" src="http://static.blog.csdn.net/scripts/category.js"></script>
+
+  <script type="text/ecmascript">
+      window.quickReplyflag = true;
+      var isBole = false; 
+      var fasrc="http://my.csdn.net/my/favorite/miniadd?t=QR+code%e4%ba%8c%e7%bb%b4%e7%a0%81%e7%ae%80%e4%bb%8b%e5%8f%8aQrencode%e5%ba%93%e7%9a%84%e7%a7%bb%e6%a4%8d%e4%b8%8e%e4%bd%bf%e7%94%a8&u=http://blog.csdn.net/u010977122/article/details/53020006"
+    </script>
+<div id="article_details" class="details">
+    <div class="article_title">   
+         <span class="ico ico_type_Original"></span>
+
+    <h1>
+        <span class="link_title"><a href="/u010977122/article/details/53020006">
+        QR code二维码简介及Qrencode库的移植与使用        
+           
+        </a>
+        </span>
+
+         
+    </h1>
+</div>
+
+   
+
+        <div class="article_manage clearfix">
+        <div class="article_l">
+            <span class="link_categories">
+            标签：
+              <a href='http://www.csdn.net/tag/qrcode' target=_blank onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_tag']);">qrcode</a><a href='http://www.csdn.net/tag/qrencode' target=_blank onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_tag']);">qrencode</a><a href='http://www.csdn.net/tag/qrencode%e7%a7%bb%e6%a4%8d%e4%b8%8e%e4%bd%bf%e7%94%a8' target=_blank onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_tag']);">qrencode移植与使用</a><a href='http://www.csdn.net/tag/QR%20code%e4%bb%8b%e7%bb%8d' target=_blank onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_tag']);">QR code介绍</a><a href='http://www.csdn.net/tag/QT' target=_blank onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_tag']);">QT</a>
+            </span>
+        </div>
+        <div class="article_r">
+            <span class="link_postdate">2016-11-03 11:40</span>
+            <span class="link_view" title="阅读次数">4057人阅读</span>
+            <span class="link_comments" title="评论次数"> <a href="#comments" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_pinglun'])">评论</a>(3)</span>
+            <span class="link_collect tracking-ad" data-mod="popu_171"> <a href="javascript:void(0);" onclick="javascript:collectArticle('QR+code%e4%ba%8c%e7%bb%b4%e7%a0%81%e7%ae%80%e4%bb%8b%e5%8f%8aQrencode%e5%ba%93%e7%9a%84%e7%a7%bb%e6%a4%8d%e4%b8%8e%e4%bd%bf%e7%94%a8','53020006');return false;" title="收藏">收藏</a></span>
+             <span class="link_report"> <a href="#report" onclick="javascript:report(53020006,2);return false;" title="举报">举报</a></span>
+
+        </div>
+    </div>    <style type="text/css">        
+            .embody{
+                padding:10px 10px 10px;
+                margin:0 -20px;
+                border-bottom:solid 1px #ededed;                
+            }
+            .embody_b{
+                margin:0 ;
+                padding:10px 0;
+            }
+            .embody .embody_t,.embody .embody_c{
+                display: inline-block;
+                margin-right:10px;
+            }
+            .embody_t{
+                font-size: 12px;
+                color:#999;
+            }
+            .embody_c{
+                font-size: 12px;
+            }
+            .embody_c img,.embody_c em{
+                display: inline-block;
+                vertical-align: middle;               
+            }
+             .embody_c img{               
+                width:30px;
+                height:30px;
+            }
+            .embody_c em{
+                margin: 0 20px 0 10px;
+                color:#333;
+                font-style: normal;
+            }
+    </style>
+    <script  type="text/javascript">
+        $(function () {
+            try
+            {
+                var lib = eval("("+$("#lib").attr("value")+")");
+                var html = "";
+                if (lib.err == 0) {
+                    $.each(lib.data, function (i) {
+                        var obj = lib.data[i];
+                        //html += '<img src="' + obj.logo + '"/>' + obj.name + "&nbsp;&nbsp;";
+                        html += ' <a href="' + obj.url + '" target="_blank">';
+                        html += ' <img src="' + obj.logo + '">';
+                        html += ' <em><b>' + obj.name + '</b></em>';
+                        html += ' </a>';
+                    });
+                    if (html != "") {
+                        setTimeout(function () {
+                            $("#lib").html(html);                      
+                            $("#embody").show();
+                        }, 100);
+                    }
+                }      
+            } catch (err)
+            { }
+            
+        });
+    </script>
+      <div class="category clearfix">
+        <div class="category_l">
+           <img src="http://static.blog.csdn.net/images/category_icon.jpg">
+            <span>分类：</span>
+        </div>
+        <div class="category_r">
+                    <label  onclick="GetCategoryArticles('6474308','u010977122','top','53020006');">
+                        <span onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_fenlei']);">Qt<em>（6）</em></span>
+                      <img class="arrow-down" src="http://static.blog.csdn.net/images/arrow_triangle _down.jpg" style="display:inline;">
+                      <img class="arrow-up" src="http://static.blog.csdn.net/images/arrow_triangle_up.jpg" style="display:none;">
+                        <div class="subItem">
+                            <div class="subItem_t"><a  href="http://blog.csdn.net/u010977122/article/category/6474308"  target="_blank">作者同类文章</a><i class="J_close">X</i></div>
+                            <ul class="subItem_l" id="top_6474308">                            
+                            </ul>
+                        </div>
+                    </label>                    
+        </div>
+    </div>
+        <div   class="bog_copyright">         
+            <p  class="copyright_p" >版权声明：本文为博主原创文章，未经博主允许不得转载。</p>
+        </div>
+
+  
+
+  
+  
+     
+
+
+<div id="article_content" class="article_content tracking-ad" data-mod=popu_307  data-dsm = "post" >
+
+<p><span style="color:rgb(51,51,51)"><span style="font-size:12px">现在生活中，二维码可以说是无处不在，微信扫码支付，支付宝扫码支付，就连贴小广告的都带上了二维码了。之前一直想去了解一下，还是太懒了，就没去，现在项目中需要用到这东西，正好借此机会了解一下。</span></span></p>
+<p><span style="color:rgb(51,51,51)"><span style="font-size:12px">&nbsp;</span></span></p>
+<p><span style="color:rgb(51,51,51)">&nbsp;</span></p>
+<p><span style="color:rgb(51,51,51)"><span style="font-size:12px">上网一查，原来二维码的还有很多种。下表是一个简单的介绍：</span></span></p>
+<p><span style="color:rgb(51,51,51)"><img src="http://img.blog.csdn.net/20161103114026319?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br>
+</span></p>
+<p></p>
+<p><span style="color:rgb(51,51,51)"><span style="font-size:12px">二维码的优点突出，所以大有取代条形码的趋势，二维码的特点：</span></span></p>
+<p><span style="font-size:12px"><span style="color:#333333">1、</span><span style="color:rgb(51,51,51)">高密度，容量大</span>，可容纳多达<span style="color:rgb(51,51,51)">1850</span><span style="color:rgb(51,51,51)">个大写字母（字符）或</span><span style="color:rgb(51,51,51)">2710</span><span style="color:rgb(51,51,51)">个数字，支持最高</span><span style="color:rgb(51,51,51)">1108</span><span style="color:rgb(51,51,51)">个字节的数据存储，比一维码信息容量高几十倍。</span></span></p>
+<p><span style="font-size:12px"><span style="color:#333333">2、 </span><span style="color:rgb(51,51,51)">范围广</span>，支持对图片、声音、文字、签字、指纹等各类可以数字化信息的编码，还可以表示多种语言文字和图像数据。</span></p>
+<p><span style="font-size:12px"><span style="color:#333333">3、 </span><span style="color:rgb(51,51,51)">容错能力强，具有纠错功能</span><span style="color:#333333">，当二维码因穿孔、污损等引起局部损坏时，照样可以正常识别，损毁面积达</span><span style="color:rgb(51,51,51)">50%</span><span style="color:rgb(51,51,51)">仍可恢复。</span></span></p>
+<p><span style="font-size:12px"><span style="color:#333333">4、 </span><span style="color:rgb(51,51,51)">成本低，易制作，持久耐用</span>等</span></p>
+<p><span style="color:rgb(51,51,51)">&nbsp;</span></p>
+<p><span style="color:rgb(51,51,51)">&nbsp;</span></p>
+<p><span style="font-size:12px"><span style="color:rgb(51,51,51)">本次开发使用的是</span><span style="color:rgb(51,51,51)">QRcode</span><span style="color:rgb(51,51,51)">，因为它目前使用的较为广泛，微信支付，扫码加好友等等都可以是</span><span style="color:rgb(51,51,51)">QRcode</span><span style="color:rgb(51,51,51)">。</span></span></p>
+<p><span style="color:rgb(51,51,51)"><span style="font-size:12px">&nbsp;</span></span></p>
+<p><span style="font-size:12px"><span style="color:rgb(51,51,51)">下面对</span><span style="color:rgb(51,51,51)">QR Code</span><span style="color:rgb(51,51,51)">做个详细的了解：</span></span></p>
+<p><span style="font-size:12px"><span style="color:rgb(51,51,51)">QR Code</span><span style="color:rgb(51,51,51)">码，是由</span><span style="color:rgb(51,51,51)">Denso</span><span style="color:rgb(51,51,51)">公司于</span><span style="color:rgb(51,51,51)">1994</span><span style="color:rgb(51,51,51)">年</span><span style="color:rgb(51,51,51)">9</span><span style="color:rgb(51,51,51)">月研制的一种</span><a target="_blank" href="http://baike.baidu.com/view/10337.htm" target="_blank"><span style="color:rgb(19,110,194)">矩阵</span></a><a target="_blank" href="http://baike.baidu.com/view/132241.htm" target="_blank"><span style="color:rgb(19,110,194)">二维码</span></a><span style="color:rgb(51,51,51)">符号，它具有一维条码及其它二维条码所具有的信息容量大、可靠性高、可表示汉字及图象多种文字信息、保密防伪性强等优点，是目前较为常用的二维条码。</span></span></p>
+<p align="left"><span style="font-size:12px">基本特性</span></p>
+<p align="left"><a><span style="color:rgb(136,136,136)">编辑</span></a></p>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tbody>
+<tr>
+<td rowspan="2" valign="bottom">
+<p align="left"><span style="color:#333333">符号规&#26684;</span></p>
+</td>
+<td valign="bottom">
+<p align="left"><span style="color:#333333">21×21</span><span style="color:#333333">模块（版本</span><span style="color:#333333">1</span><span style="color:#333333">）</span><span style="color:#333333">-177×177
+</span><span style="color:#333333">模块（版本</span><span style="color:#333333">40</span><span style="color:#333333">）</span></p>
+</td>
+</tr>
+<tr>
+<td valign="bottom">
+<p align="left"><span style="color:#333333">(</span><span style="color:#333333">每一规&#26684;：每边增加</span><span style="color:#333333">4</span><span style="color:#333333">个模块</span><span style="color:#333333">)</span></p>
+</td>
+</tr>
+<tr>
+<td rowspan="2" valign="bottom">
+<p align="left"><span style="color:#333333">容量（指最大规&#26684;符号版本</span><span style="color:#333333">40-L</span><span style="color:#333333">级）</span></p>
+<p align="left">　</p>
+</td>
+<td valign="bottom">
+<p align="left"><span style="color:#333333">· 8</span><span style="color:#333333">位字节数据</span><span style="color:#333333"> :2,953</span><span style="color:#333333">个字符</span></p>
+</td>
+</tr>
+<tr>
+<td valign="bottom">
+<p align="left"><span style="color:#333333">· </span><span style="color:#333333">汉字数据</span><span style="color:#333333"> :1,817</span><span style="color:#333333">个字符</span></p>
+</td>
+</tr>
+<tr>
+<td valign="bottom">
+<p align="left"><span style="color:#333333">数据表示方法</span></p>
+</td>
+<td valign="bottom">
+<p align="left"><span style="color:#333333">深色模块表示二进制</span><span style="color:#333333">“1”</span><span style="color:#333333">，浅色模块表示二进制</span><span style="color:#333333">“0”</span><span style="color:#333333">。</span></p>
+</td>
+</tr>
+<tr>
+<td rowspan="4" valign="bottom">
+<p align="left"><span style="color:#333333">纠错能力</span></p>
+</td>
+<td valign="bottom">
+<p align="left"><span style="color:#333333">· L</span><span style="color:#333333">级：约可纠错</span><span style="color:#333333">7%</span><span style="color:#333333">的数据码字</span></p>
+</td>
+</tr>
+<tr>
+<td valign="bottom">
+<p align="left"><span style="color:#333333">· M</span><span style="color:#333333">级：约可纠错</span><span style="color:#333333">15%</span><span style="color:#333333">的数据码字</span></p>
+</td>
+</tr>
+<tr>
+<td valign="bottom">
+<p align="left"><span style="color:#333333">· Q</span><span style="color:#333333">级：约可纠错</span><span style="color:#333333">25%</span><span style="color:#333333">的数据码字</span></p>
+</td>
+</tr>
+<tr>
+<td valign="bottom">
+<p align="left"><span style="color:#333333">· H</span><span style="color:#333333">级：约可纠错</span><span style="color:#333333">30%</span><span style="color:#333333">的数据码字</span></p>
+</td>
+</tr>
+<tr>
+<td valign="bottom">
+<p align="left"><span style="color:#333333">掩模（固有）</span></p>
+</td>
+<td valign="bottom">
+<p align="left"><span style="color:#333333">可以使符号中深色与浅色模块的比例接近</span><span style="color:#333333">1</span><span style="color:#333333">：</span><span style="color:#333333">1</span><span style="color:#333333">，使因相邻模块的排列造成译码困难的可能性降为最小。</span></p>
+</td>
+</tr>
+<tr>
+<td valign="bottom">
+<p align="left">模式</p>
+</td>
+<td valign="bottom">
+<p align="left">1、数字模式（numeric mode ）: 0001<span style="color:rgb(51,51,51)">（数字</span><span style="color:rgb(51,51,51)">0</span><span style="color:rgb(51,51,51)">～</span><span style="color:rgb(51,51,51)">9</span><span style="color:rgb(51,51,51)">）</span></p>
+<p align="left">2、混合字符模式（alphanumeric mode） : 0010<span style="color:rgb(51,51,51)">（数字</span><span style="color:rgb(51,51,51)">0</span><span style="color:rgb(51,51,51)">～</span><span style="color:rgb(51,51,51)">9</span><span style="color:rgb(51,51,51)">；大写字母</span><span style="color:rgb(51,51,51)">A</span><span style="color:rgb(51,51,51)">～</span><span style="color:rgb(51,51,51)">Z</span><span style="color:rgb(51,51,51)">；</span><span style="color:rgb(51,51,51)">9</span><span style="color:rgb(51,51,51)">个其他</span><a target="_blank" href="http://baike.baidu.com/view/263416.htm" target="_blank"><span style="color:rgb(19,110,194)">字符</span></a><span style="color:rgb(51,51,51)">：space
+</span>，$, %, *, &#43;, -, ., /, ：）；</p>
+<p align="left">3、8bit byte mode: 0100</p>
+<p align="left">4、日本汉字（KANJI mode） : 1000</p>
+<p align="left">5、中国汉字(GB2312):1101<span style="color:rgb(51,51,51)">（</span><span style="color:rgb(51,51,51)">GB 2312</span><span style="color:rgb(51,51,51)">对应的汉字和非汉字字符）</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<p></p>
+<p>&nbsp;</p>
+<p><span style="font-size:12px">为了美观，可以在二维码上添加一张logo图片，一般放在中间。我在网上查了好久，没有找到logo的大小和二维码的等级和容错性的关系，如果大家有找到的，请告知，谢谢，我这边自己选择了长宽是二维码的20%，测试不影响识别。</span></p>
+<p><span style="font-size:12px">&nbsp;</span></p>
+<p><span style="font-size:12px">编码阶段：</span></p>
+<p><span style="font-size:12px">在网上找了一个第三方的库，qrencode，提供了制作二维码的API，接口很简单，</span></p>
+<p align="left" style="background:rgb(30,30,30)"><span style="color:#569CD6">extern</span><span style="color:gainsboro">&nbsp;</span><span style="color:lime">QRcode</span><span style="color:gainsboro">&nbsp;</span><span style="color:#B4B4B4">*</span><span style="color:#880000">QRcode_encodeString</span><span style="color:deeppink">(</span><span style="color:#569CD6">const</span><span style="color:gainsboro">&nbsp;</span><span style="color:#569CD6">char</span><span style="color:gainsboro">&nbsp;</span><span style="color:#B4B4B4">*</span><span style="color:fuchsia">string</span><span style="color:#B4B4B4">,</span><span style="color:gainsboro">&nbsp;</span><span style="color:#569CD6">int</span><span style="color:gainsboro">&nbsp;</span><span style="color:fuchsia">version</span><span style="color:#B4B4B4">,</span><span style="color:gainsboro">&nbsp;</span><span style="color:lime">QRecLevel</span><span style="color:gainsboro">&nbsp;</span><span style="color:fuchsia">level</span><span style="color:#B4B4B4">,</span><span style="color:gainsboro">&nbsp;</span><span style="color:lime">QRencodeMode</span><span style="color:gainsboro">&nbsp;</span><span style="color:fuchsia">hint</span><span style="color:#B4B4B4">,</span><span style="color:gainsboro">&nbsp;</span><span style="color:#569CD6">int</span><span style="color:gainsboro">&nbsp;</span><span style="color:fuchsia">casesensitive</span><span style="color:deeppink">)</span><span style="color:#B4B4B4">;</span></p>
+<p><span style="font-size:12px">这个API可以直接设置要编码的字符串内容，以及对二维码的设置，如版本（即大小等级1~40）、容错等级、模式等，返回的是一个结构体指针，QRcode，</span></p>
+<pre style="background:#1E1E1E"><span style="color:#569CD6">typedef</span><span style="color:gainsboro">&nbsp;</span><span style="color:#569CD6">struct</span><span style="color:gainsboro">&nbsp;</span><span style="color:deeppink">{</span></pre>
+<pre style="background:#1E1E1E"><span style="color:gainsboro">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span style="color:#569CD6">int</span><span style="color:gainsboro">&nbsp;</span><span style="color:fuchsia">version</span><span style="color:#B4B4B4">;</span><span style="color:gainsboro">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#608B4E">///&lt;&nbsp;version&nbsp;of&nbsp;the&nbsp;symbol</span></pre>
+<pre style="background:#1E1E1E"><span style="color:gainsboro">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span style="color:#569CD6">int</span><span style="color:gainsboro">&nbsp;</span><span style="color:fuchsia">width</span><span style="color:#B4B4B4">;</span><span style="color:gainsboro">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#608B4E">///&lt;&nbsp;width&nbsp;of&nbsp;the&nbsp;symbol</span></pre>
+<pre style="background:#1E1E1E"><span style="color:gainsboro">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span style="color:#569CD6">unsigned</span><span style="color:gainsboro">&nbsp;</span><span style="color:#569CD6">char</span><span style="color:gainsboro">&nbsp;</span><span style="color:#B4B4B4">*</span><span style="color:fuchsia">data</span><span style="color:#B4B4B4">;</span><span style="color:gainsboro">&nbsp;</span><span style="color:#608B4E">///&lt;&nbsp;symbol&nbsp;data</span></pre>
+<pre style="background:#1E1E1E"><span style="color:deeppink">}</span><span style="color:gainsboro">&nbsp;</span><span style="color:lime">QRcode</span><span style="color:#B4B4B4">;</span></pre>
+<p><span style="font-family:SimSun; font-size:12px">它的数据data就是二维码的内容，1对应深色块，0对应浅色块。借助一些其他的画图的API就可以绘制出二维码。哭的详细介绍请参考：<a target="_blank" href="http://fukuchi.org/works/qrencode/" target="_blank">点击打开链接</a></span></p>
+<p><span style="font-family:SimSun; font-size:12px">&nbsp;</span></p>
+<p><span style="font-family:SimSun; font-size:12px">我使用的是QT&#43;VS 和QT&#43;Linux，做的是嵌入式开发，所以需要涉及到一些交叉编译等。</span></p>
+<p><span style="font-family:SimSun; font-size:12px">&nbsp;</span></p>
+<p><span style="font-family:SimSun; font-size:12px">由于qrencode 在我们项目中作为一个第三方库，只需要它的基础功能，后面不会持续去更新，所以，决定将其编译成静态库。如果想编译成动态库，可以参考<a target="_blank" href="http://blog.csdn.net/u010977122/article/details/52959098">http://blog.csdn.net/u010977122/article/details/52959098</a></span></p>
+<p><span style="font-family:SimSun; font-size:12px">这个是我开始编译成动态库遇到的一些问题。</span></p>
+<p><span style="font-family:SimSun; font-size:12px">静态库的编译参照了&nbsp;http://blog.csdn.net/liyuanbhu/article/details/44647139 博主的配置，在此感谢。</span></p>
+<p><span style="font-family:SimSun; font-size:12px">将博主的一些东西搬过来，从而让本文更加完整，下面是编译windows下的静态库的过程。</span></p>
+<p></p>
+<p style="margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; line-height:26px">
+<span style="font-family:SimSun; font-size:12px">建立一个&nbsp;win32&nbsp;项目，选择生成静态库，不使用预编译头。将&nbsp;qrencode&nbsp;的源文件（.c&nbsp;和&nbsp;.h）全部拷到vc&nbsp;的项目目录中，除了&nbsp;qrenc.c&nbsp;。<span style="line-height:26px">编译&nbsp;</span><span style="line-height:26px">qrencode&nbsp;</span><span style="line-height:26px">时还需要有个&nbsp;</span><span style="line-height:26px">config.h&nbsp;</span><span style="line-height:26px">文件（<span style="color:rgb(51,51,51); line-height:26px">源码中的config.h.in文件修改成config.h）</span></span><span style="line-height:26px">，这个文件主要是配置库中的一些宏开关，可以用我下面提供的这个。</span></span></p>
+<p style="margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; font-family:Arial; line-height:26px">
+<span style="line-height:26px; font-family:宋体"></span><pre name="code" class="cpp" style="font-size: 14px;">/* config.h.  Generated from config.h.in by configure.  */  
+/* config.h.in.  Generated from configure.ac by autoheader.  */  
+  
+/* Define to 1 if you have the &lt;inttypes.h&gt; header file. */  
+#define HAVE_INTTYPES_H 1  
+  
+/* Define to 1 if using pthread is enabled. */  
+#undef HAVE_LIBPTHREAD  
+  
+/* Define to 1 if you have the &lt;memory.h&gt; header file. */  
+#define HAVE_MEMORY_H 1  
+  
+/* Define to 1 if you have the &lt;stdint.h&gt; header file. */  
+#define HAVE_STDINT_H 1  
+  
+/* Define to 1 if you have the &lt;stdlib.h&gt; header file. */  
+#define HAVE_STDLIB_H 1  
+  
+/* Define to 1 if you have the &lt;strings.h&gt; header file. */  
+#define HAVE_STRINGS_H 1  
+  
+/* Define to 1 if you have the &lt;string.h&gt; header file. */  
+#define HAVE_STRING_H 1  
+  
+/* Define to 1 if you have the `strdup&#39; function. */  
+#define HAVE_STRDUP 1  
+  
+/* Define to 1 if you have the &lt;sys/stat.h&gt; header file. */  
+#define HAVE_SYS_STAT_H 1  
+  
+/* Define to 1 if you have the &lt;sys/types.h&gt; header file. */  
+#define HAVE_SYS_TYPES_H 1  
+  
+/* Define to 1 if you have the &lt;unistd.h&gt; header file. */  
+#define HAVE_UNISTD_H 1  
+  
+  
+/* Major version number */  
+#define MAJOR_VERSION 3  
+  
+/* Micro version number */  
+#define MICRO_VERSION 4  
+  
+/* Minor version number */  
+#define MINOR_VERSION 4  
+  
+/* Name of package */  
+#define PACKAGE &quot;qrencode&quot;  
+  
+/* Define to the address where bug reports for this package should be sent. */  
+#define PACKAGE_BUGREPORT &quot;&quot;  
+  
+/* Define to the full name of this package. */  
+#define PACKAGE_NAME &quot;QRencode&quot;  
+  
+/* Define to the full name and version of this package. */  
+#define PACKAGE_STRING &quot;QRencode 3.4.4&quot;  
+  
+/* Define to the one symbol short name of this package. */  
+#define PACKAGE_TARNAME &quot;qrencode&quot;  
+  
+/* Define to the home page for this package. */  
+#define PACKAGE_URL &quot;&quot;  
+  
+/* Define to the version of this package. */  
+#define PACKAGE_VERSION &quot;3.4.4&quot;  
+  
+/* Define to 1 if you have the ANSI C header files. */  
+#define STDC_HEADERS 1  
+  
+/* Version number of package */  
+#define VERSION &quot;3.4.4&quot;  
+  
+#define inline  
+  
+/* Define to &#39;static&#39; if no test programs will be compiled. */  
+#define __STATIC static  
+/* #undef WITH_TESTS */  
+     </pre><span style="font-size:12px"><span style="font-family:Arial; line-height:26px">然后在项目属性中添加预处理定义：</span><span style="line-height:26px; font-family:'Times New Roman'">HAVE_CONFIG_H（项目-&gt;属性-&gt;配置属性-&gt;C/C&#43;&#43;-&gt;预处理器-&gt;预处理器定义）</span></span></p>
+<p style="margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; line-height:26px">
+<span style="line-height:26px"><span style="font-family:Times New Roman"></span></span></p>
+<p style="margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; font-family:Arial; line-height:26px">
+<span style="font-size:12px"><span style="font-family:'Times New Roman'">config.h&nbsp;</span><span style="font-family:宋体">中有一行：</span>#define&nbsp;inline&nbsp;</span></p>
+<p style="margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; font-family:Arial; line-height:26px">
+<span style="font-size:12px"><span style="font-family:Arial; line-height:26px">是因为</span><span style="line-height:26px; font-family:'Times New Roman'">rscode.c&nbsp;</span><span style="line-height:26px; font-family:宋体">文件中有个</span><span style="line-height:26px; font-family:'Times New Roman'">modnn</span><span style="line-height:26px; font-family:宋体">的定义如下：</span></span><br>
+</p>
+<pre name="code" class="cpp" style="font-size: 14px;">static inline int modnn(RS *rs, int x){  
+    while (x &gt;= rs-&gt;nn) {  
+        x -= rs-&gt;nn;  
+        x = (x &gt;&gt; rs-&gt;mm) + (x &amp; rs-&gt;nn);  
+    }  
+    return x;  
+}  </pre><span style="font-size:12px">在用VS2012编译的时候，在split.c文件中，strdup编译不过，提示&nbsp;error C4996: 'strdup': The POSIX name for this item is deprecated. Instead, use the ISO C&#43;&#43; conformant name: _strdup. See online help for details. 将strdup改成_strdup，具体参考我的博客：http://blog.csdn.net/u010977122/article/details/53020475<br>
+</span>
+<p style="margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; font-size:14px; line-height:26px">
+<span style="line-height:26px"><span style="font-family:Times New Roman; font-size:12px"><a target="_blank" href="http://blog.csdn.net/u010977122/article/details/53020475" target="_blank">点击打开链接</a><br>
+</span></span></p>
+<p style="margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; line-height:26px">
+<span style="line-height:26px"><span style="font-family:Times New Roman; font-size:12px"></span></span></p>
+<p style="margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; font-family:Arial; line-height:26px">
+qrencode 本身是不依赖于 libpng 库的。所以不存在什么缺少 png.h 的问题。按照本文介绍的方法按部就班的做就能生成静态库，不存在任何问题。编译时一定要排除&nbsp;<span style="font-family:'Times New Roman'">qrenc.c</span>&nbsp;这个文件。这个文件是 qrencode 的一个使用例子，与这个库本身无关。</p>
+<p style="margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; font-family:Arial; line-height:26px">
+<br>
+</p>
+<p style="margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; font-family:Arial; line-height:26px">
+生成了libqrencode.a的一个静态库，再配qrencode.h这个头文件，就可以在项目中使用了。</p>
+在QT中使用的具体代码如下：
+<p style="margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; font-size:14px; line-height:26px">
+<span style="font-size:14px; line-height:26px"><span style="font-family:Times New Roman"><br>
+</span></span></p>
+<p style="margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; font-size:14px; line-height:26px">
+<span style="font-size:14px; line-height:26px"><span style="font-family:Times New Roman"></span></span><pre name="code" class="cpp">void HQrencodePCtrl::PaintQRcode::draw(QPainter &amp;painter, int width, int height)  
+{  
+	QColor foreground(Qt::black);
+	painter.setBrush(foreground);
+	const int qr_width = qr-&gt;width &gt; 0 ? qr-&gt;width : 1;  
+	double scale_x = width / qr_width;  
+	double scale_y = height / qr_width;  
+ 	for( int y = 0; y &lt; qr_width; y ++)  
+ 	{  
+ 		for(int x = 0; x &lt; qr_width; x++)  
+ 		{  
+ 			unsigned char b = qr-&gt;data[y * qr_width + x];  
+ 			if(b &amp; 0x01)  
+ 			{  
+ 				QRectF r(int(x * scale_x), int(y * scale_y), int(scale_x), int(scale_y));  
+ 				painter.drawRects(&amp;r, 1);  
+ 			}  
+ 		}  
+ 	} 
+	if(bhavelogo)     //添加Logo的图片，绘制在二维码的中间
+	{
+		QPixmap picture(logoaddr.c_str());
+		int logoWidth = width*0.2;
+		int logoHeight = height * 0.2;
+		painter.drawPixmap(width/2-logoWidth/2,height/2-logoHeight/2,logoWidth,logoHeight,picture);
+	}	
+}  </pre><pre name="code" class="cpp">&lt;pre name=&quot;code&quot; class=&quot;cpp&quot;&gt;void HQrencodePCtrl::PaintQRcode::setString(HString str)  
+{  
+	priv_string = str;  
+ 	if(qr != NULL)  
+ 	{  
+ 		QRcode_free(qr);  
+ 	}  
+	qr = QRcode_encodeString(priv_string.c_str(),  
+		1,  
+		QR_ECLEVEL_L,  
+		QR_MODE_8,  
+		1);  
+	update();  
+}  </pre><pre name="code" class="cpp">void HQrencodePCtrl::PaintQRcode::paint(QPainter *painter)
+{
+	QColor background(Qt::white);  
+	painter-&gt;setBrush(background);  
+	painter-&gt;setPen(Qt::NoPen);  
+	//painter-&gt;drawRect(0, 0, width(), height());  
+
+
+	if(qr != NULL)  
+	{
+		int paintWidth = int(width()/qr-&gt;width)*qr-&gt;width ;
+		int paintHeight = int(height()/qr-&gt;width)*qr-&gt;width;
+		painter-&gt;drawRect(0, 0, paintWidth, paintHeight); 
+		draw(*painter, paintWidth,paintHeight);  
+	}  
+}</pre></p>
+<pre></pre>
+<p></p>
+<p style="margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; line-height:26px">
+<span style="line-height:26px"><span style="font-size:12px"><br>
+</span></span></p>
+<p style="margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; line-height:26px">
+<span style="line-height:26px"><span style="font-size:12px">在linux下编译成库，主要是写Makefile 文件，除了<span style="font-family:'Times New Roman'; line-height:26px">将strdup改成_strdup再改回去，其他不变。下面是我的makefile文件：</span></span></span></p>
+<p style="margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; line-height:26px">
+<span style="line-height:26px"><span style="font-family:'Times New Roman'; font-size:14px; line-height:26px"></span></span><pre name="code" class="java">TARGET = libqrencode
+TARGET_DIR = ../../../lib/linux/debug/
+#OBJ_DIR = ./objs
+#$(CC) -o $(TARGET_DIR)/$(TARGET) $(OBJ_FILES) $(LDFLAGS)
+
+INCLUDE = -I../../../src/ -I../../../inc/
+SOURCES = ../../../src/bitstream.c ../../../src/mask.c ../../../src/mmask.c ../../../src/mqrspec.c ../../../src/qrencode.c ../../../src/qrinput.c ../../../src/qrspec.c ../../../src/rscode.c ../../../src/split.c
+
+LIBS = -lpthread
+OBJ_FILES = $(patsubst %.c, %.o, $(SOURCES))
+
+CC = arm-poky-linux-gnueabi-g++ -march=armv7-a -mthumb-interwork -mfloat-abi=hard -mfpu=neon -mtune=cortex-a9 --sysroot=/opt/poky/1.7/sysroots/cortexa9hf-vfp-neon-poky-linux-gnueabi -std=c++11 -ggdb
+AR = arm-poky-linux-gnueabi-ar   #这里将编译器替换成自己需要的编译器
+#CC = gcc
+#AR = ar
+
+LDFLAGS += $(LIBS) 
+CPPFLAGS += $(INCLUDE)
+
+all: check_env compile link
+
+check_env:
+	@echo &quot;[$(TARGET)]: Build Start...&quot;
+	@mkdir -p $(TARGET_DIR)
+
+compile: $(OBJ_FILES)
+
+link:
+	@echo &quot;[$(TARGET)]: Linking ...&quot;
+	@$(AR) rcs $(TARGET_DIR)/$(TARGET).a $(OBJ_FILES)
+	@echo &quot;[$(TARGET)]: Build done!&quot;	
+
+#complie step 1:
+$(OBJ_FILES): %.o: %.c
+	@echo &quot;[$(TARGET)]: Compiling  $(notdir $^) ...&quot;
+	@$(CC) -DHAVE_CONFIG_H=1 -fPIC -c $(CPPFLAGS) $&lt; -o $@     #这里在编译的时候加上&lt;span style=&quot;font-family: &#39;Times New Roman&#39;;&quot;&gt;HAVE_CONFIG_H=1的宏定义&lt;/span&gt;
+
+
+clean:
+	@rm -rf $(OBJ_FILES) $(TARGET_DIR)/$(TARGET).a
+	@echo &quot;[$(TARGET)]: Clean Finish!&quot;
+</pre><br>
+谢谢~</p>
+   
+</div>
+
+
+
+
+<!-- Baidu Button BEGIN -->
+
+
+
+
+<div class="bdsharebuttonbox tracking-ad" style="float: right;" data-mod="popu_172">
+<a href="#" class="bds_more" data-cmd="more" style="background-position:0 0 !important; background-image: url(http://bdimg.share.baidu.com/static/api/img/share/icons_0_16.png?v=d754dcc0.png) !important"></a>
+<a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"  style="background-position:0 -52px !important"></a>
+<a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"style="background-position:0 -104px !important"></a>
+<a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"style="background-position:0 -260px !important"></a>
+<a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"style="background-position:0 -208px !important"></a>
+<a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"style="background-position:0 -1612px !important" ></a>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];</script>
+<!-- Baidu Button END -->
+
+   
+
+<!--172.16.140.11-->
+
+<!-- Baidu Button BEGIN -->
+<script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=1536434" ></script>
+<script type="text/javascript" id="bdshell_js"></script>
+<script type="text/javascript">
+    document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000)
+</script>
+<!-- Baidu Button END -->
+
+
+
+ 
+
+
+        <div id="digg" ArticleId="53020006" >
+            <dl id="btnDigg" class="digg digg_disable"  onclick="btndigga();">
+               
+                 <dt>顶</dt>
+                <dd>1</dd>
+            </dl>
+           
+              
+            <dl id="btnBury" class="digg digg_disable"  onclick="btnburya();">
+              
+                  <dt>踩</dt>
+                <dd>0</dd>               
+            </dl>
+            
+        </div>
+     <div class="tracking-ad" data-mod="popu_222"><a href="javascript:void(0);" >&nbsp;</a>   </div>
+    <div class="tracking-ad" data-mod="popu_223"> <a href="javascript:void(0);" >&nbsp;</a></div>
+    <script type="text/javascript">
+        function btndigga() {
+            $(".tracking-ad[data-mod='popu_222'] a").click();
+        }
+        function btnburya() {
+            $(".tracking-ad[data-mod='popu_223'] a").click();
+        }
+            </script>
+
+   <ul class="article_next_prev">
+                <li class="prev_article"><span  onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_shangyipian']);location.href='http://blog.csdn.net/u010977122/article/details/52993560';">上一篇</span><a href="http://blog.csdn.net/u010977122/article/details/52993560" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_shangyipian'])">Linux下动态库之ldconfig和ldd指令详解</a></li>
+                <li class="next_article"><span onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_xiayipian']);location.href='http://blog.csdn.net/u010977122/article/details/53020475';">下一篇</span><a href="http://blog.csdn.net/u010977122/article/details/53020475" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_xiayipian'])">strdup 和 _strdup 的使用及区别</a></li>
+    </ul>
+
+    <div style="clear:both; height:10px;"></div>
+
+
+            <div class="similar_article"   >
+                    <h4></h4>
+                    <div class="similar_c"style="margin:20px 0px 0px 0px">
+                        <div class="similar_c_t">
+                          &nbsp;&nbsp;相关文章推荐
+                        </div>
+                   
+                        <div class="similar_wrap tracking-ad" data-mod="popu_36"  style="max-height:250px">                       
+                            <ul class="similar_list fl">    
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/u010977122/article/details/52959098" title="configure配置安装详解" strategy="BlogCommendFromBaidu_0" target="_blank">configure配置安装详解</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/huiyiCourse/detail/594?utm_source=blog7" title="C语言大型软件设计的面向对象--宋宝华" strategy="undefined" target="_blank">C语言大型软件设计的面向对象--宋宝华</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/sunnyloves/article/details/53053487" title="libqrencode库编译及使用" strategy="BlogCommendFromBaidu_1" target="_blank">libqrencode库编译及使用</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/huiyiCourse/detail/596?utm_source=blog7" title="【免费直播】神经网络的原理及结构设计--何宇健" strategy="undefined" target="_blank">【免费直播】神经网络的原理及结构设计--何宇健</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/liyuanbhu/article/details/44647139" title="vc2010 编译 qrencode" strategy="BlogCommendFromBaidu_2" target="_blank">vc2010 编译 qrencode</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/combo/detail/564?utm_source=blog7" title="C/C++学习指南全套教程" strategy="undefined" target="_blank">C/C++学习指南全套教程</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/ljttianqin/article/details/73699777" title="libqrencode学习笔记（一）： VS2015编译qrencode-3.4.4" strategy="BlogCommendFromBaidu_3" target="_blank">libqrencode学习笔记（一）： VS2015编译qrencode-3.4.4</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/course/detail/5058?utm_source=blog7" title="Spring Boot 2小时入门基础教程" strategy="undefined" target="_blank">Spring Boot 2小时入门基础教程</a>
+                                   </li>
+                            </ul>
+                              <ul class="similar_list fr">      
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://download.csdn.net/download/aileen5150/9381705" title="qrencode-3.4.4源码" strategy="BlogCommendFromBaidu_4" target="_blank">qrencode-3.4.4源码</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/course/detail/4565?utm_source=blog7" title=" 深度学习项目实战-人脸检测" strategy="undefined" target="_blank"> 深度学习项目实战-人脸检测</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/L_Backkom/article/details/38793639" title="qrencode二维码生成库函数使用心得（一）（付测试源码）" strategy="BlogCommendFromBaidu_5" target="_blank">qrencode二维码生成库函数使用心得（一）（付测试源码）</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/course/detail/6134?utm_source=blog7" title=" JDK9新特性 JDK9新特性" strategy="undefined" target="_blank"> JDK9新特性 JDK9新特性</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/fengltxx/article/details/50404681" title="最简单的扫描生成二维码--附Demo" strategy="BlogCommendFromBaidu_6" target="_blank">最简单的扫描生成二维码--附Demo</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://download.csdn.net/download/asukav_v/9475972" title="Qt5(QWidget)实现的C++二维码生成程序源码" strategy="BlogCommendFromBaidu_7" target="_blank">Qt5(QWidget)实现的C++二维码生成程序源码</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://download.csdn.net/download/shishiyouyou/9686541" title="qrencode生成二维码的QT DEMO" strategy="BlogCommendFromBaidu_8" target="_blank">qrencode生成二维码的QT DEMO</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://download.csdn.net/download/liujunpen/9300343" title="qt/c++ 实现二维码生成（利用qrencode）" strategy="BlogCommendFromBaidu_9" target="_blank">qt/c++ 实现二维码生成（利用qrencode）</a>
+                                   </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>   
+      
+</div>
+
+     <div>
+           
+
+       
+                           
+            <!-- 广告位：PC端-博客内容页-banner1-960*90 --> 
+           
+         <!-- 广告位：PC端-博客详情页底部banner-960*90 -->
+            <script>
+                (function() {
+                    var s = "_" + Math.random().toString(36).slice(2);
+                    document.write('<div id="' + s + '"></div>');
+                    (window.slotbydup=window.slotbydup || []).push({
+                        id: '4770928',
+                        container: s,
+                        size: '960,90',
+                        display: 'inlay-fix'
+                    });
+                })();
+            </script>
+    </div>
+
+<div id="suggest"></div>
+         <script  language="javascript" type='text/javascript'>     
+             $(function(){
+                 $.get("/u010977122/svc/GetSuggestContent/53020006",function(data){
+                     $("#suggest").html(data);
+                 });     
+             });             
+         </script>  
+
+
+
+            
+                                    
+            
+                                    
+
+        <!-- 广告位开始 -->
+        <!-- 广告位结束 -->
+
+
+<div class="comment_class">
+    <div id="comment_title" class="panel_head">
+        <span class="see_comment">查看评论</span><a name="comments"></a></div>
+    <div id="comment_list">
+    </div>
+    <div id="comment_bar">
+    </div>
+    <div id="comment_form">
+    </div>
+    <div class="announce">
+        * 以上用户言论只代表其个人观点，不代表CSDN网站的观点或立场<a name="reply"></a><a name="quote"></a></div>
+</div>
+
+<script type="text/javascript">
+    var fileName = '53020006';
+    var commentscount = 3;
+    var islock = false
+</script>
+
+    <div id="ad_bot">
+    </div>
+<div id="report_dialog">
+</div>
+
+<div id="d-top"  style="bottom:60px;">
+
+        <a id="quick-reply" class="btn btn-top q-reply" title="快速回复" style="display:none;">
+            <img src="http://static.blog.csdn.net/images/blog-icon-reply.png" alt="快速回复">
+        </a>    
+    <a id="d-top-a" class="btn btn-top backtop"  style="display: none;" title="返回顶部" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_huidaodingbu'])" style="">         
+         <img src="http://static.blog.csdn.net/images/top.png" alt="TOP">
+    </a>
+</div>
+<script type="text/javascript">
+    $(function ()
+    {
+        $("#ad_frm_0").height("90px");
+        
+        setTimeout(function(){
+            $("#ad_frm_2").height("200px");
+        },1000);    
+    });
+  
+</script>
+<style type="text/css">
+    .tag_list
+    {
+        background: none repeat scroll 0 0 #FFFFFF;
+        border: 1px solid #D7CBC1;
+        color: #000000;
+        font-size: 12px;
+        line-height: 20px;
+        list-style: none outside none;
+        margin: 10px 2% 0 1%;
+        padding: 1px;
+    }
+    .tag_list h5
+    {
+        background: none repeat scroll 0 0 #E0DBD3;
+        color: #47381C;
+        font-size: 12px;
+        height: 24px;
+        line-height: 24px;
+        padding: 0 5px;
+        margin: 0;
+    }
+    .tag_list h5 a
+    {
+        color: #47381C;
+    }
+    .classify
+    {
+        margin: 10px 0;
+        padding: 4px 12px 8px;
+    }
+    .classify a
+    {
+        margin-right: 20px;
+        white-space: nowrap;
+    }
+</style>
+
+
+
+
+
+<div id="pop_win" style="display:none ;position: absolute; z-index: 10000; border: 1px solid rgb(220, 220, 220); top: 222.5px; left: 630px; opacity: 1; background: none 0px 0px repeat scroll rgb(255, 255, 255);">
+    
+</div>
+<div id="popup_mask"></div>
+<style>
+    #popup_mask
+    {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        z-index: 9999;
+        left: 0px;
+        top: 0px;
+        opacity: 0.3;
+        filter: alpha(opacity=30);
+        display: none;
+    }
+
+</style>
+
+
+
+
+<script type="text/javascript">
+    $(function(){        
+        
+        setTimeout(function(){
+            $(".comment_body:contains('回复')").each(function(index,item){
+                var u=$(this).text().split('：')[0].toString().replace("回复","")
+                var thisComment=$(this);
+                if(u)
+                {
+                    $.getJSON("https://passport.csdn.net/get/nick?callback=?", {users: u}, function(a) {
+                        if(a!=null&&a.data!=null&&a.data.length>0)
+                        {
+                            nick=a.data[0].n; 
+                            if(u!=nick)
+                            {
+                                thisComment.text(thisComment.text().replace(u,nick));  
+                            }
+                        }       
+                    });  
+                }
+            });         
+
+        },200);  
+
+        setTimeout(function(){
+            $(".math").each(function(index,value){$(this).find("span").last().css("color","#fff"); })
+        },5000);
+
+        setTimeout(function(){
+            $(".math").each(function(index,value){$(this).find("span").last().css("color","#fff"); })
+        },10000);
+
+        setTimeout(function(){
+            $(".math").each(function(index,value){$(this).find("span").last().css("color","#fff"); })
+        },15000);
+        
+        setTimeout(function(){
+            $("a img[src='http://js.tongji.linezing.com/stats.gif']").parent().css({"position":"absolute","left":"50%"});
+        },300);
+    });
+
+    function loginbox(){
+        var $logpop=$("#pop_win");
+        $logpop.html('<iframe src="https://passport.csdn.net/account/loginbox?service=http://static.blog.csdn.net/callback.htm" frameborder="0" height="600" width="400" scrolling="no"></iframe>');
+
+        $('#popup_mask').css({
+            opacity: 0.5,
+            width: $( document ).width() + 'px',
+            height:  $( document ).height() + 'px'
+        });
+        $('#popup_mask').css("display","block");
+ 
+        $logpop.css( {
+            top: ($( window ).height() - $logpop.height())/ 2  + $( window 
+       ).scrollTop() + 'px',
+            left:($( window ).width() - $logpop.width())/ 2
+        } );
+ 
+        setTimeout( function () {
+            $logpop.show();
+            $logpop.css( {
+                opacity: 1
+            } );
+        }, 200 );
+ 
+        $('#popup_mask').unbind("click");
+        $('#popup_mask').bind("click", function(){
+            $('#popup_mask').hide();
+            var $clopop = $("#pop_win");
+            $("#common_ask_div_sc").css("display","none");
+            $clopop.css( {
+                opacity: 0
+            } );
+            setTimeout( function () {
+                $clopop.hide();
+            }, 350 );
+            return false;
+        });
+    }   
+
+    var articletitle='QR code二维码简介及Qrencode库的移植与使用';
+
+</script>
+
+
+
+
+
+
+
+
+
+
+                        <div class="clear">
+                        </div>
+                    </div>                   
+                
+            </div>
+                   
+           <div id="side">
+               
+    <div class="side">
+<div id="panel_Profile" class="panel">
+<ul class="panel_head"><span>个人资料</span></ul>
+<ul class="panel_body profile">
+<div id="blog_userface">
+    <a href="http://my.csdn.net/u010977122" target="_blank">
+    <img src="http://avatar.csdn.net/5/A/1/1_u010977122.jpg" title="访问我的空间" style="max-width:90%"/>
+    </a>
+    <br />
+    <span><a href="http://my.csdn.net/u010977122" class="user_name" target="_blank">u010977122</a></span>
+</div>
+<div class="interact">
+
+    <a href="javascript:void(0);" class="attent" id="span_add_follow" title="[加关注]"></a>
+
+ <a href="javascript:void(0);" class="letter"  title="[发私信]" onclick="window.open('http://msg.csdn.net/letters/model?receiver=u010977122','_blank','height=350,width=700');_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_sixin'])"></a>  
+</div>
+<div id="blog_medal">
+                <div id="bms_box">
+               </div>
+</div>
+<ul id="blog_rank">
+    <li>访问：<span>45612次</span></li>
+    <li>积分：<span>747</span> </li>    
+    <li >等级： <span style="position:relative;display:inline-block;z-index:1" >
+            <img src="http://c.csdnimg.cn/jifen/images/xunzhang/jianzhang/blog3.png" alt="" style="vertical-align: middle;" id="leveImg">
+            <div id="smallTittle" style=" position: absolute;  left: -24px;  top: 25px;  text-align: center;  width: 101px;  height: 32px;  background-color: #fff;  line-height: 32px;  border: 2px #DDDDDD solid;  box-shadow: 0px 2px 2px rgba (0,0,0,0.1);  display: none;   z-index: 999;">
+            <div style="left: 42%;  top: -8px;  position: absolute;  width: 0;  height: 0;  border-left: 10px solid transparent;  border-right: 10px solid transparent;  border-bottom: 8px solid #EAEAEA;"></div>
+            积分：747 </div>
+        </span>  </li>
+    <li>排名：<span>千里之外</span></li>
+</ul>
+<ul id="blog_statistics">
+    <li>原创：<span>25篇</span></li>
+    <li>转载：<span>16篇</span></li>
+    <li>译文：<span>0篇</span></li>
+    <li>评论：<span>23条</span></li>
+</ul>
+</ul>
+</div>
+
+
+<div class="panel" id="panel_Search">
+    <ul class="panel_head"><span>文章搜索</span></ul>
+    <ul class="panel_body" class="form_search">
+        <form id="frmSearch" action="http://so.csdn.net/search" class="form_search csdn-tracking-statistics" target="_blank"  data-mod="popu_306">
+        <span><input id="inputSearch" type="text" class="blogsearch" title="请输入关键字" /></span>
+        <input id="btnSubmit" type="button" value="搜索" title="search in blog" />
+        <input type="hidden" name="q" id="inputQ" />
+        <input type="hidden" name="t" value="blog" />
+        <a id="btnSearchBlog" target="_blank"></a>
+        </form>
+    </ul>
+</div>
+
+<script type="text/javascript">
+
+   
+    $(function () {
+        $("#btnSubmit").unbind("click");
+        $("#btnSubmit").click(function () {           
+            search();
+        });
+
+        $("#frmSearch").submit(function () {           
+            search();
+            return false;
+        });
+
+        function search()
+        {
+            if ($("#inputSearch").val() == "") {               
+                alert("请录入搜索关键词！");                         
+                return false;
+            }
+            //var url = "http://so.csdn.net/so/search/s.do?q=" + encodeURIComponent($("#inputSearch").val()) + "&u=" + username + "&t=blog";           
+            var url = "https://www.baidu.com/s?wd=" + encodeURIComponent($("#inputSearch").val()) + "%20site%3Ablog.csdn.net"
+            window.location.href = url;
+        }   
+    });
+</script><div id="panel_Category" class="panel">
+<ul class="panel_head"><span>文章分类</span></ul>
+<ul class="panel_body">    
+                 <li>
+                    <a href="/u010977122/article/category/6414030" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">杂观</a><span>(1)</span>
+                </li>
+                 <li>
+                    <a href="/u010977122/article/category/6414062" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">网络基础</a><span>(1)</span>
+                </li>
+                 <li>
+                    <a href="/u010977122/article/category/6474298" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">编程基础</a><span>(1)</span>
+                </li>
+                 <li>
+                    <a href="/u010977122/article/category/6474308" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">Qt</a><span>(7)</span>
+                </li>
+                 <li>
+                    <a href="/u010977122/article/category/6474309" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">opengl</a><span>(2)</span>
+                </li>
+                 <li>
+                    <a href="/u010977122/article/category/6474310" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">工具使用</a><span>(1)</span>
+                </li>
+                 <li>
+                    <a href="/u010977122/article/category/6474311" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">linux</a><span>(9)</span>
+                </li>
+                 <li>
+                    <a href="/u010977122/article/category/6474641" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">项目管理</a><span>(0)</span>
+                </li>
+                 <li>
+                    <a href="/u010977122/article/category/6474914" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">其他</a><span>(1)</span>
+                </li>
+                 <li>
+                    <a href="/u010977122/article/category/6481808" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">C/C++基础</a><span>(8)</span>
+                </li>
+                 <li>
+                    <a href="/u010977122/article/category/6634309" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">Kanzi学习之路</a><span>(9)</span>
+                </li>
+</ul>
+</div><div id="panel_Archive" class="panel">
+<ul class="panel_head"><span>文章存档</span></ul>
+<ul class="panel_body">
+<div id="archive_list">
+<!--归档统计-->
+<li><a href="/u010977122/article/month/2017/09">2017年09月</a><span>(1)</span></li><li><a href="/u010977122/article/month/2017/05">2017年05月</a><span>(2)</span></li><li><a href="/u010977122/article/month/2017/04">2017年04月</a><span>(1)</span></li><li><a href="/u010977122/article/month/2017/02">2017年02月</a><span>(5)</span></li><li><a href="/u010977122/article/month/2017/01">2017年01月</a><span>(3)</span></li><li><a href="/u010977122/article/month/2016/12">2016年12月</a><span>(5)</span></li><li><a href="/u010977122/article/month/2016/11">2016年11月</a><span>(11)</span></li><li><a href="/u010977122/article/month/2016/10">2016年10月</a><span>(12)</span></li><li><a href="/u010977122/article/month/2016/09">2016年09月</a><span>(2)</span></li>
+</div>
+</ul>
+</div>
+<div id="hotarticls" class="panel tracking-ad" data-mod="popu_340">
+<ul class="panel_head">
+    <span>       
+阅读排行    </span>
+</ul>
+
+<ul class="panel_body itemlist">
+<li>
+<a href="/u010977122/article/details/53316671" title="Linux系统挂载存储只读改成读写">Linux系统挂载存储只读改成读写</a><span>(6935)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/53020006" title="QR code二维码简介及Qrencode库的移植与使用">QR code二维码简介及Qrencode库的移植与使用</a><span>(4038)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/52993560" title="Linux下动态库之ldconfig和ldd指令详解">Linux下动态库之ldconfig和ldd指令详解</a><span>(3301)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/52959098" title="configure配置安装详解">configure配置安装详解</a><span>(3135)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/54023600" title="Kanzi学习之路（1）：Kanzi的简介和安装">Kanzi学习之路（1）：Kanzi的简介和安装</a><span>(2649)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/53020475" title="strdup 和 _strdup 的使用及区别">strdup 和 _strdup 的使用及区别</a><span>(2630)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/53099425" title="静态存储区、栈区、堆区的区别">静态存储区、栈区、堆区的区别</a><span>(2215)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/52944322" title="详解Qt中的状态机机制（一）">详解Qt中的状态机机制（一）</a><span>(1556)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/52986217" title="Linux下deb包和rpm包的安装方法">Linux下deb包和rpm包的安装方法</a><span>(1510)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/54618797" title="Kanzi学习之路（2）：Hello world!">Kanzi学习之路（2）：Hello world!</a><span>(1461)</span>
+</li>
+</ul>
+</div>
+<div id="hotarticls2" class="panel tracking-ad" data-mod="popu_341">
+<ul class="panel_head"><span>评论排行</span></ul>
+<ul class="panel_body itemlist">
+<li>
+<a href="/u010977122/article/details/54023600" title="Kanzi学习之路（1）：Kanzi的简介和安装">Kanzi学习之路（1）：Kanzi的简介和安装</a><span>(7)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/53791660" title="kanzi学习之路(序）">kanzi学习之路(序）</a><span>(4)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/53020006" title="QR code二维码简介及Qrencode库的移植与使用">QR code二维码简介及Qrencode库的移植与使用</a><span>(3)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/55833028" title="Kanzi学习之路（6）：属性绑定">Kanzi学习之路（6）：属性绑定</a><span>(3)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/54620079" title="Kanzi学习之路（3）：Kanzi的树形结构和常用控件介绍">Kanzi学习之路（3）：Kanzi的树形结构和常用控件介绍</a><span>(3)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/52959098" title="configure配置安装详解">configure配置安装详解</a><span>(2)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/52958330" title="Linux系统中“动态库”和“静态库”那点事儿">Linux系统中“动态库”和“静态库”那点事儿</a><span>(1)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/55002445" title="Kanzi学习之路（7）：Kanzi的资源管理系统">Kanzi学习之路（7）：Kanzi的资源管理系统</a><span>(1)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/72599003" title="Kanzi学习之路（7）：kanzi的资源预加载">Kanzi学习之路（7）：kanzi的资源预加载</a><span>(1)</span>
+</li>
+<li>
+<a href="/u010977122/article/details/52926118" title="Qt之qml入门">Qt之qml入门</a><span>(0)</span>
+</li>
+</ul>
+</div>
+<div id="homepageArticles" class="panel tracking-ad" data-mod="popu_4">
+<ul class="panel_head"><span>推荐文章</span></ul>
+<ul class="panel_body" id="ad_commend">
+<ul>
+<li>
+<a href="http://blog.csdn.net/blogdevteam/article/details/78287539" 
+target="_blank">* CSDN邀请您来GitChat赚钱啦！</a></li>
+
+<li>
+<a href=" http://blog.csdn.net/gitchat/article/details/78410081"
+target="_blank">* 改做人工智能之前，90%的人都没能给自己定位</a></li>
+
+<li>
+<a href="http://blog.csdn.net/gitchat/article/details/78410095"
+target="_blank">*   想入行 AI，别让那些技术培训坑了你...</a></li>
+
+<li>
+<a href="http://blog.csdn.net/gitchat/article/details/78431273"
+target="_blank">* 大型技术组织 DevOps 转型经验总结</a></li>
+
+<li>
+<a href=" http://blog.csdn.net/gitchat/article/details/78410108 "
+target="_blank">*  两款敏捷工具，治好你碎片化交付硬伤</a></li>
+
+
+<li>
+<a href="  http://blog.csdn.net/gitchat/article/details/78410087"
+target="_blank">* 低学历又如何？这样的程序员照样可以逆袭</a></li>
+
+</ul></ul>
+</div>
+
+
+<div id="newcomments" class="panel">
+<ul class="panel_head"><span>最新评论</span></ul>
+<ul class="panel_body itemlist">
+    <li>
+   
+         <a href="/u010977122/article/details/72599003#comments">Kanzi学习之路（7）：kanzi的资源预加载</a>
+    <p style="margin:0px;"><a href="/ufo794096593" class="user_name">ufo794096593</a>:
+可以分享一下kanzi API相关一些介绍吗
+    </p>
+    </li>
+    <li>
+   
+         <a href="/u010977122/article/details/52959098#comments">configure配置安装详解</a>
+    <p style="margin:0px;"><a href="/u014646950" class="user_name">u014646950</a>:
+--enable-static：生成静态链接库--enable-shared：生成动态链接库这两个有...
+    </p>
+    </li>
+    <li>
+   
+         <a href="/u010977122/article/details/53791660#comments">kanzi学习之路(序）</a>
+    <p style="margin:0px;"><a href="/worldyj2011" class="user_name">worldyj2011</a>:
+请问如何下载 kanzi studio 等工具试用版本？
+    </p>
+    </li>
+    <li>
+   
+         <a href="/u010977122/article/details/54023600#comments">Kanzi学习之路（1）：Kanzi的简介和安装</a>
+    <p style="margin:0px;"><a href="/demon1112" class="user_name">demon1112</a>:
+@qq_36527714:有找到吗,我也在找,盼分享...
+    </p>
+    </li>
+    <li>
+   
+         <a href="/u010977122/article/details/54023600#comments">Kanzi学习之路（1）：Kanzi的简介和安装</a>
+    <p style="margin:0px;"><a href="/qq_36527714" class="user_name">qq_36527714</a>:
+楼主 请问有安装包吗&amp;#183;&amp;#183;&amp;#183;&amp;#183;到处找不到安装包呀
+    </p>
+    </li>
+    <li>
+   
+         <a href="/u010977122/article/details/54023600#comments">kanzi学习之路(序）</a>
+    <p style="margin:0px;"><a href="/u014752412" class="user_name">u014752412</a>:
+我也是，同上，刚开始接触kanzi，一起学习
+    </p>
+    </li>
+    <li>
+   
+         <a href="/u010977122/article/details/53020006#comments">QR code二维码简介及Qrencode库的移植与使用</a>
+    <p style="margin:0px;"><a href="/sinat_27741463" class="user_name">sinat_27741463</a>:
+感谢，非常有用。另外补充：编译时注意32位与64位的区别；
+    </p>
+    </li>
+    <li>
+   
+         <a href="/u010977122/article/details/52958330#comments">Linux系统中“动态库”和“静态库”那点事儿</a>
+    <p style="margin:0px;"><a href="/wxh568100840" class="user_name">wxh568100840</a>:
+这篇文章真是不错，原文已经没了，多谢博主转载。
+    </p>
+    </li>
+    <li>
+   
+         <a href="/u010977122/article/details/55002445#comments">Kanzi学习之路（7）：Kanzi的资源管理系统</a>
+    <p style="margin:0px;"><a href="/survive_79" class="user_name">survive_79</a>:
+写的不错，期待LZ后续的心得分享~
+    </p>
+    </li>
+    <li>
+   
+         <a href="/u010977122/article/details/55002445#comments">QR code二维码简介及Qrencode库的移植与使用</a>
+    <p style="margin:0px;"><a href="/u010977122" class="user_name">u010977122</a>:
+不应该吧，我这边没有出现这样的问题哎。。
+    </p>
+    </li>
+</ul>
+</div>
+    </div>
+    <div class="clear">
+    </div>
+
+                   <div class="tracking-ad" data-view="true" data-mod="ad_popu_189" data-mtp="63" data-order="40" data-con="ad_content_1259" style="width: 250px; height: 500px;">
+                        <div id="nav_show_top_stop" style="width: 250px;height: 500px;z-index:1000"><div id="cpro_u2734133">
+                             <!-- 投放代码 -->
+                             
+                            <!-- 请置于所有广告位代码之前 -->
+                            <script src="http://dup.baidustatic.com/js/ds.js"></script>
+
+                            <!-- 广告位：PC端-博客详情页-左侧button1-250*250 -->
+                                    <script>
+                                        (function () {
+                                            var s = "_" + Math.random().toString(36).slice(2);
+                                            document.write('<div id="' + s + '"></div>');
+                                            (window.slotbydup = window.slotbydup || []).push({
+                                                id: '4740887',
+                                                container: s,
+                                                size: '250,250',
+                                                display: 'inlay-fix'
+                                            });
+                                        })();
+                                    </script>
+
+                                                                                                    </div>
+                            <div id="cpro_u3031286">
+                                 <!-- 投放代码 -->
+                               
+                                <!-- 请置于所有广告位代码之前 -->
+                                <script src="http://dup.baidustatic.com/js/ds.js"></script>
+
+                                <!-- 广告位：PC端-博客详情页-左侧Button2-250*250 -->
+                                <script>
+                                    (function () {
+                                        var s = "_" + Math.random().toString(36).slice(2);
+                                        document.write('<div id="' + s + '"></div>');
+                                        (window.slotbydup = window.slotbydup || []).push({
+                                            id: '4740890',
+                                            container: s,
+                                            size: '250,250',
+                                            display: 'inlay-fix'
+                                        });
+                                    })();
+                                </script>
+
+
+
+                            </div></div>
+                   </div>
+                    <script>
+
+                        setTimeout(function () {
+                            var naviga_offsetTop = 0; function naviga_stay_top() {
+                                var scrollTop = jQuery(document).scrollTop();
+                                if (scrollTop > naviga_offsetTop) {
+                                    jQuery("#nav_show_top_stop").css({ "position": "fixed" });
+                                    jQuery("#nav_show_top_stop").css({ "top": "0px" });
+                                } else { jQuery("#nav_show_top_stop").css({ "position": "fixed" }); jQuery("#nav_show_top_stop").css({ "top": naviga_offsetTop - scrollTop + "px" }); }
+                            }
+                            function onload_function() {
+                                naviga_offsetTop = jQuery("#nav_show_top_stop").position().top;
+                                jQuery(window).bind("scroll", naviga_stay_top); jQuery(window).bind("mousewheel", naviga_stay_top);
+                                jQuery(document).bind("scroll", naviga_stay_top); jQuery(document).bind("mousewheel", naviga_stay_top);
+                            } jQuery(document).ready(onload_function);
+                        }, 200);
+
+                    </script>
+
+           </div>   
+            <div class="clear">
+            </div>
+        </div>
+
+        
+
+
+
+
+
+
+
+
+    <script type="text/javascript" src="http://passport.csdn.net/content/loginbox/login.js"></script>
+<script type="text/javascript">
+    $(function () {
+        function __get_code_toolbar(snippet_id) {
+            return $("<span class='tracking-ad' data-mod='popu_167'><a href='https://code.csdn.net/snippets/"
+                    + snippet_id
+                    + "' target='_blank' title='在CODE上查看代码片'  style='text-indent:0;'><img src='https://code.csdn.net/assets/CODE_ico.png' width=12 height=12 alt='在CODE上查看代码片' style='position:relative;top:1px;left:2px;'/></a></span>"
+                    + "<span class='tracking-ad' data-mod='popu_170'><a href='https://code.csdn.net/snippets/"
+                    + snippet_id
+                    + "/fork' target='_blank' title='派生到我的代码片' style='text-indent:0;'><img src='https://code.csdn.net/assets/ico_fork.svg' width=12 height=12 alt='派生到我的代码片' style='position:relative;top:2px;left:2px;'/></a></span>");
+        }
+        
+        $("[code_snippet_id]").each(function () {
+            __s_id = $(this).attr("code_snippet_id");
+            if (__s_id != null && __s_id != "" && __s_id != 0 && parseInt(__s_id) > 70020) {
+                __code_tool = __get_code_toolbar(__s_id);
+                $(this).prev().find(".tools").append(__code_tool);
+            }
+        });
+
+        $(".bar").show();
+    });
+</script>
+
+
+
+
+
+    </div>
+     
+
+
+       <script type="text/javascript" src="http://static.blog.csdn.net/public/res/bower-libs/MathJax/MathJax.js?config=TeX-AMS_HTML"></script>   
+    
+    <script src="http://static.blog.csdn.net/scripts/csdn_blog_detail.min.js?v2017.041" type="text/javascript"></script>
+        
+    <script type="text/javascript" src="http://c.csdnimg.cn/blog/csdn_public_blog_detail.min.js?20170719001"></script>
+
+    <script type="text/javascript" src="http://medal.blog.csdn.net/showblogmedal.ashx?blogid=5326263"></script>
+
+
+  <div id="a52b5334d" style="width: 1px; height: 1px; display: none;">
+                    <script id="adJs52b5334"></script>
+                    <script>document.getElementById("adJs52b5334").src = "http://ads.csdn.net/js/opt/52b5334.js?t=" + Math.random();</script>
+   </div>
+          
+    <div class="pop_CA_cover"  style="display:none"></div>
+    <div class="pop pop_CA"  style="display:none">
+          <div class="CA_header">
+            收藏助手
+            <span class="cancel_icon"  id="fapancle"  onclick="$('.pop_CA').hide();$('.pop_CA_cover').hide();"></span>
+          </div>
+          <iframe src="" id="fa" frameborder="0" width="100%" height="360"  scrolling="no" ></iframe>
+    </div>
+
+
+        <script type="text/javascript">
+
+            $(function () {
+                var fromjs = $("#fromjs");
+                if (fromjs.length > 0) {
+                    $("#fromjs .markdown_views pre").addClass("prettyprint");
+                    prettyPrint();
+
+                    $('pre.prettyprint code').each(function () {
+                        var lines = $(this).text().split('\n').length;
+                        var $numbering = $('<ul/>').addClass('pre-numbering').hide();
+                        $(this).addClass('has-numbering').parent().append($numbering);
+                        for (i = 1; i <= lines; i++) {
+                            $numbering.append($('<li/>').text(i));
+                        };
+                        $numbering.fadeIn(1700);
+                    });
+
+                    $('.pre-numbering li').css("color", "#999");
+                }
+            });
+
+            $(".markdown_views a[target!='_blank']").attr("target", "_blank");
+
+            //$(".toc a[target='_blank']").attr("target", "");
+
+            setTimeout(function () {
+                $(".toc a[target='_blank']").attr("target", "");
+            }, 500);
+
+        </script>
+
+</body>
+</html>   

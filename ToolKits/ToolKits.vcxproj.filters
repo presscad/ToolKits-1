@@ -1,0 +1,789 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ToolCode">
+      <UniqueIdentifier>{3ac3a14e-3d31-4751-b58c-c9ac0fab769f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TowerCad">
+      <UniqueIdentifier>{111540a7-c04d-4632-b2f8-35fa07e11cb2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ToolKits.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\AcUiDialogPanel.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\BCMenu.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\BomTblTitleCfg.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\Buffer.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\BufferStack.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\CadToolFunc.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\ClientId.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\Cmd5.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\ColorSelectComboBox.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\Communication - 副本.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\Communication.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\ComplexId.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\CreateFace.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\Deg.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\DialogPanel.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\DimStyle--.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\DistFillet.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\DragEntSet.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\EntityDataBase.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\excel9.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\Expression.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\ExpressionCmpl.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\ExpressionCmplSysFunc.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\FileIO.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\folder_dialog.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\hardcomm.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\HardwareInfo.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\HiberarchyId.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\HoleMaker.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\HttpClient.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\Interpolator.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\LayerTable.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\list.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\ListViewComparer.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\LogBinaryFile.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\LogFile.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\Markup.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\MD5.CPP">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\MD5-2.CPP">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\MenuButton.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\MonoBmpFile.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\MsgBox.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\MutiThreadTask.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\nettime.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\NoManager.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\openssl-md5.c">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\PathManager.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\PropertyList.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\ScannerLoader.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\ScreenAdapter.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\ServerObject.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\SocketObject.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\SolidBody.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\SolidBodyBuffer.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\SortFunc.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\SortHeaderCtrl.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\SquareTree.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\SuperDropTarget.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\SuperDropTarget_xh.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\SuperEdit.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\supergridctrl.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\TaperPolygon.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\TblDef.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\TempFile.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\TimerCount.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\TSPAlgorithm.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\Variant.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\WlanConnect.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\WxPayAPI.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\XhBitMap.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\XhCharString.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\XhListCtrl.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\XhLocale.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\XhMath.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\XhMenu.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\XhTable.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\XhTableCtrl.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ToolCode\XhTreeCtrl.cpp">
+      <Filter>ToolCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\CAD.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\CadLib.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\CadToolFunc.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\ComparePartNoString.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\CopyPasteOper.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\DbEntContext.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\DimStyle.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\DrawDim.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\DrawingToolKits.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\DxfFile.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\DxfModel.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\HuoQuJgDrawing.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\JgDrawing.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\JgNcDataManager.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\LicFuncDef.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\NcJg.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\ParseAdaptNo.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\PlateDrawer.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\ProcessPart.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\ProductFeature.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\Query.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\SegI.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\ServerTowerType.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\TIDBuffer.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\TIDModel.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\TMSServer.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\WirePlaceCode.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TowerCad\XerocadDrawing.cpp">
+      <Filter>TowerCad</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ToolKits.def">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="res\ToolKits.rc2">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolKits.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\AcUiDialogPanel.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\AngleLayout.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\ArrayList.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\ArrayPtrList.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\atom_list.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\BCMenu.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\BomTblTitleCfg.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\Buffer.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\BufferStack.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\CadToolFunc.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\Catlog.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\CirStack.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\ClientId.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\Cmd5.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\ColorSelectComboBox.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\Communication - 副本.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\Communication.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\ComplexId.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\CreateFace.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\Deg.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\DialogPanel.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\DimStyle--.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\DistFillet.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\DragEntSet.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\EnlargeFileDialog.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\EntityDataBase.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\excel9.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\ExcelOper.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\Expression.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\ExpressionCmpl.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\ExpressionCmplSysFunc.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\ExpressionValue.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\FileIO.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\folder_dialog.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\GimDef.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\hardcomm.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\HardwareInfo.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\Hash64Table.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\HashCmplexKeyTable.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\HashSetBuffer.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\HashTable.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\HiberarchyId.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\HoleMaker.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\HttpClient.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\Interpolator.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\LayerTable.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\ldsptr_list.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\LifeObj.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\list.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\ListViewComparer.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\LogBinaryFile.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\LogFile.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\macro.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\MapArray.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\Markup.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\MD5.H">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\MD5-2.H">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\MemberProperty.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\MenuButton.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\ModuleRegApp.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\MonoBmpFile.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\MsgBox.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\MutiThreadTask.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\NoManager.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\NumberToolKits.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\objptr_list.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\openssl-md5.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\ParseSizeSpecStr.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\PathManager.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\PropertyList.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\PropertyListOper.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\PropListItem.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\QRCode.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\ScannerLoader.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\ScreenAdapter.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\ServerObject.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\SocketObject.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\SolidBody.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\SolidBodyBuffer.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\SortFunc.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\SortHeaderCtrl.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\SquareTree.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\StackMemory.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\SuperDropTarget.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\SuperDropTarget_xh.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\SuperEdit.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\supergridctrl.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\TaperPolygon.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\TblDef.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\TempFile.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\TimerCount.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\TSPAlgorithm.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\Variant.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\WlanConnect.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\WxPayAPI.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\XhBitMap.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\XhCharString.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\XhListCtrl.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\XhLocale.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\XhMath.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\XhMenu.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\XhPtrList.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\XhTable.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\XhTableCtrl.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ToolCode\XhTreeCtrl.h">
+      <Filter>ToolCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\CAD.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\CadLib.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\CadToolFunc.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\ComparePartNoString.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\CopyPasteOper.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\DbEntContext.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\DesignParamItem.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\DimStyle.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\DrawDim.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\DrawingDef.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\DrawingToolKits.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\DXFDef.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\DxfFile.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\DxfModel.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\JgDrawing.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\JgNcDataManager.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\LicFuncDef.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\NcJg.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\ParseAdaptNo.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\PlateDrawer.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\ProcessPart.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\ProductFeature.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\Query.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\SegI.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\ServerTowerType.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\TIDBuffer.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\TIDModel.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\TMSServer.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\WirePlaceCode.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\XerocadDrawing.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TowerCad\XerofoxHeaders.h">
+      <Filter>TowerCad</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ToolKits.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\ToolCode\ExcelColorIndex.png">
+      <Filter>ToolCode</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{122F3AE1-4DC0-449A-9C60-75E84C21EC74}</ProjectGuid>
+    <Keyword>MFCDLLProj</Keyword>
+    <RootNamespace>ToolKits</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Dynamic</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Dynamic</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Dynamic</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Dynamic</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <ModuleDefinitionFile>.\ToolKits.def</ModuleDefinitionFile>
+    </Link>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0804</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_WINDOWS;_DEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <ModuleDefinitionFile>.\ToolKits.def</ModuleDefinitionFile>
+    </Link>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0804</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ModuleDefinitionFile>.\ToolKits.def</ModuleDefinitionFile>
+    </Link>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0804</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_WINDOWS;NDEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ModuleDefinitionFile>.\ToolKits.def</ModuleDefinitionFile>
+    </Link>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0804</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ToolCode\AcUiDialogPanel.cpp" />
+    <ClCompile Include="..\ToolCode\BCMenu.cpp" />
+    <ClCompile Include="..\ToolCode\BomTblTitleCfg.cpp" />
+    <ClCompile Include="..\ToolCode\Buffer.cpp" />
+    <ClCompile Include="..\ToolCode\BufferStack.cpp" />
+    <ClCompile Include="..\ToolCode\CadToolFunc.cpp" />
+    <ClCompile Include="..\ToolCode\ClientId.cpp" />
+    <ClCompile Include="..\ToolCode\Cmd5.cpp" />
+    <ClCompile Include="..\ToolCode\ColorSelectComboBox.cpp" />
+    <ClCompile Include="..\ToolCode\Communication - 副本.cpp" />
+    <ClCompile Include="..\ToolCode\Communication.cpp" />
+    <ClCompile Include="..\ToolCode\ComplexId.cpp" />
+    <ClCompile Include="..\ToolCode\CreateFace.cpp" />
+    <ClCompile Include="..\ToolCode\Deg.cpp" />
+    <ClCompile Include="..\ToolCode\DialogPanel.cpp" />
+    <ClCompile Include="..\ToolCode\DimStyle--.cpp" />
+    <ClCompile Include="..\ToolCode\DistFillet.cpp" />
+    <ClCompile Include="..\ToolCode\DragEntSet.cpp" />
+    <ClCompile Include="..\ToolCode\EntityDataBase.cpp" />
+    <ClCompile Include="..\ToolCode\excel9.cpp" />
+    <ClCompile Include="..\ToolCode\Expression.cpp" />
+    <ClCompile Include="..\ToolCode\ExpressionCmpl.cpp" />
+    <ClCompile Include="..\ToolCode\ExpressionCmplSysFunc.cpp" />
+    <ClCompile Include="..\ToolCode\FileIO.cpp" />
+    <ClCompile Include="..\ToolCode\folder_dialog.cpp" />
+    <ClCompile Include="..\ToolCode\hardcomm.cpp" />
+    <ClCompile Include="..\ToolCode\HardwareInfo.cpp" />
+    <ClCompile Include="..\ToolCode\HiberarchyId.cpp" />
+    <ClCompile Include="..\ToolCode\HoleMaker.cpp" />
+    <ClCompile Include="..\ToolCode\HttpClient.cpp" />
+    <ClCompile Include="..\ToolCode\Interpolator.cpp" />
+    <ClCompile Include="..\ToolCode\LayerTable.cpp" />
+    <ClCompile Include="..\ToolCode\list.cpp" />
+    <ClCompile Include="..\ToolCode\ListViewComparer.cpp" />
+    <ClCompile Include="..\ToolCode\LogBinaryFile.cpp" />
+    <ClCompile Include="..\ToolCode\LogFile.cpp" />
+    <ClCompile Include="..\ToolCode\Markup.cpp" />
+    <ClCompile Include="..\ToolCode\MD5-2.CPP" />
+    <ClCompile Include="..\ToolCode\MD5.CPP" />
+    <ClCompile Include="..\ToolCode\MenuButton.cpp" />
+    <ClCompile Include="..\ToolCode\MonoBmpFile.cpp" />
+    <ClCompile Include="..\ToolCode\MsgBox.cpp" />
+    <ClCompile Include="..\ToolCode\MutiThreadTask.cpp" />
+    <ClCompile Include="..\ToolCode\nettime.cpp" />
+    <ClCompile Include="..\ToolCode\NoManager.cpp" />
+    <ClCompile Include="..\ToolCode\openssl-md5.c" />
+    <ClCompile Include="..\ToolCode\PathManager.cpp" />
+    <ClCompile Include="..\ToolCode\PropertyList.cpp" />
+    <ClCompile Include="..\ToolCode\ScannerLoader.cpp" />
+    <ClCompile Include="..\ToolCode\ScreenAdapter.cpp" />
+    <ClCompile Include="..\ToolCode\ServerObject.cpp" />
+    <ClCompile Include="..\ToolCode\SocketObject.cpp" />
+    <ClCompile Include="..\ToolCode\SolidBody.cpp" />
+    <ClCompile Include="..\ToolCode\SolidBodyBuffer.cpp" />
+    <ClCompile Include="..\ToolCode\SortFunc.cpp" />
+    <ClCompile Include="..\ToolCode\SortHeaderCtrl.cpp" />
+    <ClCompile Include="..\ToolCode\SquareTree.cpp" />
+    <ClCompile Include="..\ToolCode\SuperDropTarget.cpp" />
+    <ClCompile Include="..\ToolCode\SuperDropTarget_xh.cpp" />
+    <ClCompile Include="..\ToolCode\SuperEdit.cpp" />
+    <ClCompile Include="..\ToolCode\supergridctrl.cpp" />
+    <ClCompile Include="..\ToolCode\TaperPolygon.cpp" />
+    <ClCompile Include="..\ToolCode\TblDef.cpp" />
+    <ClCompile Include="..\ToolCode\TempFile.cpp" />
+    <ClCompile Include="..\ToolCode\TimerCount.cpp" />
+    <ClCompile Include="..\ToolCode\TSPAlgorithm.cpp" />
+    <ClCompile Include="..\ToolCode\Variant.cpp" />
+    <ClCompile Include="..\ToolCode\WlanConnect.cpp" />
+    <ClCompile Include="..\ToolCode\WxPayAPI.cpp" />
+    <ClCompile Include="..\ToolCode\XhBitMap.cpp" />
+    <ClCompile Include="..\ToolCode\XhCharString.cpp" />
+    <ClCompile Include="..\ToolCode\XhListCtrl.cpp" />
+    <ClCompile Include="..\ToolCode\XhLocale.cpp" />
+    <ClCompile Include="..\ToolCode\XhMath.cpp" />
+    <ClCompile Include="..\ToolCode\XhMenu.cpp" />
+    <ClCompile Include="..\ToolCode\XhTable.cpp" />
+    <ClCompile Include="..\ToolCode\XhTableCtrl.cpp" />
+    <ClCompile Include="..\ToolCode\XhTreeCtrl.cpp" />
+    <ClCompile Include="..\TowerCad\CAD.cpp" />
+    <ClCompile Include="..\TowerCad\CadLib.cpp" />
+    <ClCompile Include="..\TowerCad\CadToolFunc.cpp" />
+    <ClCompile Include="..\TowerCad\ComparePartNoString.cpp" />
+    <ClCompile Include="..\TowerCad\CopyPasteOper.cpp" />
+    <ClCompile Include="..\TowerCad\DbEntContext.cpp" />
+    <ClCompile Include="..\TowerCad\DimStyle.cpp" />
+    <ClCompile Include="..\TowerCad\DrawDim.cpp" />
+    <ClCompile Include="..\TowerCad\DrawingToolKits.cpp" />
+    <ClCompile Include="..\TowerCad\DxfFile.cpp" />
+    <ClCompile Include="..\TowerCad\DxfModel.cpp" />
+    <ClCompile Include="..\TowerCad\HuoQuJgDrawing.cpp" />
+    <ClCompile Include="..\TowerCad\JgDrawing.cpp" />
+    <ClCompile Include="..\TowerCad\JgNcDataManager.cpp" />
+    <ClCompile Include="..\TowerCad\LicFuncDef.cpp" />
+    <ClCompile Include="..\TowerCad\NcJg.cpp" />
+    <ClCompile Include="..\TowerCad\ParseAdaptNo.cpp" />
+    <ClCompile Include="..\TowerCad\PlateDrawer.cpp" />
+    <ClCompile Include="..\TowerCad\ProcessPart.cpp" />
+    <ClCompile Include="..\TowerCad\ProductFeature.cpp" />
+    <ClCompile Include="..\TowerCad\Query.cpp" />
+    <ClCompile Include="..\TowerCad\SegI.cpp" />
+    <ClCompile Include="..\TowerCad\ServerTowerType.cpp" />
+    <ClCompile Include="..\TowerCad\TIDBuffer.cpp" />
+    <ClCompile Include="..\TowerCad\TIDModel.cpp" />
+    <ClCompile Include="..\TowerCad\TMSServer.cpp" />
+    <ClCompile Include="..\TowerCad\WirePlaceCode.cpp" />
+    <ClCompile Include="..\TowerCad\XerocadDrawing.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="ToolKits.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\ToolKits.rc2" />
+    <None Include="ToolKits.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\ToolCode\AcUiDialogPanel.h" />
+    <ClInclude Include="..\ToolCode\AngleLayout.h" />
+    <ClInclude Include="..\ToolCode\ArrayList.h" />
+    <ClInclude Include="..\ToolCode\ArrayPtrList.h" />
+    <ClInclude Include="..\ToolCode\atom_list.h" />
+    <ClInclude Include="..\ToolCode\BCMenu.h" />
+    <ClInclude Include="..\ToolCode\BomTblTitleCfg.h" />
+    <ClInclude Include="..\ToolCode\Buffer.h" />
+    <ClInclude Include="..\ToolCode\BufferStack.h" />
+    <ClInclude Include="..\ToolCode\CadToolFunc.h" />
+    <ClInclude Include="..\ToolCode\Catlog.h" />
+    <ClInclude Include="..\ToolCode\CirStack.h" />
+    <ClInclude Include="..\ToolCode\ClientId.h" />
+    <ClInclude Include="..\ToolCode\Cmd5.h" />
+    <ClInclude Include="..\ToolCode\ColorSelectComboBox.h" />
+    <ClInclude Include="..\ToolCode\Communication - 副本.h" />
+    <ClInclude Include="..\ToolCode\Communication.h" />
+    <ClInclude Include="..\ToolCode\ComplexId.h" />
+    <ClInclude Include="..\ToolCode\CreateFace.h" />
+    <ClInclude Include="..\ToolCode\Deg.h" />
+    <ClInclude Include="..\ToolCode\DialogPanel.h" />
+    <ClInclude Include="..\ToolCode\DimStyle--.h" />
+    <ClInclude Include="..\ToolCode\DistFillet.h" />
+    <ClInclude Include="..\ToolCode\DragEntSet.h" />
+    <ClInclude Include="..\ToolCode\EnlargeFileDialog.h" />
+    <ClInclude Include="..\ToolCode\EntityDataBase.h" />
+    <ClInclude Include="..\ToolCode\excel9.h" />
+    <ClInclude Include="..\ToolCode\ExcelOper.h" />
+    <ClInclude Include="..\ToolCode\Expression.h" />
+    <ClInclude Include="..\ToolCode\ExpressionCmpl.h" />
+    <ClInclude Include="..\ToolCode\ExpressionCmplSysFunc.h" />
+    <ClInclude Include="..\ToolCode\ExpressionValue.h" />
+    <ClInclude Include="..\ToolCode\FileIO.h" />
+    <ClInclude Include="..\ToolCode\folder_dialog.h" />
+    <ClInclude Include="..\ToolCode\GimDef.h" />
+    <ClInclude Include="..\ToolCode\hardcomm.h" />
+    <ClInclude Include="..\ToolCode\HardwareInfo.h" />
+    <ClInclude Include="..\ToolCode\Hash64Table.h" />
+    <ClInclude Include="..\ToolCode\HashCmplexKeyTable.h" />
+    <ClInclude Include="..\ToolCode\HashSetBuffer.h" />
+    <ClInclude Include="..\ToolCode\HashTable.h" />
+    <ClInclude Include="..\ToolCode\HiberarchyId.h" />
+    <ClInclude Include="..\ToolCode\HoleMaker.h" />
+    <ClInclude Include="..\ToolCode\HttpClient.h" />
+    <ClInclude Include="..\ToolCode\Interpolator.h" />
+    <ClInclude Include="..\ToolCode\LayerTable.h" />
+    <ClInclude Include="..\ToolCode\ldsptr_list.h" />
+    <ClInclude Include="..\ToolCode\LifeObj.h" />
+    <ClInclude Include="..\ToolCode\list.h" />
+    <ClInclude Include="..\ToolCode\ListViewComparer.h" />
+    <ClInclude Include="..\ToolCode\LogBinaryFile.h" />
+    <ClInclude Include="..\ToolCode\LogFile.h" />
+    <ClInclude Include="..\ToolCode\macro.h" />
+    <ClInclude Include="..\ToolCode\MapArray.h" />
+    <ClInclude Include="..\ToolCode\Markup.h" />
+    <ClInclude Include="..\ToolCode\MD5-2.H" />
+    <ClInclude Include="..\ToolCode\MD5.H" />
+    <ClInclude Include="..\ToolCode\MemberProperty.h" />
+    <ClInclude Include="..\ToolCode\MenuButton.h" />
+    <ClInclude Include="..\ToolCode\ModuleRegApp.h" />
+    <ClInclude Include="..\ToolCode\MonoBmpFile.h" />
+    <ClInclude Include="..\ToolCode\MsgBox.h" />
+    <ClInclude Include="..\ToolCode\MutiThreadTask.h" />
+    <ClInclude Include="..\ToolCode\NoManager.h" />
+    <ClInclude Include="..\ToolCode\NumberToolKits.h" />
+    <ClInclude Include="..\ToolCode\objptr_list.h" />
+    <ClInclude Include="..\ToolCode\openssl-md5.h" />
+    <ClInclude Include="..\ToolCode\ParseSizeSpecStr.h" />
+    <ClInclude Include="..\ToolCode\PathManager.h" />
+    <ClInclude Include="..\ToolCode\PropertyList.h" />
+    <ClInclude Include="..\ToolCode\PropertyListOper.h" />
+    <ClInclude Include="..\ToolCode\PropListItem.h" />
+    <ClInclude Include="..\ToolCode\QRCode.h" />
+    <ClInclude Include="..\ToolCode\ScannerLoader.h" />
+    <ClInclude Include="..\ToolCode\ScreenAdapter.h" />
+    <ClInclude Include="..\ToolCode\ServerObject.h" />
+    <ClInclude Include="..\ToolCode\SocketObject.h" />
+    <ClInclude Include="..\ToolCode\SolidBody.h" />
+    <ClInclude Include="..\ToolCode\SolidBodyBuffer.h" />
+    <ClInclude Include="..\ToolCode\SortFunc.h" />
+    <ClInclude Include="..\ToolCode\SortHeaderCtrl.h" />
+    <ClInclude Include="..\ToolCode\SquareTree.h" />
+    <ClInclude Include="..\ToolCode\StackMemory.h" />
+    <ClInclude Include="..\ToolCode\SuperDropTarget.h" />
+    <ClInclude Include="..\ToolCode\SuperDropTarget_xh.h" />
+    <ClInclude Include="..\ToolCode\SuperEdit.h" />
+    <ClInclude Include="..\ToolCode\supergridctrl.h" />
+    <ClInclude Include="..\ToolCode\TaperPolygon.h" />
+    <ClInclude Include="..\ToolCode\TblDef.h" />
+    <ClInclude Include="..\ToolCode\TempFile.h" />
+    <ClInclude Include="..\ToolCode\TimerCount.h" />
+    <ClInclude Include="..\ToolCode\TSPAlgorithm.h" />
+    <ClInclude Include="..\ToolCode\Variant.h" />
+    <ClInclude Include="..\ToolCode\WlanConnect.h" />
+    <ClInclude Include="..\ToolCode\WxPayAPI.h" />
+    <ClInclude Include="..\ToolCode\XhBitMap.h" />
+    <ClInclude Include="..\ToolCode\XhCharString.h" />
+    <ClInclude Include="..\ToolCode\XhListCtrl.h" />
+    <ClInclude Include="..\ToolCode\XhLocale.h" />
+    <ClInclude Include="..\ToolCode\XhMath.h" />
+    <ClInclude Include="..\ToolCode\XhMenu.h" />
+    <ClInclude Include="..\ToolCode\XhPtrList.h" />
+    <ClInclude Include="..\ToolCode\XhTable.h" />
+    <ClInclude Include="..\ToolCode\XhTableCtrl.h" />
+    <ClInclude Include="..\ToolCode\XhTreeCtrl.h" />
+    <ClInclude Include="..\TowerCad\CAD.h" />
+    <ClInclude Include="..\TowerCad\CadLib.h" />
+    <ClInclude Include="..\TowerCad\CadToolFunc.h" />
+    <ClInclude Include="..\TowerCad\ComparePartNoString.h" />
+    <ClInclude Include="..\TowerCad\CopyPasteOper.h" />
+    <ClInclude Include="..\TowerCad\DbEntContext.h" />
+    <ClInclude Include="..\TowerCad\DesignParamItem.h" />
+    <ClInclude Include="..\TowerCad\DimStyle.h" />
+    <ClInclude Include="..\TowerCad\DrawDim.h" />
+    <ClInclude Include="..\TowerCad\DrawingDef.h" />
+    <ClInclude Include="..\TowerCad\DrawingToolKits.h" />
+    <ClInclude Include="..\TowerCad\DXFDef.h" />
+    <ClInclude Include="..\TowerCad\DxfFile.h" />
+    <ClInclude Include="..\TowerCad\DxfModel.h" />
+    <ClInclude Include="..\TowerCad\JgDrawing.h" />
+    <ClInclude Include="..\TowerCad\JgNcDataManager.h" />
+    <ClInclude Include="..\TowerCad\LicFuncDef.h" />
+    <ClInclude Include="..\TowerCad\NcJg.h" />
+    <ClInclude Include="..\TowerCad\ParseAdaptNo.h" />
+    <ClInclude Include="..\TowerCad\PlateDrawer.h" />
+    <ClInclude Include="..\TowerCad\ProcessPart.h" />
+    <ClInclude Include="..\TowerCad\ProductFeature.h" />
+    <ClInclude Include="..\TowerCad\Query.h" />
+    <ClInclude Include="..\TowerCad\SegI.h" />
+    <ClInclude Include="..\TowerCad\ServerTowerType.h" />
+    <ClInclude Include="..\TowerCad\TIDBuffer.h" />
+    <ClInclude Include="..\TowerCad\TIDModel.h" />
+    <ClInclude Include="..\TowerCad\TMSServer.h" />
+    <ClInclude Include="..\TowerCad\WirePlaceCode.h" />
+    <ClInclude Include="..\TowerCad\XerocadDrawing.h" />
+    <ClInclude Include="..\TowerCad\XerofoxHeaders.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="ToolKits.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ToolKits.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\ToolCode\ExcelColorIndex.png" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
