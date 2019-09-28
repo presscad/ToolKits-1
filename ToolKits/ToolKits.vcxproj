@@ -23,7 +23,7 @@
     <ProjectGuid>{122F3AE1-4DC0-449A-9C60-75E84C21EC74}</ProjectGuid>
     <Keyword>MFCDLLProj</Keyword>
     <RootNamespace>ToolKits</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
