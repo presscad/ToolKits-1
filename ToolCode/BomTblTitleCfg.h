@@ -18,9 +18,6 @@ public:
 	const static char* T_NOTES;		 //= "备注";
 	const static char* T_WIDE;		 //= "宽度";
 	const static char* T_PARTTYPE;	 //= "类型";
-	const static char* T_MANU_NUM;	 //="加工数"
-	const static char* T_MANU_WEIGHT;//="加工重量"
-	const static char* T_REPLACE_SPEC; //= "代用规格"
 	//
 	const static int INDEX_PART_NO		= 0; //= "编号";
 	const static int INDEX_METERIAL		= 1; //= "材质";
@@ -31,9 +28,6 @@ public:
 	const static int INDEX_NOTES		= 6; //= "备注";
 	const static int INDEX_WIDE			= 7; //= "宽度";
 	const static int INDEX_PARTTYPE		= 8; //= "类型";
-	const static int INDEX_MANU_NUM		= 9; //= "加工数";
-	const static int INDEX_MANU_WEIGHT	= 10; //= "加工重量";
-	const static int INDEX_REPLACE_SPEC = 11; //= "代用规格"
 public:
 	int m_nStartRow,m_nColCount;
 	CXhChar500 m_sColTitleArr;	//
@@ -49,7 +43,6 @@ public:
 	bool GetHashColIndexByColTitleTbl(CHashStrList<DWORD> &hashColIndexByColTitle);
 	void Clone(CBomTblTitleCfg &srcCfg);
 	static bool IsMatchTitle(int colIndex,const char* title);
-	static int DetectTitleRowIndex(CVariant2dArray &sheetContent);
 };
 
 class CBomTblTitleCfgSet

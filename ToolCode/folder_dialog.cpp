@@ -32,8 +32,6 @@ WNDPROC CFolderDialog::m_wndProc = NULL;
 CFolderDialog::CFolderDialog(CString* pPath) : CFileDialog(TRUE, NULL, _T("*..*"))
 {
 	m_pPath = pPath;
-	if (pPath != NULL)
-		m_ofn.lpstrInitialDir = *pPath;
 }
 
 

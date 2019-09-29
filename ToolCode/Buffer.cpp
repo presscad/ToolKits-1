@@ -2,10 +2,11 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include <stdafx.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <memory.h>
 #include "Buffer.h"
-#include "stdlib.h"
-#include "memory.h"
 
 //因不在Windows MFC环境下运行，无法执行下面的调试跟踪宏定义功能
 #if defined(_DEBUG)&&!defined(_DISABLE_DEBUG_NEW_)
@@ -62,7 +63,7 @@ void BUFFER_IO::ReadBoolean(bool *b){
 		*b = false;
 }
 void BUFFER_IO::WriteBoolean(bool b){
-	char bt[8];
+	char bt[8]={ 0 };
 	//由于strcpy报编译过时警告，用以下原始代码代替
 	if(b)
 	{
@@ -142,6 +143,12 @@ CBuffer::CBuffer(int nBlockSize/* = 1024*/ )
 	m_bExternalBuf=false;
 	m_bExternalPosStack=true;
 	m_pPosStack=NULL;
+	_OverFlowBuffPool=NULL;		//溢出缓存文件读写时的文件缓存
+	m_dwOverFlowBuffPoolSize=0;	//_OverFlowBuffPool大小
+	m_liOverflowFileCurrPos=0;
+	m_fpOverflowBuffFile=NULL;
+	m_dwOverflowBuffFileLength=0;
+	m_dwMaxAllocMemBuffSize=0x40000000;
 }
 CBuffer::CBuffer(char* srcBuf, DWORD buf_size)
 {
@@ -152,6 +159,12 @@ CBuffer::CBuffer(char* srcBuf, DWORD buf_size)
 	m_bExternalBuf=(srcBuf!=NULL);
 	m_bExternalPosStack=true;
 	m_pPosStack=NULL;
+	_OverFlowBuffPool=NULL;		//溢出缓存文件读写时的文件缓存
+	m_dwOverFlowBuffPoolSize=0;	//_OverFlowBuffPool大小
+	m_liOverflowFileCurrPos=0;
+	m_fpOverflowBuffFile=NULL;
+	m_dwOverflowBuffFileLength=0;
+	m_dwMaxAllocMemBuffSize=0x40000000;
 }
 CBuffer::CBuffer(BYTE* srcBuf, DWORD buf_size)
 {
@@ -162,6 +175,12 @@ CBuffer::CBuffer(BYTE* srcBuf, DWORD buf_size)
 	m_bExternalBuf=(srcBuf!=NULL);
 	m_bExternalPosStack=true;
 	m_pPosStack=NULL;
+	_OverFlowBuffPool=NULL;		//溢出缓存文件读写时的文件缓存
+	m_dwOverFlowBuffPoolSize=0;	//_OverFlowBuffPool大小
+	m_liOverflowFileCurrPos=0;
+	m_fpOverflowBuffFile=NULL;
+	m_dwOverflowBuffFileLength=0;
+	m_dwMaxAllocMemBuffSize=0x40000000;
 }
 bool CBuffer::AttachMemory(char* srcBuf, DWORD buf_size)
 {
@@ -199,6 +218,35 @@ char* CBuffer::GetBufferPtr()
 {
 	return buffer;
 }
+bool  CBuffer::InitOverflowBuffFile(FILE* fp,DWORD dwMaxAllocMemBuffSize/*=0x40000000*/,
+		char* buff_pool/*=NULL*/,UINT buff_pool_size/*=0*/)
+{
+	this->_OverFlowBuffPool=buff_pool;
+	this->m_dwOverFlowBuffPoolSize=buff_pool_size;
+	if (m_fpOverflowBuffFile!=fp)
+		m_dwOverflowBuffFileLength=0;
+	if ((m_fpOverflowBuffFile=fp)!=NULL)
+	{
+		if(_OverFlowBuffPool!=NULL&&buff_pool_size>4096)	//实践证明缓存对写入文件速度影响不大 wjh-2019.8.15
+			setvbuf(fp,_OverFlowBuffPool,_IOFBF,buff_pool_size);
+		fseek(fp,0,SEEK_SET);
+		m_liOverflowFileCurrPos=0;
+	}
+	m_dwMaxAllocMemBuffSize=dwMaxAllocMemBuffSize;
+	return m_fpOverflowBuffFile!=NULL;
+}
+UINT CBuffer::DetachOverflowBuffFile()
+{
+	m_fpOverflowBuffFile=NULL;
+	UINT dwBuffSize=m_dwOverflowBuffFileLength;
+	m_dwOverflowBuffFileLength=0;
+	m_dwMaxAllocMemBuffSize=0x40000000;
+	return dwBuffSize;
+}
+DWORD CBuffer::GetOverflowBuffFileLength()
+{
+	return m_fpOverflowBuffFile!=NULL?m_dwOverflowBuffFileLength:0;
+}
 //清除缓存，释放内存，再需要时需要重新分配
 void CBuffer::ClearBuffer()
 {
@@ -213,6 +261,7 @@ void CBuffer::ClearContents()
 {
 	file_len = 0;
 	log_mem_position = mem_cursor = 0;
+	m_dwOverflowBuffFileLength=0;
 }
 DWORD CBuffer::GetLength()
 {
@@ -355,7 +404,7 @@ bool CBuffer::SeekPosition(DWORD pos)
 	//旧代码　wjh-2012.12.14
 	//if(pos>=0&&pos<=file_len)
 	//	mem_cursor = pos;
-	if(pos<0||pos>file_len)
+	if(pos<0||pos>file_len+this->m_dwOverflowBuffFileLength)
 		return false;
 	else
 		mem_cursor=pos;
@@ -364,6 +413,42 @@ bool CBuffer::SeekPosition(DWORD pos)
 UINT CBuffer::GetRemnantSize()
 {
 	return file_len-mem_cursor;
+}
+DWORD CBuffer::ReadFromFileAt(DWORD posBeginFromFile,void *pch,DWORD size)
+{
+	if (this->m_fpOverflowBuffFile==NULL)
+		return 0;
+	long liReadBytes=posBeginFromFile+size<this->m_dwOverflowBuffFileLength?size:this->m_dwOverflowBuffFileLength-posBeginFromFile;
+	if (liReadBytes<=0)
+		return 0;
+	else if (m_liOverflowFileCurrPos!=posBeginFromFile)
+		fseek(m_fpOverflowBuffFile,posBeginFromFile,SEEK_SET);
+	return (DWORD)fread(pch,liReadBytes,1,m_fpOverflowBuffFile);
+}
+DWORD CBuffer::WriteToFileAt(DWORD posBeginFromFile,const void *pch,DWORD size)
+{
+	if (this->m_fpOverflowBuffFile==NULL)
+		return 0;
+	long liFillNullBytes=posBeginFromFile>this->m_dwOverflowBuffFileLength?m_dwOverflowBuffFileLength-posBeginFromFile:0;
+	DWORD dwZero=0,dwWriteByts=0;
+	//实践证明ftell函数对文件读写速度影响巨大，有必要内存记录当前游标位置 wjh-2019.8.15
+	//m_liOverflowFileCurrPos=ftell(m_fpOverflowBuffFile);
+	if (liFillNullBytes>0)
+	{
+		fseek(m_fpOverflowBuffFile,m_dwOverflowBuffFileLength,SEEK_SET);
+		for (int i=0;i<liFillNullBytes;i+=4)
+		{
+			dwWriteByts=i+4<liFillNullBytes?4:liFillNullBytes-i;
+			fwrite(&dwZero,dwWriteByts,1,m_fpOverflowBuffFile);
+		}
+	}
+	else if(m_liOverflowFileCurrPos!=posBeginFromFile)
+		fseek(m_fpOverflowBuffFile,posBeginFromFile,SEEK_SET);
+	dwWriteByts= (DWORD)fwrite(pch,size,1,m_fpOverflowBuffFile);
+	if(m_dwOverflowBuffFileLength<posBeginFromFile+size)
+		m_dwOverflowBuffFileLength=posBeginFromFile+size;
+	m_liOverflowFileCurrPos=posBeginFromFile+size;
+	return dwWriteByts;
 }
 DWORD CBuffer::Read(void *pch,DWORD size)
 {
@@ -389,7 +474,29 @@ DWORD CBuffer::Write(const void *pch,DWORD size)
 {
 	if(size<=0)
 		return 0;
-	if(mem_cursor+size>buffer_len)
+	DWORD dwWriteSize=size;
+	DWORD dwWriteToExtraFileBytes=0;
+	if (m_fpOverflowBuffFile!=NULL && mem_cursor+size>m_dwMaxAllocMemBuffSize)
+	{
+		if (mem_cursor<m_dwMaxAllocMemBuffSize)
+		{
+			dwWriteToExtraFileBytes=size-(m_dwMaxAllocMemBuffSize-mem_cursor);//WriteToFileAt
+			size-=dwWriteToExtraFileBytes;
+		}
+		else
+		{
+			dwWriteToExtraFileBytes=size;
+			size=0;
+		}
+	}
+	if (dwWriteToExtraFileBytes>0)
+	{
+		DWORD posBeginFromFile=mem_cursor+size-m_dwMaxAllocMemBuffSize;
+		this->WriteToFileAt(posBeginFromFile,((char*)pch)+size,dwWriteToExtraFileBytes);
+		if (posBeginFromFile+dwWriteToExtraFileBytes>this->m_dwOverflowBuffFileLength)
+			m_dwOverflowBuffFileLength=posBeginFromFile+dwWriteToExtraFileBytes;
+	}
+	if(size>0&&mem_cursor+size>buffer_len)
 	{
 		int size_incre;
 		if(size>m_nBlockSize)
@@ -409,13 +516,21 @@ DWORD CBuffer::Write(const void *pch,DWORD size)
 		buffer_len+=size_incre;
 		m_bExternalBuf=false;
 	}
-	if(pch==NULL)	//写入零数据
-		memset(buffer+mem_cursor,0,size);
-	else
-		memcpy(buffer+mem_cursor,pch,size);
-	mem_cursor+=size;
-	file_len = max(mem_cursor,file_len);
-	return size;
+	if (size>0&&mem_cursor<buffer_len)
+	{
+		if (pch==NULL)	//写入零数据
+			memset(buffer+mem_cursor,0,size);
+		else
+			memcpy(buffer+mem_cursor,pch,size);
+	}
+	if(size>0)
+	{
+		file_len = max(mem_cursor+size,file_len);
+		//file_len = min(file_len,buffer_len);
+		//file_len = min(file_len,m_dwMaxAllocMemBuffSize);
+	}
+	mem_cursor+=size+dwWriteToExtraFileBytes;
+	return dwWriteSize;
 }
 DWORD CBuffer::ReadAt(DWORD pos,void *pch,DWORD size,bool moveCursorPosition/*=false*/)
 {
@@ -516,6 +631,12 @@ void CBuffer::ReadDword(DWORD *dw)
 //{
 //	Read(f,4);
 //}
+double CBuffer::ReadDouble()
+{
+	double d=0;
+	Read(&d, 8);
+	return d;
+}
 void CBuffer::ReadDouble(double *d)
 {
 	Read(d,8);
@@ -695,8 +816,13 @@ UINT BUFFER_IO::ReadString(char *sReadString,UINT maxBufLength/*=0*/)
 	if(maxBufLength>0&&len>=maxBufLength)	//maxLength为sReadString最大缓存长度时，应考虑字符串收尾字符问题
 	{
 		DWORD pos=GetCursorPosition();
+		Read(sReadString, maxBufLength);
+		sReadString[maxBufLength] = '\0';
 		SeekPosition(pos+len);
-		throw "字符串超过预定缓存长度，内存溢出，请立即存盘关闭程序。";
+		if (len > 500)
+			throw "字符串超过预定缓存长度，内存溢出，请立即存盘关闭程序。";
+		else
+			return maxBufLength;
 	}
 	if(sReadString==NULL)
 		return len;

@@ -1,5 +1,4 @@
 #pragma once
-#ifdef __SCANNER_LOADER_
 #include <objbase.h>
 #include <iphlpapi.h>
 #include <wlanapi.h> 
@@ -45,4 +44,3 @@ private:
 };
 
 extern CScannerLoader g_scannerLoader;
-#endif

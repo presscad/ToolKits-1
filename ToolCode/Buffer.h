@@ -8,6 +8,8 @@
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
+#include <stdio.h> //定义FILE类型
+
 struct IBufferStack;
 struct BUFFER_IO{
 public:	//以下两函数纯粹是为了实现property,property中不能直接指向虚函数
@@ -41,18 +43,43 @@ public:
 	//典型数据类型的快整读写
 	virtual DWORD ReadByte(BYTE *byte){return Read(byte,1);}
 	virtual DWORD ReadByte(char *ch){return Read(ch,1);}
+	virtual BYTE ReadByte(){
+		BYTE cbValue=0;
+		Read(&cbValue,1);
+		return cbValue;
+	}
 	virtual void ReadBoolean(bool *b);	//为避免更改代码全局编译，实现代码移至Buffer.cpp wjh-2014.5.15
 	virtual void ReadBooleanThin(bool *b){Read(b,1);}
 	virtual void ReadInteger(int *ii){Read(ii,4);}
 	virtual void ReadInteger(long *ii){Read(ii,4);}
 	virtual void ReadInteger(UINT *u){Read(u,4);}
 	virtual void ReadInteger(DWORD *u){Read(u,4);}
+	virtual long ReadInteger(){
+		long liValue=0;
+		Read(&liValue,4);
+		return liValue;
+	}
 	virtual void ReadWord(WORD *w){Read(w,2);}
 	virtual void ReadWord(short *w){Read(w,2);}
+	virtual WORD ReadWord(){
+		WORD wiValue=0;
+		Read(&wiValue,2);
+		return wiValue;
+	}
 	virtual void ReadDword(DWORD *dw){Read(dw,4);}
+	virtual DWORD ReadDword(){
+		DWORD dwValue=0;
+		Read(&dwValue,4);
+		return dwValue;
+	}
 	virtual void ReadFloat(float *f){Read(f,4);}
 	virtual void ReadFloat(double *ff){float f=0; Read(&f,4); *ff=f;}
 	virtual void ReadDouble(double *d){Read(d,8);}
+	virtual double ReadDouble(){
+		double dfValue=0;
+		Read(&dfValue,8);
+		return dfValue;
+	}
 	virtual void ReadPoint(double *pt_arr){Read(pt_arr,24);}	//三维双精度浮点数组
 	virtual void ReadThinPoint(double *pt_arr);		//三维单精度浮点数组
 	virtual void WriteByte(BYTE byte){Write(&byte,1);}
@@ -177,11 +204,24 @@ protected:
 	DWORD m_nBlockSize;
 	bool m_bExternalPosStack;
 	IBufferStack* m_pPosStack;
+	//溢出缓存文件读写属性及方法定义，专用于解决写入大文件时内存分配失败情况 wjh-2019.8.15
+	FILE* m_fpOverflowBuffFile;		//FILE*类型，只是为了减少头文件包含，所以此处声明为void*
+	char* _OverFlowBuffPool;		//溢出缓存文件读写时的文件缓存
+	DWORD m_dwOverFlowBuffPoolSize;	//_OverFlowBuffPool大小
+	DWORD m_dwMaxAllocMemBuffSize;	//直接从程序堆上分配内存的大小，超出此值如指定外挂溢出文件时读取(或写入)溢出文件
+	DWORD m_dwOverflowBuffFileLength;
+	//实践证明ftell函数对文件读写速度影响巨大，有必要内存记录当前游标位置 wjh-2019.8.15
+	long  m_liOverflowFileCurrPos;	//溢出文件当前的读写位置
+	DWORD ReadFromFileAt(DWORD posBeginFromFile,void *pch,DWORD size);
+	DWORD WriteToFileAt(DWORD posBeginFromFile,const void *pch,DWORD size);
 public:
 	static IBufferStackPtr (*CreateBufferStackFunc)(BUFFER_IO* pBuffIO);	//只是创建IBufferStack类型的缓存位置栈，需要用户自行delete
 public:
 	virtual DWORD GetLength();
 	DWORD SetBlockSize(DWORD nBlockSize = 1024 );
+	bool  InitOverflowBuffFile(FILE* fp,DWORD dwMaxAllocMemBuffSize=0x40000000,char* buff_pool=NULL,UINT buff_pool_size=0);	//默认从程序堆一次性分配内存最大为1G
+	UINT  DetachOverflowBuffFile();	//返回当前溢出缓存文件大小
+	DWORD GetOverflowBuffFileLength();
 	virtual void ClearBuffer();		//清除缓存，释放内存，再需要时需要重新分配
 	void ClearContents();	//只清空内容，不清除缓存，即只将file_len置0
 	char* GetBufferPtr();
@@ -224,6 +264,7 @@ public:
 	void ReadWord(short *w);
 	void ReadDword(DWORD *dw);
 	//virtual void ReadFloat(float *f);
+	double ReadDouble();
 	void ReadDouble(double *d);
 	//void ReadPoint(double *pt_arr);	//三维双精度浮点数组
 	void WriteByte(BYTE byte);

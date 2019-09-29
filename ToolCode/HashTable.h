@@ -1,9 +1,6 @@
 #ifndef __HASH_TABLE_H_
 #define __HASH_TABLE_H_
 #include "list.h"
-#ifndef max
-#define max(a,b)            (((a) > (b)) ? (a) : (b))
-#endif
 //Hash±íÄ£°åÀà
 template <class TYPE> class CHashTable
 {

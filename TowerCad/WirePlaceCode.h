@@ -53,5 +53,6 @@ public:
 	__declspec(property(put=set_ciPostCode,get=get_ciPostCode)) char ciPostCode;
 	//π“µ„–Ú∫≈
 	int get_serial() const;
-	__declspec( property(get=get_serial)) int iSerial;
+	int set_serial(int _iSerial);
+	__declspec( property(put=set_serial,get=get_serial)) int iSerial;
 };

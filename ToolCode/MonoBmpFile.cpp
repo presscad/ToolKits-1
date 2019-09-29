@@ -48,20 +48,20 @@ int WriteMonoBmpFile(const char* fileName, unsigned int width,unsigned effic_wid
 
 	// Open file
 	if ((filep = fopen(fileName, "wb")) == NULL) {
-		//AfxMessageBox("Error opening file");
+		AfxMessageBox("Error opening file");
 		return FALSE;
 	}
 
 	// Write bmp file header
 	if (fwrite(&bmpFileHeader, 1, sizeof(BITMAPFILEHEADER), filep) < sizeof(BITMAPFILEHEADER)) {
-		//AfxMessageBox("Error writing bitmap file header");
+		AfxMessageBox("Error writing bitmap file header");
 		fclose(filep);
 		return FALSE;
 	}
 
 	// Write bmp info header
 	if (fwrite(&bmpInfoHeader, 1, sizeof(BITMAPINFOHEADER), filep) < sizeof(BITMAPINFOHEADER)) {
-		//AfxMessageBox("Error writing bitmap info header");
+		AfxMessageBox("Error writing bitmap info header");
 		fclose(filep);
 		return FALSE;
 	}
@@ -72,7 +72,7 @@ int WriteMonoBmpFile(const char* fileName, unsigned int width,unsigned effic_wid
 	// Allocate memory for some temporary storage
 	paddedImage = (unsigned char *)calloc(sizeof(unsigned char), bytesize);
 	if (paddedImage == NULL) {
-		//AfxMessageBox("Error allocating memory");
+		AfxMessageBox("Error allocating memory");
 		fclose(filep);
 		return FALSE;
 	}
@@ -97,7 +97,7 @@ int WriteMonoBmpFile(const char* fileName, unsigned int width,unsigned effic_wid
 
 	// Write bmp data
 	if (fwrite(paddedImage, 1, bytesize, filep) < bytesize) {
-		//AfxMessageBox("Error writing bitmap data");
+		AfxMessageBox("Error writing bitmap data");
 		free(paddedImage);
 		fclose(filep);
 		return FALSE;

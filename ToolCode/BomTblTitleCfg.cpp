@@ -34,9 +34,6 @@ const char* CBomTblTitleCfg::T_SING_WEIGHT	= "单重";
 const char* CBomTblTitleCfg::T_NOTES		= "备注";
 const char* CBomTblTitleCfg::T_WIDE			= "宽度";
 const char* CBomTblTitleCfg::T_PARTTYPE		= "类型";
-const char* CBomTblTitleCfg::T_MANU_NUM		= "加工数";
-const char* CBomTblTitleCfg::T_MANU_WEIGHT  = "加工重量";
-const char* CBomTblTitleCfg::T_REPLACE_SPEC = "代用规格";
 CBomTblTitleCfg::CBomTblTitleCfg(const int *colIndexArr,const char *colTitleArr,int colCount,int startRow)
 {
 	Init(colIndexArr,colTitleArr,colCount,startRow);
@@ -123,7 +120,7 @@ bool CBomTblTitleCfg::IsEqual(CBomTblTitleCfg &cfg)
 }
 bool CBomTblTitleCfg::GetHashColIndexByColTitleTbl(CHashStrList<DWORD> &hashColIndexByColTitle)
 {
-	int colIndexArr[100]={0};
+	int colIndexArr[100]={};
 	int i=0,i2=0,index=0,nColCount=0;
 	CString sColIndex=m_sColIndexArr;
 	while ((i2=sColIndex.Find('|',i)) != -1)
@@ -178,9 +175,6 @@ bool CBomTblTitleCfg::IsMatchTitle(int colIndex,const char* title)
 		if( sTitle.EqualNoCase(T_PART_NO)||
 			sTitle.EqualNoCase("构件编号")||
 			sTitle.EqualNoCase("零件编号")||
-			sTitle.EqualNoCase("图纸号码")||
-			sTitle.EqualNoCase("部件名") ||
-			sTitle.EqualNoCase("件号") ||
 			strstr(sTitle,"编号")!=0)
 			return true;
 		else
@@ -208,7 +202,7 @@ bool CBomTblTitleCfg::IsMatchTitle(int colIndex,const char* title)
 	{
 		if( sTitle.EqualNoCase(T_SPEC)||
 			sTitle.EqualNoCase("设计规格")||
-			(strstr(sTitle,"规格")!=0&&strstr(sTitle,"代用")==NULL))
+			strstr(sTitle,"规格")!=0)
 			return true;
 		else
 			return false;
@@ -217,23 +211,7 @@ bool CBomTblTitleCfg::IsMatchTitle(int colIndex,const char* title)
 	{
 		if( sTitle.EqualNoCase(T_NUM)||
 			sTitle.EqualNoCase("单基")||
-			sTitle.EqualNoCase("单基数量")||
-			sTitle.EqualNoCase("数量")||
-			sTitle.EqualNoCase("单基\n数量") || 
-			sTitle.EqualNoCase("单数") ||
-			strstr(sTitle, "单基") != 0)
-			return true;
-		else
-			return false;
-	}
-	else if (INDEX_MANU_NUM == colIndex)
-	{
-		if (sTitle.EqualNoCase(T_MANU_NUM) ||
-			sTitle.EqualNoCase("加工") ||
-			sTitle.EqualNoCase("加工数量") ||
-			sTitle.EqualNoCase("加工数")||
-			sTitle.EqualNoCase("总数") ||
-			sTitle.EqualNoCase("加工总数量"))
+			sTitle.EqualNoCase("单基数量"))
 			return true;
 		else
 			return false;
@@ -243,8 +221,7 @@ bool CBomTblTitleCfg::IsMatchTitle(int colIndex,const char* title)
 		if( sTitle.EqualNoCase(T_SING_WEIGHT)||
 			sTitle.EqualNoCase("单重")||
 			sTitle.EqualNoCase("单件重")||
-			sTitle.EqualNoCase("单件重量")||
-			sTitle.EqualNoCase("单件\n重量"))
+			sTitle.EqualNoCase("单件重量"))
 			return true;
 		else
 			return false;
@@ -272,29 +249,9 @@ bool CBomTblTitleCfg::IsMatchTitle(int colIndex,const char* title)
 		else
 			return false;
 	}
-	else if (INDEX_MANU_NUM == colIndex)
-	{
-		if (sTitle.EqualNoCase(T_MANU_NUM))
-			return true;
-		else
-			return false;
-	}
-	else if (INDEX_REPLACE_SPEC == colIndex)
-	{
-		if (sTitle.EqualNoCase(T_REPLACE_SPEC))
-			return true;
-		else
-			return false;
-	}
 	else
 		return false;
 }
-
-int CBomTblTitleCfg::DetectTitleRowIndex(CVariant2dArray &sheetContent)
-{
-	return -1;
-}
-
 //////////////////////////////////////////////////////////////////////////
 // CBolTblTitleCfgSet
 char CBomTblTitleCfgSet::CFG_FILE_NAME[50]="TblTitle.cfg";

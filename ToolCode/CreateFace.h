@@ -30,13 +30,15 @@ class CCreateFace
 	ARRAY_LIST<f3dPoint*> vertex_list;
 public:
 	CCreateFace();
+	virtual ~CCreateFace();
+	//
 	void InitVertexList(fBody *pBody);
 	void AddVertex(f3dPoint* pVertex);
 	f3dPoint VertexAt(int i){return *vertex_list[i];}
 	f3dPoint* VertexPtrAt(int i){return vertex_list[i];}
 	f3dAtomLine* NewOutterEdgeLine(f3dPolyFace *pFace, int e_vertex_i, int s_vertex_i=-1);
 	f3dAtomLine* NewInnerLoopEdgeLine(fLoop *pInnerLoop, int e_vertex_i, int s_vertex_i=-1);
-	virtual ~CCreateFace();
+	void NewOutsideFace(f3dPolyFace *pFace, int* ptIndexArr,int nSize);
 };
 //#endif
 #endif // !defined(AFX_CREATEFACE_H__EF0A4EA0_84A6_43FC_9922_98B9782A1152__INCLUDED_)

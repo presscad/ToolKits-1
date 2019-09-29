@@ -283,6 +283,7 @@ public:
 			if(data[i]==pcRemove)
 			{
 				memmove(data+i,data+i+1,len-i);
+				i--;	//循环结束会加1,不提前减1检测时会跳过个别字符 wjh-2019.4.23
 				len--;
 				hits++;
 			}
@@ -302,6 +303,7 @@ public:
 				else
 				{
 					memmove(data+i,data+i+1,len-i);
+					i--;	//循环结束会加1,不提前减1检测时会跳过个别字符 wjh-2019.4.23
 					len--;
 				}
 				hits++;
@@ -320,11 +322,8 @@ public:
 			return 0;	//新旧字符串完全相同
 		int newstr_len=(int)strlen(psNew);
 		int hits=0;
-		int offset = 0;	//记录下一次开始查找的偏移量，否则将“数量:4”替换位“数量:48”会进入死循环 wht 19-08-21
 		while(true){
-			if (offset > GetLength())
-				return hits;
-			char* psFind=strstr(data + offset,psOld);
+			char* psFind=strstr(data,psOld);
 			if(psFind==NULL)	//未找到待替换字符串，结束替换
 				return hits;
 			hits++;
@@ -343,7 +342,6 @@ public:
 			}
 			if(newstr_len>0)
 				memcpy(psFind,psNew,newstr_len);
-			offset = (psFind - data) + newstr_len;
 		};
 		return hits;
 	}
@@ -401,7 +399,9 @@ public:
 			else
 				Append(',');
 			sprintf(sCoord,"%.1f",coord[i]);
-			SimplifiedNumString(sCoord);
+			char* pchComma=strchr(sCoord,'.');
+			if(pchComma&&(*(pchComma+1)==0))
+				*pchComma='\0';	//SimplifiedNumString(sCoord);
 			Append(sCoord);
 		}
 		Append(')');

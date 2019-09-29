@@ -46,11 +46,11 @@ bool CTimerCount::PopTicks()
 	m_iStackIndex--;
 	return true;
 }
-void CTimerCount::Start(){
+DWORD CTimerCount::Start(){
 	m_dwStartTicks=m_dwRelayTicks=GetTickCount();
 	m_iStackIndex=-1;
 	hashTicks.Empty();
-	//return m_dwStartTicks;
+	return m_dwStartTicks;
 }
 DWORD CTimerCount::Relay(DWORD id,DWORD dwStartTicks/*=0*/)	//临时中继性质的时间记录,id是标识
 {
@@ -69,7 +69,7 @@ DWORD CTimerCount::Relay(DWORD id,DWORD dwStartTicks/*=0*/)	//临时中继性质的时间
 	}
 	return tick;
 }
-void CTimerCount::End(){
+DWORD CTimerCount::End(){
 	m_dwEndTicks=GetTickCount();
-	//return m_dwStartTicks;
+	return m_dwStartTicks;
 }

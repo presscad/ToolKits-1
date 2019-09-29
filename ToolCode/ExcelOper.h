@@ -4,7 +4,7 @@
 #include "excel9.h"
 #include "Variant.h"
 #include "XhCharString.h"
-#include "comutil.h"
+#include "LogFile.h"
 
 class CExcelOperObject
 {
@@ -16,8 +16,6 @@ class CExcelOperObject
 public:
 	BOOL OpenExcelFile(const char* sExcelFile)
 	{	//打开指定的Excel文件
-		if (sExcelFile == NULL || strlen(sExcelFile)==0)
-			return FALSE;
 		int nRetCode = 0;
 		Sheets       excel_sheets;
 		LPDISPATCH   pDisp;
@@ -25,7 +23,8 @@ public:
 		CLSID        clsid;
 		if(!ExcelCLSIDFromProgID(clsid))
 		{
-			AfxMessageBox("Excel program not found");
+			//AfxMessageBox("Excel program not found");
+			logerr.Log("未找到Excel程序！");
 			return false;
 		}
 		if(::GetActiveObject(clsid,NULL,&pUnk) == S_OK)
@@ -36,7 +35,8 @@ public:
 		}
 		else if(!excel.CreateDispatch(clsid))
 		{
-			AfxMessageBox("Excel program not found");
+			//AfxMessageBox("Excel program not found");
+			logerr.Log("未找到Excel程序！");
 			return false;
 		}
 		LPDISPATCH pWorkbooks;
@@ -67,26 +67,25 @@ public:
 		excel.Quit();
 		excel.ReleaseDispatch();
 	}
-	LPDISPATCH UpdateValidWorkSheetBySheetIndex(int index)
+	LPDISPATCH ClearContent(int index)
 	{
-		LPDISPATCH pWorksheets = GetWorksheets();//CExcelOper::CreateExcelWorksheets(2);
+		LPDISPATCH pWorksheets = GetWorksheets();
 		ASSERT(pWorksheets);
 		Sheets excel_sheets;
 		excel_sheets.AttachDispatch(pWorksheets);
-		LPDISPATCH pWorksheet3 = NULL;
-		try
+		LPDISPATCH pWorksheet3 = excel_sheets.GetItem(COleVariant((short)index));
+		if(pWorksheet3)//已存在sheet表，则删除
 		{
-			pWorksheet3 = excel_sheets.GetItem(COleVariant((short)index));
 			_Worksheet excel_sheet;
 			excel_sheet.AttachDispatch(pWorksheet3, FALSE);
-			excel_sheet.Delete();
-			return GetValidWorkSheet(index);
+			excel_sheet.GetRows()->Release();
+			Range excel_range=excel_sheet.GetUsedRange();
+			excel_range.SetRowHeight(COleVariant(15.0));
+			excel_range.UnMerge();
+			return pWorksheet3;
 		}
-		catch (...)
-		{
-			return GetValidWorkSheet(index);
-		}
-		return pWorksheet3;
+		else
+			return Insert(index);
 	}
 	LPDISPATCH GetValidWorkSheet(int index)
 	{
@@ -117,11 +116,11 @@ public:
 		}
 		return pWorksheet3;
 	}
-	LPDISPATCH InsertValidWorkSheetByIndex(int index)
+	LPDISPATCH Insert(int index)
 	{
-		return InsertValidWorkSheetAfterIndex(index-1);
+		return InsertSheetByAfterIndex(index-1);
 	}
-	LPDISPATCH InsertValidWorkSheetAfterIndex(int afterIndex)
+	LPDISPATCH InsertSheetByAfterIndex(int afterIndex)
 	{
 		if(afterIndex==-1)
 			afterIndex=0;
@@ -131,10 +130,10 @@ public:
 		excel_sheets.AttachDispatch(pWorksheets);
 		LPDISPATCH pWorksheet3 = NULL;
 		LPDISPATCH pWorksheet2 = excel_sheets.GetItem(COleVariant((short)afterIndex));
-		if(pWorksheet2==NULL)
-			pWorksheet3 = excel_sheets.Add(vtMissing, vtMissing, COleVariant((long)1), vtMissing);
-		else
+		if(pWorksheet2)//after的sheet都不存在，则插入到最后
 			pWorksheet3 = excel_sheets.Add(vtMissing, _variant_t(pWorksheet2), COleVariant((long)1), vtMissing);
+		else
+			pWorksheet3 = InsertLastValidWorkSheet();
 		_Worksheet excel_sheet;
 		excel_sheet.AttachDispatch(pWorksheet2, FALSE);
 		excel_sheet.Select();
@@ -142,12 +141,12 @@ public:
 	}
 	LPDISPATCH InsertLastValidWorkSheet()
 	{
-		LPDISPATCH pWorksheets = GetWorksheets();//CExcelOper::CreateExcelWorksheets(2);
+		LPDISPATCH pWorksheets = GetWorksheets();
 		ASSERT(pWorksheets);
 		Sheets excel_sheets;
 		excel_sheets.AttachDispatch(pWorksheets);
 		
-		return InsertValidWorkSheetByIndex(excel_sheets.GetCount() + 1);
+		return Insert(excel_sheets.GetCount() + 1);
 	}
 	CExcelOperObject(){m_bFileOpened=false;}
 	~CExcelOperObject()
@@ -169,7 +168,8 @@ public:
 			::CLSIDFromProgID(L"Excel.Application.12", &clsid)==S_OK||	//Excel 2007
 			::CLSIDFromProgID(L"Excel.Application.13", &clsid)==S_OK||	//Excel 2007
 			::CLSIDFromProgID(L"Excel.Application.14", &clsid)==S_OK||	//Excel 2010
-			::CLSIDFromProgID(L"Excel.Application.15", &clsid)==S_OK)	//Excel 2013
+			::CLSIDFromProgID(L"Excel.Application.15", &clsid)==S_OK||	//Excel 2013
+			::CLSIDFromProgID(L"Excel.Application.16", &clsid)==S_OK)	//Excel 2016
 			return true;
 		else
 			return false;
@@ -737,6 +737,14 @@ public:
 		else
 			return FALSE;
 	}
+	static BOOL GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj,CVariant2dArray &sheetContentMap,const char* sSheetName)
+	{
+		int iSheet = GetExcelIndexOfSpecifySheet(pExcelOperObj,sSheetName);
+		if(iSheet>0)
+			return GetExcelContentOfSpecifySheet(pExcelOperObj,sheetContentMap,iSheet);
+		else
+			return FALSE;
+	}
 	static BOOL GetExcelContentOfSpecifySheet(const char* sExcelFile,CVariant2dArray &sheetContentMap,const char* sSheetName)
 	{
 		CStringArray sheetNameArr;
@@ -764,33 +772,41 @@ public:
 	}
 	static BOOL GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj,CVariant2dArray &sheetContentMap,int iSheetIndex)
 	{	//打开指定的Excel文件
-		int nRetCode = 0;
-		_Worksheet   excel_sheet;    // 工作表
-		Sheets       excel_sheets;
-		LPDISPATCH   pRange;
-		LPDISPATCH   pWorksheets = pExcelOperObj->GetWorksheets();
-		ASSERT(pWorksheets != NULL);
-		excel_sheets.AttachDispatch(pWorksheets);
-		LPDISPATCH pWorksheet = excel_sheets.GetItem(COleVariant((short) iSheetIndex));
-		excel_sheet.AttachDispatch(pWorksheet);
-		//excel_sheet.Select();
-		//1.计算Excel的行数，列数
-		Range excel_usedRange,excel_range;
-		excel_usedRange.AttachDispatch(excel_sheet.GetUsedRange());
-		excel_range.AttachDispatch(excel_usedRange.GetRows());
-		long nRowNum = excel_range.GetCount();
-		excel_range.AttachDispatch(excel_usedRange.GetColumns());
-		long nColNum = excel_range.GetCount();
-		//2.获取Excel指定Sheet内容存储至sheetContentMap中
-		CXhChar50 cell=GetCellPos(nColNum,nRowNum);
-		pRange = excel_sheet.GetRange(COleVariant("A1"),COleVariant(cell));
-		excel_range.AttachDispatch(pRange,FALSE);
-		sheetContentMap.var=excel_range.GetValue();
-		excel_range.ReleaseDispatch();
-		excel_sheet.ReleaseDispatch();
-		excel_sheets.ReleaseDispatch();
-		excel_usedRange.ReleaseDispatch();
-		return true;
+		try
+		{
+			int nRetCode = 0;
+			_Worksheet   excel_sheet;    // 工作表
+			Sheets       excel_sheets;
+			LPDISPATCH   pRange;
+			LPDISPATCH   pWorksheets = pExcelOperObj->GetWorksheets();
+			ASSERT(pWorksheets != NULL);
+			excel_sheets.AttachDispatch(pWorksheets);
+			LPDISPATCH pWorksheet = excel_sheets.GetItem(COleVariant((short)iSheetIndex));
+			excel_sheet.AttachDispatch(pWorksheet);
+			//excel_sheet.Select();
+			//1.计算Excel的行数，列数
+			Range excel_usedRange, excel_range;
+			excel_usedRange.AttachDispatch(excel_sheet.GetUsedRange());
+			excel_range.AttachDispatch(excel_usedRange.GetRows());
+			long nRowNum = excel_range.GetCount();
+			excel_range.AttachDispatch(excel_usedRange.GetColumns());
+			long nColNum = excel_range.GetCount();
+			//2.获取Excel指定Sheet内容存储至sheetContentMap中
+			CXhChar50 cell = GetCellPos(nColNum, nRowNum);
+			pRange = excel_sheet.GetRange(COleVariant("A1"), COleVariant(cell));
+			excel_range.AttachDispatch(pRange, FALSE);
+			sheetContentMap.var = excel_range.GetValue();
+			excel_range.ReleaseDispatch();
+			excel_sheet.ReleaseDispatch();
+			excel_sheets.ReleaseDispatch();
+			excel_usedRange.ReleaseDispatch();
+			return true;
+		}
+		catch (CString sError)
+		{
+			logerr.Log(sError);
+			return false;
+		}
 	}
 	static BOOL GetExcelContentOfSpecifySheet(const char* sExcelFile,CStringArray &sheetNameArr)
 	{
@@ -837,7 +853,6 @@ public:
 		excel_sheets.AttachDispatch(pWorksheets);
 		LPDISPATCH pWorksheet=NULL;
 		int nSheetCount=excel_sheets.GetCount();
-		sheetNameArr.RemoveAll();
 		if(nSheetCount>0)
 		{
 			sheetNameArr.SetSize(nSheetCount);

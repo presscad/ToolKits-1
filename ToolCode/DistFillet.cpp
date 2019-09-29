@@ -2,8 +2,11 @@
 #include "distfillet.h"
 #include "f_alg_fun.h"
 
-CDistFillet::CDistFillet(void)
+CDistFillet::CDistFillet(bool blScatterTolerance/*=false*/)
 {
+	m_blScatterTolerance=blScatterTolerance;
+	coordArr.Attach(_coordValPool,0,200);
+	distArr.Attach(_distValPool,0,200);
 }
 
 CDistFillet::~CDistFillet(void)
@@ -24,12 +27,15 @@ bool CDistFillet::Fillet(double groupDistThreshold/*=120*/,FILLET_PRECISION prec
 {
 	int i,j;
 	distArr.SetSize(coordArr.GetSize());
+	double dfAccumRoundingTolerance=0;
 	for(i=0;i<coordArr.GetSize();i++)
 	{
 		double dist=coordArr[i];
 		if(i>0)
 			dist=coordArr[i]-coordArr[i-1];
-		distArr[i]=FilletDist(dist,precision);
+		distArr[i]=FilletDist(dist+dfAccumRoundingTolerance,precision);
+		if(m_blScatterTolerance)	//对于横担与塔身横材间的水平外贴角钢上非标间距形成累积误差较多时，须采用分散误差的方式（不能保证间距） wjh-2019.8.14
+			dfAccumRoundingTolerance-=(distArr[i]-dist);
 	}
 	int group_start=-1,group_end=-1,group_mid=0;
 	for(i=0;i<distArr.GetSize();i++)

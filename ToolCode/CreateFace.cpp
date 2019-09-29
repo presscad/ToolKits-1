@@ -102,6 +102,13 @@ void CCreateFace::AddVertex(f3dPoint *pVertex)
 	vertex_list.append(pVertex);
 }
 
+//根据一组轮廓点生成一个面
+void CCreateFace::NewOutsideFace(f3dPolyFace *pFace, int* ptIndexArr, int nSize)
+{
+	for (int i = 0; i < nSize; i++)
+		NewOutterEdgeLine(pFace, ptIndexArr[(i + 1) % nSize], ptIndexArr[i]);
+}
+
 //填充外环链表
 f3dAtomLine* CCreateFace::NewOutterEdgeLine(f3dPolyFace *pFace, int e_vertex_i, int s_vertex_i/* =-1 */)
 {

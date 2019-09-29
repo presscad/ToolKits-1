@@ -27,22 +27,11 @@
 #include "AcUiDialogPanel.h"
 
 #ifdef __SUPPORT_DOCK_UI_
-
-#if defined (_ARX_2007) && defined (__SUPPORT_DOCK_UI_) && !defined _UNICODE
-#define ON_WM_CREATE_ARX2007() \
-	{ WM_CREATE, 0, 0, 0, AfxSig_is, \
-		(AFX_PMSG) (AFX_PMSGW) \
-		(static_cast< int (AFX_MSG_CALL CWnd::*)(LPCREATESTRUCTW) > ( &ThisClass :: OnCreate)) },
-#else
-#define ON_WM_CREATE_ARX2007() ON_WM_CREATE()
-#endif
-
 //-----------------------------------------------------------------------------
 IMPLEMENT_DYNAMIC (CAcUiDialogPanel, CAcUiDockControlBar)
 
-
 BEGIN_MESSAGE_MAP(CAcUiDialogPanel, CAcUiDockControlBar)
-	ON_WM_CREATE_ARX2007()
+	ON_WM_CREATE()
 	ON_WM_NCCALCSIZE()
 	ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()
@@ -85,33 +74,15 @@ void CAcUiDialogPanel::Init(CRuntimeClass *pRunClass, UINT idDlg)
 }
 
 //-----------------------------------------------------------------------------
-#if defined (_ARX_2007) && defined (__SUPPORT_DOCK_UI_) && !defined _UNICODE
-BOOL CAcUiDialogPanel::Create (CWnd *pParent, LPCWSTR lpszTitle) 
-#else
-BOOL CAcUiDialogPanel::Create(CWnd *pParent, LPCSTR lpszTitle)
-#endif
-{
+BOOL CAcUiDialogPanel::Create (CWnd *pParent, LPCSTR lpszTitle) {
 	CString strWndClass ;
 	strWndClass =AfxRegisterWndClass (CS_DBLCLKS, LoadCursor (NULL, IDC_ARROW)) ;
-#if defined (_ARX_2007) && defined (__SUPPORT_DOCK_UI_) && !defined _UNICODE
-	RECT rect;
-	rect.left = 0;
-	rect.top = 0;
-	rect.right = 250;
-	rect.bottom = 200;
+	CRect rect (0, 0, 250, 200) ;
 	if (!CAcUiDockControlBar::Create(
-		_bstr_t(strWndClass), lpszTitle, WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN,
+		strWndClass, lpszTitle, WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN,
 		rect, pParent, 0
 		)
 	)
-#else
-	CRect rect(0, 0, 250, 200);
-	if (!CAcUiDockControlBar::Create(
-		_bstr_t(strWndClass), lpszTitle, WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN,
-		rect, pParent, 0
-	)
-		)
-#endif
 		return (FALSE) ;
 	
 	SetToolID (&m_clsId) ;
@@ -124,11 +95,7 @@ BOOL CAcUiDialogPanel::Create(CWnd *pParent, LPCSTR lpszTitle)
 //-----------------------------------------------------------------------------
 //----- This member function is called when an application requests the window be 
 //----- created by calling the Create or CreateEx member function
-#if defined _ARX_2007_UI_ && !defined _UNICODE
-int CAcUiDialogPanel::OnCreate(LPCREATESTRUCTW lpCreateStruct) {
-#else
-int CAcUiDialogPanel::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-#endif
+int CAcUiDialogPanel::OnCreate (LPCREATESTRUCT lpCreateStruct) {
 	if ( CAcUiDockControlBar::OnCreate (lpCreateStruct) == -1 )
 		return (-1) ;
 	//ÏÔÊ¾×Ó´°¿Ú

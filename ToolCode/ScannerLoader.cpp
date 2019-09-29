@@ -1,9 +1,7 @@
 #include "StdAfx.h"
-#ifdef __SCANNER_LOADER_
 #include "ScannerLoader.h"
 #include "comutil.h"
 #include "WlanConnect.h"
-
 
 CScannerLoader g_scannerLoader;
 const char* CScannerLoader::XML_URL="http://s.oorrzz.com/:sda1/DCIM:.xml:Picture:Sub";
@@ -188,4 +186,3 @@ bool CScannerLoader::AutoConnectScannerWifi(char *sError)
 	}
 		
 }
-#endif

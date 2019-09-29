@@ -19,14 +19,14 @@ public:
 	CHashList<DWORD>hashTicks;
 	CTimerCount();
 	virtual ~CTimerCount();
-	void Start();
+	DWORD Start();
 	bool PushTicks(bool relayTicks=true);
 	bool PopTicks();
 	DWORD GetStartTicks(){return m_dwStartTicks;}
 	DWORD GetEndTicks(){return m_dwEndTicks;}
 	//临时中继性质的时间记录,id是分类统计时间标识,dwStartTicks>0时表示自dwStartTicks到当前的时间计入到id分类中
 	DWORD Relay(DWORD id=0,DWORD dwStartTicks=0);
-	void End();
+	DWORD End();
 };
 extern CTimerCount timer;
 #endif // !defined(AFX_TIMERCOUNT_H__76CA18AB_703B_4964_9D14_EBB9D3849C45__INCLUDED_)

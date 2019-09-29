@@ -109,19 +109,20 @@ char WIREPLACE_CODE::set_ciHangingStyle(char _ciHangingStyle)
 		data.bytes.cbPostCode&=0xf9;
 	return ciHangingStyle;
 }
-//线缆方向'Q' or 'H'
+//线缆方向'X' or 'Y'
 char WIREPLACE_CODE::get_ciWireDirection() const
 {
 	if((data.bytes.cbPostCode&0x08)>0)
-		return 'Q';
-	else 
-		return 'H';
+		return 'X';
+	else //if((data.bytes.cbPostCode&0x08)==0)
+		return 'Y';
 }
 char WIREPLACE_CODE::set_ciWireDirection(char ciWireAxisDirection)
 {
-	data.bytes.cbPostCode &= 0xf7;
-	if(ciWireAxisDirection=='Q'||ciWireAxisDirection=='q')
+	if(ciWireAxisDirection=='X'||ciWireAxisDirection=='x')
 		data.bytes.cbPostCode|=0x08;
+	else //if(ciWireAxisDirection=='Y'||ciWireAxisDirection=='y')
+		data.bytes.cbPostCode&=0xf7;
 	return ciWireDirection;
 }
 //挂点附加码，如"导1-V3"中V后面的'3'表示1号相序导线的V挂点中的第三个
@@ -153,9 +154,23 @@ bool WIREPLACE_CODE::set_blCircuitDC(bool blCircuitDC)
 //挂点的序号，根据挂点所在回路及回路中的相序号
 int WIREPLACE_CODE::get_serial() const
 {
+	int nPhaseNum = blCircuitDC ? 2 : 3;
 	if(ciCircuitSerial>0)
-		return (ciCircuitSerial-1)*3+ciPhaseSerial;
+		return (ciCircuitSerial-1)*nPhaseNum+ciPhaseSerial;
 	else
 		return ciPhaseSerial;
+}
+int WIREPLACE_CODE::set_serial(int _iSerial)
+{
+	int nPhaseNum = blCircuitDC ? 2 : 3;
+	if (ciWireType != 'E' && _iSerial > 0)
+	{
+		_iSerial -= 1;
+		ciCircuitSerial = 1 + (_iSerial / nPhaseNum);
+		ciPhaseSerial = 1 + _iSerial % nPhaseNum;
+	}
+	else
+		ciPhaseSerial = _iSerial;
+	return ciPhaseSerial;
 }
 

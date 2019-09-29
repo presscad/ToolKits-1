@@ -1,7 +1,6 @@
 ////////////////////////////////// HttpClient.cpp
 #include "stdafx.h"
 #include "HttpClient.h"
-//#include "comutil.h"
 
 #define  BUFFER_SIZE       1024
 

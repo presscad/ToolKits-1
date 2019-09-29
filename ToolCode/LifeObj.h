@@ -83,16 +83,16 @@ public:
 		m_fp = NULL;
 	}
 };
-class CDepthCounter{
-	int* piVisit;
+template <class INT_TYPE> class CDepthCounter{
+	INT_TYPE* piVisit;
 public:
-	int AttachCounter(void* piCounter){
-		piVisit=(int*)piCounter;
+	int AttachCounter(INT_TYPE* piCounter){
+		piVisit=piCounter;
 		if(piVisit)
 			(*piVisit)++;
 		return piVisit!=NULL? *piVisit : 0;
 	}
-	CDepthCounter(void* piCounter)
+	CDepthCounter(INT_TYPE* piCounter)
 	{
 		AttachCounter(piCounter);
 	}
@@ -100,7 +100,7 @@ public:
 		if(piVisit)
 			(*piVisit)--;
 	}
-	int VisitCounts() const{return *piVisit;}
+	INT_TYPE VisitCounts() const{return *piVisit;}
 	bool ManualUnlock(){
 		piVisit=NULL;
 		return true;

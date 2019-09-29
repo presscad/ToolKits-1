@@ -59,10 +59,17 @@ public:
 			ciLayoutStyle=4;
 		else
 			ciLayoutStyle=0;
+		return ciWorkWing;
 	}
 	__declspec(property(put=set_ciAngleWorkWing,get=get_ciAngleWorkWing)) \
 		char ciAngleWorkWing;	//'X','x','Y','y',大写为外铁，小写为里铁对应(角钢的布置方式1,3,4,2);<=0表示不指定肢朝向，相对于贴合肢法线看
-
+	BYTE get_ciWorkWingX0Y1(){
+		if(ciLayoutStyle==1||ciLayoutStyle==3)
+			return 0;
+		else //if(ciLayoutStyle==2||ciLayoutStyle==4)
+			return 1;
+	}
+	__declspec(property(get=get_ciWorkWingX0Y1)) BYTE ciWorkWingX0Y1;	//工作肢为X肢返回0,Y肢返回1
 };
 //角钢肢摆放方式
 struct ANGLE_WORKWING{
