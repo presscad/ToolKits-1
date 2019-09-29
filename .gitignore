@@ -68,6 +68,7 @@ artifacts/
 *.scc
 *.read.1.tlog
 *.write.1.tlog
+*.write.1u.tlog
 *.command.1.tlog
 *.lastbuildstate
 *.dll.intermediate.manifest
