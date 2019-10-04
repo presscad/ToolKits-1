@@ -2660,9 +2660,11 @@ void CProcessPlate::CalRollLineAndHuoquLine(PROFILE_VER *pRollStart,PROFILE_VER 
 	f3dPoint cur_vec=pRollEnd->vertex-pRollStart->vertex;
 	normalize(cur_vec);
 	GEPOINT offset_vec=cur_vec;	
-	offset_vec.Set(offset_vec.y,-offset_vec.x);
+	//TODO 此处需要在外部进行，在此处不易理解 wht 19-09-22
 	if(mcsFlg.ciOverturn>0)	//钢板翻转后，卷边偏移方向也应翻转 wht 19-09-15
 		offset_vec.Set(-cur_vec.y, cur_vec.x);
+	else
+		offset_vec.Set(offset_vec.y, -offset_vec.x);
 	normalize(offset_vec);
 	double cosa=fabs(cur_vec*prev_vec);//判断当前边与前一边是否共线
 	double cosb=fabs(cur_vec*next_vec);//判断当前边与下一边是否共线
@@ -3036,16 +3038,21 @@ bool CProcessPlate::IsFoldPlate()
 	if(m_cFaceN==3)
 	{	//根据轮廓点面号顺序进行判断，2到3中间无过度(12或13)轮廓点时为折叠板
 		PROFILE_VER *pPreVertex=NULL;
+		int iPush = vertex_list.push_stack();
 		for(PROFILE_VER *pVertex=vertex_list.GetFirst();pVertex;pVertex=vertex_list.GetNext())
 		{
 			if(pPreVertex!=NULL)
 			{
-				if( pPreVertex->vertex.feature<10&&pVertex->vertex.feature<10&&
-					pPreVertex->vertex.feature!=pVertex->vertex.feature)
+				if (pPreVertex->vertex.feature < 10 && pVertex->vertex.feature < 10 &&
+					pPreVertex->vertex.feature != pVertex->vertex.feature)
+				{
+					vertex_list.pop_stack(iPush);
 					return false;
+				}
 			}
 			pPreVertex=pVertex;
 		}
+		vertex_list.pop_stack(iPush);
 		return true;
 	}
 	else 
@@ -3324,7 +3331,7 @@ bool CProcessPlate::IsEqual(CGeneralPart *pPart,double epsilon/*=1.0*/,char *err
 	}
 	return true;
 }
-double CProcessPlate::GetHuoQuAngle(int iFace,f3dLine *pHuoQuLine/*=NULL*/)
+double CProcessPlate::GetHuoQuAngle(int iFace,f3dLine *pHuoQuLine/*=NULL*/,BOOL bDisplayLog/*=TRUE*/)
 {
 	if(m_cFaceN<=1||vertex_list.GetNodeNum()<3||iFace<1||iFace>m_cFaceN-1)	//单面板没有变形
 		return 0;
@@ -3431,14 +3438,16 @@ double CProcessPlate::GetHuoQuAngle(int iFace,f3dLine *pHuoQuLine/*=NULL*/)
 		}
 		if(!bFindHuoQuStart||!bFindHuoQuEnd)
 		{
-			logerr.Log("钢板%s没找到合理的火曲线与板边缘相交顶点!",(char*)m_sPartNo,iFace-1);
+			if (bDisplayLog)
+				logerr.Log("钢板%s没找到合理的火曲线与板边缘相交顶点!",(char*)m_sPartNo,iFace-1);
 			return 0;
 		}
 		f3dPoint huoqu_axis_vec=huoquline.endPt-huoquline.startPt;
 		f3dPoint huoqu_norm=HuoQuFaceNorm[iFace-2];
 		if(huoqu_norm.IsZero())
 		{
-			logerr.Log("钢板%s的第%d(火曲)面法线为空，火曲角计算有误!",(char*)m_sPartNo,iFace-1);
+			if (bDisplayLog)
+				logerr.Log("钢板%s的第%d(火曲)面法线为空，火曲角计算有误!",(char*)m_sPartNo,iFace-1);
 			return 0;
 		}
 		UCS_STRU huoquucs;
@@ -3446,8 +3455,11 @@ double CProcessPlate::GetHuoQuAngle(int iFace,f3dLine *pHuoQuLine/*=NULL*/)
 		normalize(huoquucs.axis_z);
 		huoquucs.axis_x.Set(0,0,1);
 		huoquucs.axis_y=huoquucs.axis_z^huoquucs.axis_x;
-		if(fabs(huoqu_norm*huoquucs.axis_z)>0.001)
-			logerr.Log("钢板%s的第%d(火曲)面法线方向与火曲线不垂直，火曲角计算有误!",(char*)m_sPartNo,iFace-1);
+		if (fabs(huoqu_norm*huoquucs.axis_z) > 0.001)
+		{
+			if(bDisplayLog)
+				logerr.Log("钢板%s的第%d(火曲)面法线方向与火曲线不垂直，火曲角计算有误!", (char*)m_sPartNo, iFace - 1);
+		}
 		vector_trans(huoqu_norm,huoquucs,FALSE);
 		double huoquangle=Cal2dLineAng(0,0,huoqu_norm.x,huoqu_norm.y);
 		if(huoquangle>Pi)
@@ -3456,6 +3468,115 @@ double CProcessPlate::GetHuoQuAngle(int iFace,f3dLine *pHuoQuLine/*=NULL*/)
 			*pHuoQuLine=huoquline;
 		return huoquangle;
 	}
+}
+
+//iFace取值0或1
+BOOL CProcessPlate::GetBendLineAt(int iBendLine, f3dLine *pBendLine)
+{
+	f3dLine line;
+	BOOL bRetCode = FALSE;
+	if (GetHuoQuAngle(iBendLine+1, &line, FALSE) != 0)
+		bRetCode = TRUE;
+	if (!bRetCode && m_cFaceN>1 && iBendLine>=0 && iBendLine<m_cFaceN-1)
+	{
+		BOOL bFindStart = FALSE, bFindEnd = FALSE;
+		f3dPoint startPt = HuoQuLine[iBendLine].startPt;
+		f3dPoint endPt = HuoQuLine[iBendLine].endPt;
+		f3dPoint vec = endPt - startPt;
+		normalize(vec);
+		f2dLine huoquLine, tem_line;
+		huoquLine.startPt.Set(f3dPoint(startPt - vec * 1000).x, f3dPoint(startPt - vec * 1000).y);
+		huoquLine.endPt.Set(f3dPoint(endPt + vec * 1000).x, f3dPoint(endPt + vec * 1000).y);
+		PROFILE_VER *pVertex=NULL, *pPrevPnt = vertex_list.GetTail();
+		for (pVertex = vertex_list.GetFirst(); pVertex; pVertex = vertex_list.GetNext())
+		{
+			tem_line.startPt.Set(pPrevPnt->vertex.x, pPrevPnt->vertex.y);
+			tem_line.endPt.Set(pVertex->vertex.x, pVertex->vertex.y);
+			f3dPoint pt;
+			if (Int2dll(tem_line, huoquLine, pt.x, pt.y) > 0)
+			{
+				if (!bFindStart&&DISTANCE(startPt, pt) < DISTANCE(endPt, pt))
+				{
+					line.startPt = pt;
+					bFindStart = TRUE;
+				}
+				if (!bFindEnd&&DISTANCE(startPt, pt) > DISTANCE(endPt, pt))
+				{
+					line.endPt = pt;
+					bFindEnd = TRUE;
+				}
+			}
+			if (bFindStart&&bFindEnd)
+				break;
+			pPrevPnt = pVertex;
+		}
+		if (bFindStart&&bFindEnd)
+			bRetCode = TRUE;
+	}
+	if (pBendLine)
+		*pBendLine = line;
+	return bRetCode;
+}
+
+BYTE CProcessPlate::GetHuoQuFaceBendType(int iFace)
+{
+	BYTE cBendType = BEND_NONE;
+	if (m_cFaceN > 1 && iFace > 1 && iFace <= m_cFaceN)
+	{
+		f3dLine huoquline = HuoQuLine[iFace - 2];
+		f3dPoint basePt, base_face_pick;
+		bool basepick_finded = false;
+		int n = vertex_list.GetNodeNum();
+		for (PROFILE_VER *pVertex = vertex_list.GetFirst(); pVertex; pVertex = vertex_list.GetNext())
+		{
+			f3dPoint pt = pVertex->vertex;
+			//保证基准面和火曲面的拾取点不在火曲线上，否则无法正确判断内外曲 wht 11-04-21
+			/** 后面添加fabs(dist)>10判断是为了避免连板轮廓顶点与火曲点接近（常出现于合并生成火曲连接板），
+			   且基面火曲面错乱时，导致错误 wjh-2016.4.29
+			*/
+			double dist1 = 0, dist2 = 0;
+			if (!basepick_finded)
+			{
+				dist1 = DistOf2dPtLine(pt, HuoQuLine[0].startPt, HuoQuLine[0].endPt);
+				if (m_cFaceN >= 3)
+					dist2 = DistOf2dPtLine(pt, HuoQuLine[1].startPt, HuoQuLine[1].endPt);
+			}
+			if (m_cFaceN == 3)
+			{   //保证基准面和火曲面的拾取点不在火曲线上，否则无法正确判断内外曲 wht 11-04-21
+				if (fabs(dist1) > 10 && fabs(dist2) > 10 && HuoQuLine[0].PtInLine(pt) == 0 && HuoQuLine[1].PtInLine(pt) == 0)
+				{
+					if (!basepick_finded&&pt.feature == 1)      //基准面拾取点
+					{
+						basepick_finded = true;
+						base_face_pick = pt;
+					}
+				}
+			}
+			else if (m_cFaceN == 2)
+			{
+				if (fabs(dist1) > 10 && HuoQuLine[0].PtInLine(pt) == 0)
+				{
+					if (!basepick_finded&&pt.feature == 1)      //基准面拾取点
+					{
+						basepick_finded = true;
+						base_face_pick = pt;
+					}
+				}
+			}
+		}
+		f3dPoint prj_base_pick, base_vec;
+		SnapPerp(&prj_base_pick, huoquline, base_face_pick);
+		base_vec = base_face_pick - prj_base_pick;
+		normalize(base_vec);
+		f3dPoint norm = HuoQuFaceNorm[iFace - 2];
+		//vector_trans(norm, ucs, FALSE);
+		BOOL bNeiQu = TRUE;
+		double dd = cal_angle_of_2vec(base_vec, norm);
+		if (dd < Pi / 2 || (fabs(dd - Pi / 2) < EPS&&norm.z > 0))   //火曲面向外曲(正曲)
+			bNeiQu = FALSE;
+		cBendType = bNeiQu ? BEND_IN : BEND_OUT;
+	}
+	return cBendType;
 }
 f3dPoint CProcessPlate::GetDeformedVertex(f3dPoint vertice)
 {
