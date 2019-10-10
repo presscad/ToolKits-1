@@ -660,6 +660,7 @@ typedef PRESET_ARRAY<UINT,PRESET_OBJS4>  PRESET_UINT4ARR;
 typedef PRESET_ARRAY<UINT,PRESET_OBJS8>  PRESET_UINT8ARR;
 typedef PRESET_ARRAY<UINT,PRESET_OBJS16> PRESET_UINT16ARR;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+//SIMPLE_ARRAY相比PRESET_ARRAY没有虚拟数，允许通过memset(this,0,sizeof())清零初始化 wjh-2019.10.2
 template <class TYPE, class TYPE_PRESET_COUNT> class SIMPLE_ARRAY
 {
 protected:
@@ -823,7 +824,7 @@ public:
 	TYPE* Data() { return GetPresetValArr(); }
 	operator TYPE*() { return GetPresetValArr(); }
 public:
-	virtual DWORD ReSize(UINT count) {
+	DWORD ReSize(UINT count) {
 		if (count <= GetCountOfPreset())
 			m_wnValidValCount = count;
 		else
@@ -867,11 +868,11 @@ public:
 public:
 	SIMPLE_ARRAY() { pAttachValues = NULL; m_wnValidValCount = 0; }
 	~SIMPLE_ARRAY() { Clear(); }
-	void CloneFrom(PRESET_ARRAY<TYPE, TYPE_PRESET_COUNT> &objarr)
+	void CloneFrom(SIMPLE_ARRAY<TYPE, TYPE_PRESET_COUNT> &objarr)
 	{
 		if (Count > objarr.Count)
 			Clear();
-		for (int i = 0; i < Count; i++)
+		for (UINT i = 0; i < Count; i++)
 			Set(i, objarr.At(i), true);
 	}
 };

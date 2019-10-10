@@ -7,6 +7,8 @@
 #endif // _MSC_VER > 1000
 #include "stdio.h"
 #include "XhCharString.h"
+#include "list.h"
+#include "objptr_list.h"
 
 struct CATLOG_ITEM{
 protected:
@@ -23,4 +25,23 @@ public:
 	unsigned int set_idRelaObj(unsigned int _idRelaObj){return idRelaObject=_idRelaObj;}
 	unsigned int get_idRelaObj(){return idRelaObject;}
 	__declspec(property(put=set_idRelaObj,get=get_idRelaObj)) unsigned int idRelaObj;
+};
+
+class CATLOG_TREEITEM{
+protected:
+	CATLOG_ITEM *pRelaCatlog;
+	CXhPtrList<CATLOG_TREEITEM> hashSonItems;
+public:
+	static IXhList<CATLOG_ITEM>* pBelongCatlogLibary;
+	CATLOG_ITEM* get_pCatlog(){return pRelaCatlog;}
+	CATLOG_ITEM* set_pCatlog(CATLOG_ITEM* _pRelaCatlog){return pRelaCatlog=_pRelaCatlog;}
+	__declspec(property(put=set_pCatlog,get=get_pCatlog)) CATLOG_ITEM* pCatlog;
+public:
+	CATLOG_TREEITEM(CATLOG_ITEM *pCatlog=NULL);
+	CATLOG_TREEITEM* AppendSonItem(const char* itemname,int idCatgType=0,DWORD id=0);
+	CATLOG_TREEITEM* MoveSonItemFirst();
+	CATLOG_TREEITEM* MoveSonItemNext();
+	void Empty() { hashSonItems.Empty(); }
+	bool DeleteCursor(bool blClean=false);
+	int GetSonItemCount();
 };
