@@ -413,7 +413,7 @@ CShieldCadLayer::CShieldCadLayer(const char* sReservedLayerName/*=NULL*/,BOOL bF
 #ifdef _ARX_2007
 	if (m_bSendCommand)
 	{
-		SendCommandToCad(CString("undo be \n"));
+		SendCommandToCad(CString"undo be \n");
 		if (bFreeze)
 		{
 			SendCommandToCad(CString(sCmd1));
@@ -424,7 +424,7 @@ CShieldCadLayer::CShieldCadLayer(const char* sReservedLayerName/*=NULL*/,BOOL bF
 			SendCommandToCad(CString(sCmd3));
 			SendCommandToCad(CString(sCmd4));
 		}
-		SendCommandToCad(CString("undo e "));
+		SendCommandToCad(CString"undo e ");
 	}
 	else
 	{
@@ -1081,7 +1081,8 @@ AcDbObjectId
 	AcDbObjectId textStyleId,	//=NULL标注样式记录ID号
 	double height,double rotation,
 	AcDb::TextHorzMode hMode,AcDb::TextVertMode vMode,
-	AcDbObjectId layerId/*=AcDbObjectId::kNull*/)	//=NULL图层ID号
+	AcDbObjectId layerId/*=AcDbObjectId::kNull*/,//=NULL图层ID号
+	COLORREF clr/*=-1*/)	
 {
 	AcGePoint3d acad_base;
 	AcDbText *pText;
@@ -1096,7 +1097,11 @@ AcDbObjectId
 #else
 	pText=new AcDbText(acad_base,dimText,textStyleId,height,rotation);
 #endif
-
+	if (clr != -1)
+	{	//设置颜色索引
+		int color_index = GetNearestACI(clr);
+		pText->setColorIndex(color_index);	
+	}
 	pText->setHorizontalMode(hMode);
 	pText->setVerticalMode(vMode);
 	if(hMode!=AcDb::kTextLeft||vMode!=AcDb::kTextBase)
@@ -1223,7 +1228,7 @@ BOOL GetCadTextEntPos(AcDbText *pText, GEPOINT &pos, bool bCorrectPos /*= false*
 		Add_Pnt(align_pos, org_txt_pos, offset_pos);
 		pText->setAlignmentPoint(align_pos);
 	}
-	
+
 	//
 	double fTestH = pText->height();
 	double fWidth = TestDrawTextLength(sText, fTestH, pText->textStyle());
@@ -1254,7 +1259,7 @@ BOOL GetCadTextEntPos(AcDbText *pText, GEPOINT &pos, bool bCorrectPos /*= false*
 		dim_pos-=fTestH*0.5;
 	else if(vertMode==AcDb::kTextBottom)
 		dim_pos+=fTestH*0.5;*/
-	pos.Set(dim_pos.x,dim_pos.y,dim_pos.z);
+	pos.Set(dim_pos.x, dim_pos.y, dim_pos.z);
 	return true;
 }
 //根据CAD实体ID更新scope wht 11-08-01
@@ -1714,6 +1719,7 @@ void MoveEntIds(ARRAY_LIST<AcDbObjectId> &entIdList, GEPOINT &fromPt, GEPOINT &t
 
 void SaveAsDxf(const char* sDxfFilePath, ARRAY_LIST<AcDbObjectId> &entIdList, bool bMoveToOrigin)
 {
+	CLockDocumentLife lock;
 	AcDbDatabase* pCur = acdbHostApplicationServices()->workingDatabase();
 	AcDbDatabase* pOut = NULL;
 	AcDbObjectIdArray outObjIds;
@@ -1731,7 +1737,7 @@ void SaveAsDxf(const char* sDxfFilePath, ARRAY_LIST<AcDbObjectId> &entIdList, bo
 #ifdef _ARX_2007
 		pOut->dxfOut(_bstr_t(sDxfFilePath));
 #else
-		pOut->dxfOut(sDxfFilePath);
+		es = pOut->dxfOut(sDxfFilePath);
 #endif
 		delete pOut;
 	}
@@ -1883,7 +1889,7 @@ BOOL InsertBlock(AcDbBlockTableRecord *pBlockTableRecord,
 
 
 AcDbObjectId CreateAcadCircle(AcDbBlockTableRecord *pBlockTableRecord,
-	f3dPoint centre, double radius, THANDLE handle/*=NULL*/)
+	f3dPoint centre, double radius, THANDLE handle/*=NULL*/, COLORREF clr /*= -1*/)
 {
 	AcDbObjectId CircleId;//定义标识符
 	AcGePoint3d acad_centre;
@@ -1918,6 +1924,11 @@ AcDbObjectId CreateAcadCircle(AcDbBlockTableRecord *pBlockTableRecord,
 			pXrec->setFromRbChain(*head);
 			ads_relrb(head);
 			pXrec->close();
+		}
+		if (clr != -1)
+		{	//设置颜色索引
+			int color_index = GetNearestACI(clr);
+			pCircle->setColorIndex(color_index);
 		}
 		pCircle->close();//调用关闭对象的成员函数
 	}

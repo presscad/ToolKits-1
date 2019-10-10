@@ -100,7 +100,7 @@ AcDbObjectId CreateAcadPolyLine(AcDbBlockTableRecord *pBlockTableRecord, f3dPoin
 AcDbObjectId CreateAcadHatch(AcDbBlockTableRecord *pBlockTableRecord, fPtList &vertexList, char *sHatchStyle,
 	double scale, double angle = 0, COLORREF color = RGB(255, 255, 255));
 AcDbObjectId CreateAcadCircle(AcDbBlockTableRecord *pBlockTableRecord,
-	f3dPoint centre, double radius, THANDLE handle = NULL);
+	f3dPoint centre, double radius, THANDLE handle = NULL,COLORREF clr=-1);
 //根据圆弧起点，终点以及半径生成圆弧 wht 10-08-18
 AcDbObjectId CreateAcadArcLine(AcDbBlockTableRecord *pBlockTableRecord,
 	f3dPoint center, f3dPoint startPoint, f3dPoint endPoint, THANDLE handle = NULL);
@@ -124,7 +124,7 @@ AcDbObjectId
 	AcDbObjectId textStyleId,	//=NULL标注样式记录ID号
 	double height,double rotation,
 	AcDb::TextHorzMode hMode=AcDb::kTextLeft,AcDb::TextVertMode vMode=AcDb::kTextBase,
-	AcDbObjectId layerId=AcDbObjectId::kNull);
+	AcDbObjectId layerId=AcDbObjectId::kNull,COLORREF clr=-1);
 AcDbObjectId
 DimMText(AcDbBlockTableRecord *pBlockTableRecord,//块表记录指针
 	char *dimText,//尺寸线位置及内容
@@ -150,7 +150,7 @@ DimSize(AcDbBlockTableRecord *pBlockTableRecord,
 //视图区域操作函数
 double TestDrawTextLength(const char* dimtext, double height, AcDbObjectId textStyleId);
 BOOL GetAcDbTextRect(AcDbText *pText, f3dPoint rgnVertArr[4]);
-BOOL GetCadTextEntPos(AcDbText *pText, GEPOINT &pos, bool bCorrectPos=false);
+BOOL GetCadTextEntPos(AcDbText *pText, GEPOINT &pos, bool bCorrectPos = false);
 BOOL VerifyVertexByCADEntId(SCOPE_STRU &scope, AcDbObjectId entId);
 f2dRect GetCadEntRect(ARRAY_LIST<AcDbObjectId> &entIdList, double extendLen = 0);
 f2dRect GetCadEntRect(CHashSet<AcDbObjectId> &screenEntSet, double extendLen = 0);
