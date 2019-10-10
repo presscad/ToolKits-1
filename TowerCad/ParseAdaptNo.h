@@ -3,8 +3,10 @@
 #include "SegI.h"
 #include "HashTable.h"
 #include "ArrayList.h"
-#ifndef __ATOM_LIST_H_
+#if defined(__LDS_)||defined(__TMA_)||defined(__TSA_)||defined(__LMA_)||defined(__TDA_)||defined(__TAP_)||defined(__PNC_) 
 #include "f_ent_list.h"
+#else
+#include "atom_list.h"
 #endif
 
 bool IsAdaptNoEnd();

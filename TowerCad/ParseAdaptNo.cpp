@@ -1,7 +1,4 @@
 #include "stdafx.h"
-#ifndef __ATOM_LIST_H_
-#include "f_ent_list.h"
-#endif
 #include "ParseAdaptNo.h"
 #include "LogFile.h"
 

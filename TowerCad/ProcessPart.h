@@ -606,7 +606,12 @@ public:
 	int GetBoltNumByD(int bolt_d);
 	void GetMkRect(double fLen,double fWidth,ATOM_LIST<f3dPoint>& ptArr);
 	f3dPoint GetDeformedVertex(f3dPoint vertice);
-	double GetHuoQuAngle(int iFace,f3dLine *pHuoQuLine=NULL);
+	double GetHuoQuAngle(int iFace,f3dLine *pHuoQuLine=NULL,BOOL bDisplayLog=TRUE);
+	BOOL GetBendLineAt(int iHuoQuLine, f3dLine *pHuoQuLine);
+	static const BYTE BEND_NONE = 0;	//无制弯
+	static const BYTE BEND_OUT = 1;		//外曲
+	static const BYTE BEND_IN = 2;		//内曲
+	BYTE GetHuoQuFaceBendType(int iFace);
 	//由实际绝对坐标-->展开相对坐标
 	//acs			构件装配坐标系
 	//ls_norm		螺栓法线(绝对坐标系下)

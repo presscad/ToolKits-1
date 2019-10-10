@@ -5,6 +5,7 @@
 #include "Variant.h"
 #include "XhCharString.h"
 #include "LogFile.h"
+#include "comutil.h"
 
 class CExcelOperObject
 {
