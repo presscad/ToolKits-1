@@ -30,8 +30,14 @@ void SendCommandToCad(CString sCmd)
 		return;
 	COPYDATASTRUCT cmd_msg;
 	cmd_msg.dwData = (DWORD)1;
+#ifdef _ARX_2007
+	wchar_t *swCharCmd=sCmd.AllocSysString();
+	cmd_msg.cbData = (DWORD)wcslen(swCharCmd) + 1;
+	cmd_msg.lpData = swCharCmd;
+#else
 	cmd_msg.cbData = (DWORD)_tcslen(sCmd) + 1;
 	cmd_msg.lpData = sCmd.GetBuffer(sCmd.GetLength() + 1);
+#endif
 	SendMessage(adsw_acadMainWnd(), WM_COPYDATA, (WPARAM)adsw_acadMainWnd(), (LPARAM)&cmd_msg);
 }
 
@@ -413,7 +419,7 @@ CShieldCadLayer::CShieldCadLayer(const char* sReservedLayerName/*=NULL*/,BOOL bF
 #ifdef _ARX_2007
 	if (m_bSendCommand)
 	{
-		SendCommandToCad(CString"undo be \n");
+		SendCommandToCad(CString("undo be \n"));
 		if (bFreeze)
 		{
 			SendCommandToCad(CString(sCmd1));
@@ -424,7 +430,7 @@ CShieldCadLayer::CShieldCadLayer(const char* sReservedLayerName/*=NULL*/,BOOL bF
 			SendCommandToCad(CString(sCmd3));
 			SendCommandToCad(CString(sCmd4));
 		}
-		SendCommandToCad(CString"undo e ");
+		SendCommandToCad(CString("undo e "));
 	}
 	else
 	{
@@ -1082,7 +1088,7 @@ AcDbObjectId
 	double height,double rotation,
 	AcDb::TextHorzMode hMode,AcDb::TextVertMode vMode,
 	AcDbObjectId layerId/*=AcDbObjectId::kNull*/,//=NULL图层ID号
-	COLORREF clr/*=-1*/)	
+	COLORREF clr/*=-1*/)
 {
 	AcGePoint3d acad_base;
 	AcDbText *pText;
@@ -1100,7 +1106,7 @@ AcDbObjectId
 	if (clr != -1)
 	{	//设置颜色索引
 		int color_index = GetNearestACI(clr);
-		pText->setColorIndex(color_index);	
+		pText->setColorIndex(color_index);
 	}
 	pText->setHorizontalMode(hMode);
 	pText->setVerticalMode(vMode);
@@ -1228,7 +1234,7 @@ BOOL GetCadTextEntPos(AcDbText *pText, GEPOINT &pos, bool bCorrectPos /*= false*
 		Add_Pnt(align_pos, org_txt_pos, offset_pos);
 		pText->setAlignmentPoint(align_pos);
 	}
-
+	
 	//
 	double fTestH = pText->height();
 	double fWidth = TestDrawTextLength(sText, fTestH, pText->textStyle());
@@ -1259,14 +1265,22 @@ BOOL GetCadTextEntPos(AcDbText *pText, GEPOINT &pos, bool bCorrectPos /*= false*
 		dim_pos-=fTestH*0.5;
 	else if(vertMode==AcDb::kTextBottom)
 		dim_pos+=fTestH*0.5;*/
-	pos.Set(dim_pos.x, dim_pos.y, dim_pos.z);
+	pos.Set(dim_pos.x,dim_pos.y,dim_pos.z);
 	return true;
 }
 //根据CAD实体ID更新scope wht 11-08-01
-BOOL VerifyVertexByCADEntId(SCOPE_STRU &scope,AcDbObjectId entId)
+BOOL VerifyVertexByCADEntId(SCOPE_STRU &scope, AcDbObjectId entId)
 {
-	AcDbEntity *pEnt=NULL;
-	acdbOpenObject(pEnt,entId,AcDb::kForRead);
+	AcDbEntity *pEnt = NULL;
+	acdbOpenObject(pEnt, entId, AcDb::kForRead);
+	if (pEnt == NULL)
+		return FALSE;
+	BOOL bRetCode = VerifyVertexByCADEntId(scope, entId);
+	pEnt->close();
+	return bRetCode;
+}
+BOOL VerifyVertexByCADEntId(SCOPE_STRU &scope, AcDbEntity *pEnt)
+{
 	if(pEnt==NULL)
 		return FALSE;
 	if(pEnt->isKindOf(AcDbLine::desc()))
@@ -1402,7 +1416,6 @@ BOOL VerifyVertexByCADEntId(SCOPE_STRU &scope,AcDbObjectId entId)
 		point=pDim->dimLinePoint();
 		scope.VerifyVertex(f3dPoint(point.x,point.y,0));
 	}
-	pEnt->close();
 	return TRUE;
 }
 f2dRect GetCadEntRect(ARRAY_LIST<AcDbObjectId> &entIdList, double extendLen/*=0*/)
