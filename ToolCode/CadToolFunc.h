@@ -151,7 +151,7 @@ DimSize(AcDbBlockTableRecord *pBlockTableRecord,
 double TestDrawTextLength(const char* dimtext, double height, AcDbObjectId textStyleId);
 BOOL GetAcDbTextRect(AcDbText *pText, f3dPoint rgnVertArr[4]);
 BOOL GetCadTextEntPos(AcDbText *pText, GEPOINT &pos, bool bCorrectPos = false);
-BOOL VerifyVertexByCADEntId(SCOPE_STRU &scope, AcDbEntity *pEnt);
+BOOL VerifyVertexByCADEnt(SCOPE_STRU &scope, AcDbEntity *pEnt);
 BOOL VerifyVertexByCADEntId(SCOPE_STRU &scope, AcDbObjectId entId);
 f2dRect GetCadEntRect(ARRAY_LIST<AcDbObjectId> &entIdList, double extendLen = 0);
 f2dRect GetCadEntRect(CHashSet<AcDbObjectId> &screenEntSet, double extendLen = 0);

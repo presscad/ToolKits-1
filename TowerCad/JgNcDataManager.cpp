@@ -38,6 +38,7 @@ CJgNcDataManager::CJgNcDataManager()
 	strcpy(extension,"dat");
 	m_bSpecialHoleOutputHoleD=FALSE;
 	m_bSpecialHoleAutoDrillD = FALSE;
+	m_bUsePartLabelPrefix = TRUE;
 }
 BOOL CJgNcDataManager::InitJgNcDriver(const char *nc_driver)
 {
@@ -180,6 +181,19 @@ BOOL CJgNcDataManager::InitJgNcDriver(const char *nc_driver)
 				m_bSpecialHoleAutoDrillD = TRUE;
 				m_bSpecialHoleOutputHoleD = FALSE;
 			}
+		}
+		else if (szToken&&_stricmp(szToken, "PART_NO_PREFIX") == 0)
+		{	//启用件号前缀 wht 19-10-18
+			szToken = strtok(NULL, szTokens);
+			if (szToken != NULL)
+			{
+				if (stricmp(szToken, "FALSE") == 0)
+					m_bUsePartLabelPrefix = FALSE;
+				else
+					m_bUsePartLabelPrefix = TRUE;
+			}
+			else
+				m_bUsePartLabelPrefix = TRUE;
 		}
 		else if (szToken&&_stricmp(szToken, "STAMP_MAX_LEN") == 0)
 		{	//最长钢印(字模)长度(默认150),mm

@@ -37,6 +37,7 @@ public:
 	char STAMP_IN_WING;		//钢印号所在肢，未设置时查找两肢都合适的位置(‘X’表示在X肢,‘Y’表示在Y肢,其余为双肢查找)
 	BOOL m_bSpecialHoleOutputHoleD;	//生成特殊孔冲头信息时直接输出孔直径 wht 17-05-18
 	BOOL m_bSpecialHoleAutoDrillD;	//特殊孔自动查找最接近的冲头 wht 19-09-13
+	BOOL m_bUsePartLabelPrefix;		//是否启用件号前缀 wht 19-10-18
 	CJgNcDataManager();
 	virtual ~CJgNcDataManager();
 	BOOL InitJgNcDriver(const char *nc_driver);

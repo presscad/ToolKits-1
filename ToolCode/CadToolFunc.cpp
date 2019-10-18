@@ -1275,11 +1275,11 @@ BOOL VerifyVertexByCADEntId(SCOPE_STRU &scope, AcDbObjectId entId)
 	acdbOpenObject(pEnt, entId, AcDb::kForRead);
 	if (pEnt == NULL)
 		return FALSE;
-	BOOL bRetCode = VerifyVertexByCADEntId(scope, entId);
+	BOOL bRetCode = VerifyVertexByCADEnt(scope, pEnt);
 	pEnt->close();
 	return bRetCode;
 }
-BOOL VerifyVertexByCADEntId(SCOPE_STRU &scope, AcDbEntity *pEnt)
+BOOL VerifyVertexByCADEnt(SCOPE_STRU &scope, AcDbEntity *pEnt)
 {
 	if(pEnt==NULL)
 		return FALSE;
