@@ -89,7 +89,7 @@ void CFolderDialog::OnInitDone()
 	pFD->GetDlgItem(lst1)->SetWindowPos(0,0,0,rectList2.Width(), abs(rectList2.top - (rectCancel.top - 4)), SWP_NOMOVE | SWP_NOZORDER);
 	SetControlText(IDOK, _T("选择"));
 	pFD->SetWindowText(_T("选择文件夹"));
-	m_wndProc = (WNDPROC)SetWindowLong(pFD->m_hWnd, GWL_WNDPROC, (long)WindowProcNew);
+	m_wndProc = (WNDPROC)SetWindowLong(pFD->m_hWnd, -4, (long)WindowProcNew);	//GWL_WNDPROC=-4
 }
 
 BOOL IsWindows7OrGreater()

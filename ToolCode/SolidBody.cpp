@@ -336,6 +336,7 @@ struct EDGE_LIST_NODE{
 			char stack_memory[64];
 			CBuffer buffer(64);
 			buffer.AttachMemory(stack_memory,64);
+			buffer.ClearContents();
 			ToBuffer(buffer,pLine,hashVertexPtr);
 			pEdge->InitBuffer(buffer.GetBufferPtr(),buffer.GetLength(),false);
 
@@ -692,7 +693,9 @@ bool CSolidBody::ConvertFrom(fBody* pBody)
 	DWORD index=1;
 	for(pVertex=pBody->vertex.GetFirst();pVertex;pVertex=pBody->vertex.GetNext(),index++)
 		hashVertexPtr.SetValueAt((DWORD)pVertex,index);
-	CSolidBodyBuffer solidbuf;
+	char mempool[0x40000];	//在函数栈上预先分配内存，以避免反复调用new-delete wjh-2019.8.5
+	CSolidBodyBuffer solidbuf(mempool, 0x40000);
+	solidbuf.ClearContents();
 	//统计边数
 	DWORD ID_COUNTER=1;
 	f3dPolyFace *pFace=NULL;

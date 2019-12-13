@@ -1043,15 +1043,17 @@ template <class TYPE> class CHashList : public IXhList<TYPE>
 protected:
 	DWORD unique_id;
 	DWORD m_dwMinmalId;
-	typedef struct tagDATA_TYPE
+#pragma pack(push,1)
+	struct DATA_TYPE
 	{
 		TYPE atom;
-		tagDATA_TYPE *prev;
-		tagDATA_TYPE *next;
+		DATA_TYPE *prev;
+		DATA_TYPE *next;
 		DWORD key;
-		BOOL bDeleted;
-		tagDATA_TYPE(){key=0;bDeleted=FALSE;}
-	}DATA_TYPE;
+		bool bDeleted;
+		DATA_TYPE(){key=0;bDeleted=FALSE;}
+	};
+#pragma pack(pop)
 	ULONG m_uHashTableGrowSize;
 	CHashTable<TYPE*> hashTable;
 	CHashStack<DATA_TYPE*> POS_STACK;
@@ -2168,15 +2170,51 @@ public:
 			NodeNum++;
 		}
 		cursor->pAtom=new TYPE(key);
-		//if(LoadDefaultObjectInfo)
-		//	LoadDefaultObjectInfo(&cursor->pAtom,key);
+		if(LoadDefaultObjectInfo)
+			LoadDefaultObjectInfo(cursor->pAtom,key);
 		if(hashTable.GetHashTableSize()<NodeNum)
 			RebuildHashtable();
 		else
 			hashTable.SetValueAt(key,cursor->pAtom);
 		return cursor->pAtom;
 	}
-    /*	由于SetValue会导致对象生命期管理复杂化，暂不支持此函数 wjh-2014.3.22
+     TYPE* AddNoneKeyObj(DWORD key)//在节点链表的末尾添加节点(对象构造函数中无key参数赋值)wjh-2019.11.11
+	{
+		TYPE *pObj=NULL;
+		if(key<=0)	//key<0时自动生成key值
+			key=AllocateUniqueId();
+		else 
+			pObj=GetValue(key);
+		if(pObj!=NULL)
+			return pObj;
+		else if(NodeNum<=0)//空链表
+		{
+			cursor = tail = head = new DATA_TYPE;
+			cursor->key = key;
+			cursor->prev = NULL;
+			cursor->next = NULL;
+			NodeNum=1;
+		}
+		else
+		{
+			DATA_TYPE* ptr = new DATA_TYPE;
+			ptr->key = key;
+			ptr->prev = tail;
+			ptr->next = NULL;
+			tail->next = ptr;
+			cursor = tail = ptr;
+			NodeNum++;
+		}
+		cursor->pAtom=new TYPE();
+		if(LoadDefaultObjectInfo)
+			LoadDefaultObjectInfo(cursor->pAtom,key);
+		if(hashTable.GetHashTableSize()<NodeNum)
+			RebuildHashtable();
+		else
+			hashTable.SetValueAt(key,cursor->pAtom);
+		return cursor->pAtom;
+	}
+   /*	由于SetValue会导致对象生命期管理复杂化，暂不支持此函数 wjh-2014.3.22
 	TYPE* SetValue(DWORD key, TYPE* pObj)//在节点链表的末尾添加节点
 	{
 		TYPE *pObj=GetValue(key);
@@ -3237,15 +3275,17 @@ public:
 //使用该链表时需要设置回调函数:CreateNewData,DeleteData
 template <class TYPE> class CSuperHashList
 {
-	typedef struct tagDATA_TYPE
+#pragma pack(push,1)
+	struct DATA_TYPE
 	{
 		TYPE *pAtom;
-		tagDATA_TYPE *prev;
-		tagDATA_TYPE *next;
+		DATA_TYPE *prev;
+		DATA_TYPE *next;
 		DWORD key;
-		BOOL bDeleted;
-		tagDATA_TYPE(){bDeleted=FALSE; pAtom=NULL; prev=NULL; next=NULL; key=0;}
-	}DATA_TYPE;
+		bool bDeleted;
+		DATA_TYPE(){bDeleted=FALSE; pAtom=NULL; prev=NULL; next=NULL; key=0;}
+	};
+#pragma pack(pop)
 	ULONG m_uHashTableGrowSize;
 	CHashTable<TYPE*> hashTable;
 	CHashStack<DATA_TYPE*> POS_STACK;
