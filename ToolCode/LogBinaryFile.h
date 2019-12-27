@@ -143,6 +143,7 @@ public:
 	//Log(char *format,...)会将某些出错信息中的'%'类字符转义抹掉 wjh-2014.5.23
 	bool LogString(char *error, bool jumpToNextLine=true);
 	bool LogDwords(int logId, int para1 = -1, int para2 = -1, int para3 = -1, int para4 = -1, int para5 = -1);
+	bool LogByteArr(int logId, char *byteArr, int count);
 	bool LogByteArr(int logId, BYTE *byteArr, int count);
 	bool LogByteArr(int logId, char *byteArr, int count);
 	virtual bool LogObject(LOG_RECORD* pBinLogObj);

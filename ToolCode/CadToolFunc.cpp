@@ -961,7 +961,11 @@ AcDbObjectId CreateAcadArcLine(AcDbBlockTableRecord *pBlockTableRecord, f3dPoint
 	normal.set(worknorm.x, worknorm.y, worknorm.z);
 	Cpy_Pnt(acad_center, center);
 	AcDbArc *pArc = new AcDbArc(acad_center, normal, radius, startAngle, endAngle);//创建ARC对象
+#ifdef __DRAG_ENT_
 	if (DRAGSET.AppendAcDbEntity(pBlockTableRecord, ArcId, pArc))//将实体写入块表记录
+#else
+	if (pBlockTableRecord->appendAcDbEntity(ArcId, pArc) == Acad::eOk)
+#endif
 	{
 		if (handle != NULL)
 		{
@@ -1046,7 +1050,11 @@ AcDbObjectId CreateAcadEllipseLine(AcDbBlockTableRecord *pBlockTableRecord, f3dP
 	acad_majorAxis.set(majorAxis.x, majorAxis.y, majorAxis.z);
 	Cpy_Pnt(acad_center, center);
 	AcDbEllipse *pEllipse = new AcDbEllipse(acad_center, acad_normal, acad_majorAxis, radiusRatio, startAngle, endAngle);//创建ARC对象
+#ifdef __DRAG_ENT_	
 	if (DRAGSET.AppendAcDbEntity(pBlockTableRecord, ArcId, pEllipse))//将实体写入块表记录
+#else
+	if (pBlockTableRecord->appendAcDbEntity(ArcId, pEllipse) == Acad::eOk)
+#endif
 	{
 		if (handle != NULL)
 		{

@@ -2,6 +2,12 @@
 #ifndef __QR_CODE_INC_H_
 #define __QR_CODE_INC_H_
 
+#if _DEBUG
+#pragma comment(lib, "..\\QRcode\\Debug\\QRcode.lib")
+#else
+#pragma comment(lib, "..\\QRcode\\Release\\QRcode.lib")
+#endif
+
 #include "ArrayList.h"
 #include "..\QRcode\qrencode.h"
 

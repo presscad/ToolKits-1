@@ -611,51 +611,34 @@ void CExcelOper::SetRangeBackColor(_Worksheet excel_sheet, long colorId, char *c
 	pRange->Release();
 }
 BOOL CExcelOper::GetExcelContentOfSpecifySheet(const char* sExcelFile, CVariant2dArray &sheetContentMap,
-											   int iSheetIndex, CXhTable* pTempTable /*= NULL*/, int maxColCount /*= -1*/)
+											   int iSheetIndex, int maxColCount /*= -1*/)
 {
 	CExcelOperObject excelobj;
 	if (excelobj.OpenExcelFile(sExcelFile))
-		return GetExcelContentOfSpecifySheet(&excelobj, sheetContentMap, pTempTable, iSheetIndex);
+		return GetExcelContentOfSpecifySheet(&excelobj, sheetContentMap, iSheetIndex,maxColCount);
 	else
 		return FALSE;
 }
-BOOL CExcelOper::GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, CVariant2dArray &sheetContentMap, 
-											   const char* sSheetName, CXhTable* pTempTable /*= NULL*/, int maxColCount /*= -1*/)
+BOOL CExcelOper::GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, CVariant2dArray &sheetContentMap,
+											   const char* sSheetName, int maxColCount /*= -1*/)
 {
 	int iSheet = GetExcelIndexOfSpecifySheet(pExcelOperObj, sSheetName);
 	if (iSheet > 0)
-		return GetExcelContentOfSpecifySheet(pExcelOperObj, sheetContentMap, iSheet, pTempTable, maxColCount);
+		return GetExcelContentOfSpecifySheet(pExcelOperObj, sheetContentMap, iSheet,maxColCount);
 	else
 		return FALSE;
 }
-BOOL CExcelOper::GetExcelContentOfSpecifySheet(const char* sExcelFile, CVariant2dArray &sheetContentMap, 
-											   const char* sSheetName, CXhTable* pTempTable /*= NULL*/, int maxColCount /*= -1*/)
+BOOL CExcelOper::GetExcelContentOfSpecifySheet(const char* sExcelFile, CVariant2dArray &sheetContentMap,
+											   const char* sSheetName, int maxColCount /*= -1*/)
 {
-	CStringArray sheetNameArr;
 	CExcelOperObject excelobj;
 	if (!excelobj.OpenExcelFile(sExcelFile))
 		return FALSE;
-	if (GetExcelContentOfSpecifySheet(&excelobj, sheetNameArr))
-	{
-		int iSheet = -1;
-		for (int i = 0; i < sheetNameArr.GetSize(); i++)
-		{
-			if (sheetNameArr[i].CompareNoCase(sSheetName) == 0)
-			{
-				iSheet = i + 1;
-				break;
-			}
-		}
-		if (iSheet > 0)
-			return GetExcelContentOfSpecifySheet(&excelobj, sheetContentMap, iSheet,pTempTable,maxColCount);
-		else
-			return FALSE;
-	}
 	else
-		return FALSE;
+		return GetExcelContentOfSpecifySheet(&excelobj, sheetContentMap, sSheetName, maxColCount);
 }
-BOOL CExcelOper::GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, CVariant2dArray &sheetContentMap, 
-											   int iSheetIndex, CXhTable* pTempTable /*= NULL*/, int maxColCount /*= -1*/)
+BOOL CExcelOper::GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, CVariant2dArray &sheetContentMap,
+											   int iSheetIndex,int maxColCount /*= -1*/)
 {	//打开指定的Excel文件
 	try
 	{
@@ -668,7 +651,6 @@ BOOL CExcelOper::GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, 
 		excel_sheets.AttachDispatch(pWorksheets);
 		LPDISPATCH pWorksheet = excel_sheets.GetItem(COleVariant((short)iSheetIndex));
 		excel_sheet.AttachDispatch(pWorksheet);
-		//excel_sheet.Select();
 		//1.计算Excel的行数，列数
 		Range excel_usedRange, excel_range;
 		excel_usedRange.AttachDispatch(excel_sheet.GetUsedRange());
@@ -685,9 +667,9 @@ BOOL CExcelOper::GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, 
 		excel_range.AttachDispatch(pRange, FALSE);
 		sheetContentMap.var = excel_range.GetValue();
 		excel_range.ReleaseDispatch();
+		excel_usedRange.ReleaseDispatch();
 		excel_sheet.ReleaseDispatch();
 		excel_sheets.ReleaseDispatch();
-		excel_usedRange.ReleaseDispatch();
 		return true;
 	}
 	catch (CString sError)
@@ -765,6 +747,7 @@ int CExcelOper::GetExcelIndexOfSpecifySheet(CExcelOperObject* pExcelOperObj, con
 	return iSheet;
 }
 
+#ifdef __SUPPORT_XH_REPORT_TBL_
 BOOL CExcelOper::ExportExcle(CXhTable* pTbl)
 {
 	if (pTbl == NULL)
@@ -805,14 +788,14 @@ BOOL CExcelOper::ExportExcle(CXhTable* pTbl)
 	{
 		for (int iCol = 0; iCol < pTbl->nColsCount; iCol++)
 		{
-			CXhGrid *pGrid = pTbl->GetGridAt(iRow, iCol);
-			if (pGrid->m_bHGridVirtual || pGrid->m_bVGridVirtual)
-				continue;	//虚表格单元
+			XHGRID *pGrid = pTbl->GetGridAt(iRow, iCol);
+			//if (pGrid->m_bHGridVirtual || pGrid->m_bVGridVirtual)
+			//	continue;	//虚表格单元
 			VARIANT varVA, varHA;
 			if (pGrid->xFontStyle.m_nTextAlignFlags == XHTBLDEF::TEXTALIGN_RIGHT_CENTER)
 			{	//右中央对齐
 				varVA = COleVariant((long)-4108);
-				varHA = COleVariant((long)2);
+				varHA = COleVariant((long)4);
 			}
 			else if (pGrid->xFontStyle.m_nTextAlignFlags == XHTBLDEF::TEXTALIGN_MIDDLE_CENTER)
 			{	//正中央对齐
@@ -822,17 +805,17 @@ BOOL CExcelOper::ExportExcle(CXhTable* pTbl)
 			else if (pGrid->xFontStyle.m_nTextAlignFlags == XHTBLDEF::TEXTALIGN_LEFT_CENTER)
 			{	//左中央对齐
 				varVA = COleVariant((long)-4108);
-				varHA = COleVariant((long)4);
+				varHA = COleVariant((long)2);
 			}
 			else if (pGrid->xFontStyle.m_nTextAlignFlags == XHTBLDEF::TEXTALIGN_BOTTOM_RIGHT)
 			{	//右下角对齐
 				varVA = COleVariant((long)-4107);
-				varHA = COleVariant((long)2);
+				varHA = COleVariant((long)4);
 			}
 			else if (pGrid->xFontStyle.m_nTextAlignFlags == XHTBLDEF::TEXTALIGN_TOP_LEFT)
 			{	//左下角对齐
 				varVA = COleVariant((long)-4107);
-				varHA = COleVariant((long)4);
+				varHA = COleVariant((long)2);
 			}
 			else
 				continue;
@@ -885,7 +868,7 @@ BOOL CExcelOper::ExportExcle(CXhTable* pTbl)
 					cellE = CExcelOper::GetCellPos(iColE, iRow + 1);
 					CExcelOper::MergeColRange(excel_sheet, cellS, cellE);
 				}
-				iColS = iCol;
+				iColS = iCol+1;
 			}
 		}
 	}
@@ -931,5 +914,131 @@ BOOL CExcelOper::ExportExcle(CXhTable* pTbl)
 	borders.ReleaseDispatch();
 	excel_range.ReleaseDispatch();
 	pRange->Release();
+
 	return TRUE;
 }
+BOOL CExcelOper::GetExcelContentOfSpecifySheet(const char* sExcelFile, const char* sSheetName,
+										CXhTable* pTempTable, int maxColCount /*= -1*/)
+{
+	if (pTempTable == NULL)
+		return FALSE;
+	CExcelOperObject excelobj;
+	if (excelobj.OpenExcelFile(sExcelFile))
+		return GetExcelContentOfSpecifySheet(&excelobj, sSheetName, pTempTable, maxColCount);
+	else
+		return FALSE;
+}
+BOOL CExcelOper::GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, const char* sSheetName,
+										CXhTable* pTempTable, int maxColCount /*= -1*/)
+{
+	if (pTempTable == NULL)
+		return FALSE;
+	int iSheet = GetExcelIndexOfSpecifySheet(pExcelOperObj, sSheetName);
+	if (iSheet > 0)
+		return GetExcelContentOfSpecifySheet(pExcelOperObj, iSheet, pTempTable, maxColCount);
+	else
+		return FALSE;
+}
+BOOL CExcelOper::GetExcelContentOfSpecifySheet(const char* sExcelFile, int iSheetIndex,
+										CXhTable* pTempTable, int maxColCount /*= -1*/)
+{
+	if (pTempTable == NULL)
+		return FALSE;
+	CExcelOperObject excelobj;
+	if (excelobj.OpenExcelFile(sExcelFile))
+		return GetExcelContentOfSpecifySheet(&excelobj, iSheetIndex, pTempTable,maxColCount);
+	else
+		return FALSE;
+}
+BOOL CExcelOper::GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, int iSheetIndex,
+										CXhTable* pTempTable, int maxColCount /*= -1*/)
+{
+	if (pTempTable == NULL)
+		return FALSE;
+	try
+	{
+		int nRetCode = 0;
+		_Worksheet   excel_sheet;    // 工作表
+		Sheets       excel_sheets;
+		LPDISPATCH   pRange;
+		LPDISPATCH   pWorksheets = pExcelOperObj->GetWorksheets();
+		ASSERT(pWorksheets != NULL);
+		excel_sheets.AttachDispatch(pWorksheets);
+		LPDISPATCH pWorksheet = excel_sheets.GetItem(COleVariant((short)iSheetIndex));
+		excel_sheet.AttachDispatch(pWorksheet);
+		//1.计算Excel的行数，列数
+		Range excel_usedRange, excel_range;
+		excel_usedRange.AttachDispatch(excel_sheet.GetUsedRange());
+		excel_range.AttachDispatch(excel_usedRange.GetRows());
+		long nRowNum = excel_range.GetCount();
+		excel_range.AttachDispatch(excel_usedRange.GetColumns());
+		long nColNum = excel_range.GetCount();
+		//外部支持最大列数，防止因螺栓过多导致的读取失败 wht 19-12-04
+		if (maxColCount > 0 && nColNum > maxColCount)
+			nColNum = maxColCount;
+		//2.获取Excel指定Sheet内容存储至pTempTable中
+		CXhChar50 cell = GetCellPos(nColNum, nRowNum);
+		pRange = excel_sheet.GetRange(COleVariant("A1"), COleVariant(cell));
+		excel_range.AttachDispatch(pRange, FALSE);
+		Range  oCurCell;
+		for (int i = 0; i < nRowNum; )
+		{
+			for (int j = 0; j <= nColNum - 1; )
+			{
+				oCurCell.AttachDispatch(excel_range.GetItem(COleVariant((long)(i + 1)), COleVariant((long)(j + 1))).pdispVal, TRUE);
+				VARIANT text = oCurCell.GetText();
+				VARIANT varMerge = oCurCell.GetMergeCells();
+				LPDISPATCH lPDISPATCH = oCurCell.GetMergeArea();
+				VARIANT height = oCurCell.GetHeight();
+				VARIANT width = oCurCell.GetColumnWidth();
+				VARIANT varVA = oCurCell.GetVerticalAlignment();
+				VARIANT varHA = oCurCell.GetHorizontalAlignment();
+				FontLegacy font;
+				font.AttachDispatch(oCurCell.GetFont(), FALSE);
+				VARIANT size = font.GetSize();
+				if (pTempTable != NULL)
+				{
+					if (varVA.iVal == (long)-4108 && varHA.iVal == (long)-4152)
+					{	//右中央对齐
+						pTempTable->GetGridAt(i, j)->xFontStyle.m_nTextAlignFlags = XHTBLDEF::TEXTALIGN_RIGHT_CENTER;
+					}
+					else if (varVA.iVal == (long)-4108 && varHA.iVal == (long)-4108)
+					{	//正中央对齐
+						pTempTable->GetGridAt(i, j)->xFontStyle.m_nTextAlignFlags = XHTBLDEF::TEXTALIGN_MIDDLE_CENTER;
+					}
+					else if (varVA.iVal == (long)-4108 && varHA.iVal == (long)-4131)
+					{	//左中央对齐
+						pTempTable->GetGridAt(i, j)->xFontStyle.m_nTextAlignFlags = XHTBLDEF::TEXTALIGN_LEFT_CENTER;
+					}
+					else if (varVA.iVal == (long)-4107 && varHA.iVal == (long)-4152)
+					{	//右下角对齐
+						pTempTable->GetGridAt(i, j)->xFontStyle.m_nTextAlignFlags = XHTBLDEF::TEXTALIGN_BOTTOM_RIGHT;
+					}
+					else if (varVA.iVal == (long)-4107 && varHA.iVal == (long)-4131)
+					{	//左下角对齐
+						pTempTable->GetGridAt(i, j)->xFontStyle.m_nTextAlignFlags = XHTBLDEF::TEXTALIGN_TOP_LEFT;
+					}
+					pTempTable->GetGridAt(i, j)->m_bHGridVirtual = (varMerge.boolVal) ? true : false;
+					if (j == 0)
+						pTempTable->SetRowHigh(i, height.dblVal);
+					if (i == 0)
+						pTempTable->SetColWide(j, width.dblVal);
+					pTempTable->GetGridAt(i, j)->simfont.sfTextSize = (float)size.dblVal;
+				}
+				j++;
+			}
+			i++;
+		}
+		excel_range.ReleaseDispatch();
+		excel_sheet.ReleaseDispatch();
+		excel_sheets.ReleaseDispatch();
+		excel_usedRange.ReleaseDispatch();
+		return true;
+	}
+	catch (CString sError)
+	{
+		logerr.Log(sError);
+		return false;
+	}
+}
+#endif
