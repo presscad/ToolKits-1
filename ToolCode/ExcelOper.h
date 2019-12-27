@@ -6,7 +6,9 @@
 #include "XhCharString.h"
 #include "LogFile.h"
 #include "comutil.h"
-#include "..\XhRptTbl\XhRptTbl.h"
+#ifdef __SUPPORT_XH_REPORT_TBL_
+#include "XhRptTbl.h"
+#endif
 
 class CExcelOperObject
 {
@@ -140,16 +142,23 @@ public:
 	//设置单元格%的形式
 	static void SetRangeNumberFormatLocal(_Worksheet excel_sheet, const char* sLocal, char *cell_start, char *cell_end = NULL);
 	//获取指定sheet内容
-	static BOOL GetExcelContentOfSpecifySheet(const char* sExcelFile, CVariant2dArray &sheetContentMap, int iSheetIndex, CXhTable* pTempTable=NULL,int maxColCount=-1);
-	static BOOL GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, CVariant2dArray &sheetContentMap, const char* sSheetName, CXhTable* pTempTable = NULL, int maxColCount = -1);
-	static BOOL GetExcelContentOfSpecifySheet(const char* sExcelFile, CVariant2dArray &sheetContentMap, const char* sSheetName, CXhTable* pTempTable = NULL, int maxColCount = -1);
-	static BOOL GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, CVariant2dArray &sheetContentMap, int iSheetIndex, CXhTable* pTempTable = NULL, int maxColCount = -1);
+	static BOOL GetExcelContentOfSpecifySheet(const char* sExcelFile, CVariant2dArray &sheetContentMap, int iSheetIndex, int maxColCount=-1);
+	static BOOL GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, CVariant2dArray &sheetContentMap, int iSheetIndex, int maxColCount = -1);
+	static BOOL GetExcelContentOfSpecifySheet(const char* sExcelFile, CVariant2dArray &sheetContentMap, const char* sSheetName, int maxColCount = -1);
+	static BOOL GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, CVariant2dArray &sheetContentMap, const char* sSheetName, int maxColCount = -1);
 	static BOOL GetExcelContentOfSpecifySheet(const char* sExcelFile, CStringArray &sheetNameArr);
 	static BOOL GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, CStringArray &sheetNameArr);
 	//根据sheet名获取sheet序号
 	static int  GetExcelIndexOfSpecifySheet(CExcelOperObject* pExcelOperObj, const char* sSheetName);
+#ifdef __SUPPORT_XH_REPORT_TBL_
 	//根据XhTable导出Excel
 	static BOOL  ExportExcle(CXhTable* pTbl);
+	//获取指定sheet内容到XhTable中
+	static BOOL GetExcelContentOfSpecifySheet(const char* sExcelFile, int iSheetIndex, CXhTable* pTempTable, int maxColCount = -1);
+	static BOOL GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, int iSheetIndex, CXhTable* pTempTable, int maxColCount = -1);
+	static BOOL GetExcelContentOfSpecifySheet(const char* sExcelFile, const char* sSheetName, CXhTable* pTempTable, int maxColCount = -1);
+	static BOOL GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, const char* sSheetName, CXhTable* pTempTable, int maxColCount = -1);
+#endif
 };
 
 #endif
