@@ -44,6 +44,7 @@ LOG_STRING::LOG_STRING(const char* szErrLog)
 	if (nStrLen > 0)
 		memcpy(_szInternalStrPool, szErrLog, nStrLen);
 	_szInternalStrPool[nStrLen] = 0;
+	snRecBuffLen=(short)nStrLen;
 }
 bool LOG_STRING::InternalFromMetaData(LOG_METAREC* pMetaData)
 {
@@ -176,10 +177,10 @@ LOG_BYTE_ARR_REC::LOG_BYTE_ARR_REC(int logId /*= 0*/, BYTE *byteArr/*=NULL*/, in
 {
 	idRecordType = ILogBin2File::TYPE_REC_BYTES;
 	_logId = logId;
-	_snByteCount = len;
+	_snByteCount = min(len,BYTE_MAX_COUNT);
 	memset(_datapool, 0, BYTE_MAX_COUNT);
 	if (byteArr&&len > 0)
-		memcpy(_datapool, byteArr, len);
+		memcpy(_datapool, byteArr, _snByteCount);
 }
 bool LOG_BYTE_ARR_REC::InternalFromMetaData(LOG_METAREC* pMetaData)
 {
@@ -262,20 +263,19 @@ bool CLogBinFile::LogObject(LOG_RECORD* pBinLogObj)
 		return false;
 	m_bHasContens = true;
 	//写入二进制格式的日志文件头
-	long flen = ftell(this->SelfFilePointer());
+	fseek(m_fp, 0, SEEK_END);
+	long flen = ftell(m_fp);
 	UINT uiLogDocType = 857235986, uiLogFileVersion = 0;
 	if (flen == 0)
 	{
 		fwrite(&uiLogDocType, 4, 1, this->SelfFilePointer());
 		fwrite(&uiLogFileVersion, 4, 1, this->SelfFilePointer());
 	}
-	else
-		fseek(SelfFilePointer(), 0, SEEK_END);
 	//
 	LOG_METAREC meta = pBinLogObj->xMetaRecord;
-	fwrite(&meta.idRecordType, 2, 1, this->SelfFilePointer());
-	fwrite(&meta.snRecBuffLen, 2, 1, this->SelfFilePointer());
-	fwrite(&meta.datapool, meta.snRecBuffLen, 1, this->SelfFilePointer());
+	fwrite(&meta.idRecordType, 2, 1, m_fp);
+	fwrite(&meta.snRecBuffLen, 2, 1, m_fp);
+	fwrite(&meta.datapool, meta.snRecBuffLen, 1, m_fp);
 	fflush(this->SelfFilePointer());
 	return true;
 }
@@ -509,6 +509,10 @@ bool CLogBinFile::LogDwords(int logId, int para1 /*= -1*/, int para2 /*= -1*/,
 	//	_FireReflectTo(_iTempReflectWarningType, _hTempReflectRelaObj, _internal_tmp_str);
 	return this->LogObject(&logDwords);
 }
+bool CLogBinFile::LogByteArr(int logId,char *byteArr,int count)
+{
+	return LogByteArr(logId,(BYTE*)byteArr,count);
+}
 bool CLogBinFile::LogByteArr(int logId, BYTE *byteArr, int count)
 {
 	if (m_fp == NULL)
@@ -520,11 +524,16 @@ bool CLogBinFile::LogByteArr(int logId, BYTE *byteArr, int count)
 		return false;
 	if (logId == 0 || byteArr == NULL || count <= 0)
 		return false;
-	LOG_BYTE_ARR_REC logDwords(logId,byteArr,count);
-	//size_t str_len = strlen(_internal_tmp_str);
-	//if (_FireReflectTo)
-	//	_FireReflectTo(_iTempReflectWarningType, _hTempReflectRelaObj, _internal_tmp_str);
-	return this->LogObject(&logDwords);
+	int hits=0;
+	for (int i=0;i<count;i+=500,hits++)
+	{
+		int bytescount=500;
+		if (i+500>count)
+			bytescount=count-i;
+		LOG_BYTE_ARR_REC logDwords(logId+hits*100,byteArr+i,bytescount);
+		this->LogObject(&logDwords);
+	}
+	return true;
 }
 void CLogBinFile::CloseFile()
 {

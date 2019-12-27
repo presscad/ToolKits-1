@@ -3,6 +3,8 @@
 #include "HashTable.h"
 #include "XhCharString.h"
 
+#ifndef _STRUCT_LOCALE_PROPITEM_DEFINED_
+#define _STRUCT_LOCALE_PROPITEM_DEFINED_
 struct LOCALE_PROPITEM{
 	static const BYTE DTVALTYPE_BOOL	= 0;
 	static const BYTE DTVALTYPE_LONG	= 1;
@@ -20,6 +22,7 @@ public:
 		char szStrBuff[101];
 	};
 };
+#endif
 struct XHLOCALE{
 	static const BYTE CID_Xerofox			=	1;	//id=1.信狐天诚
 	static const BYTE CID_NanTong_HuaCan	=	2;	//id=2.表示江苏南通华灿
@@ -55,8 +58,8 @@ public:
 	XHLOCALE();
 	//自定义属性存储区
 	CHashStrList<LOCALE_PROPITEM> hashLocaleProp;
-	LOCALE_PROPITEM* AddLocaleItemLong(const char* keyidstr,long liPropVal,const char* name);
-	LOCALE_PROPITEM* AddLocaleItemDouble(const char* keyidstr,double dfPropVal,const char* name);
+	LOCALE_PROPITEM* AddLocaleItemLong(const char* keyidstr,long liPropVal,const char* name = NULL);
+	LOCALE_PROPITEM* AddLocaleItemDouble(const char* keyidstr,double dfPropVal,const char* name = NULL);
 	LOCALE_PROPITEM* AddLocaleItemBool(const char* keyidstr,bool blPropVal,const char* name=NULL);
 	LOCALE_PROPITEM* AddLocaleItemStr100(const char* keyidstr, const char* pszPropVal, const char* name = NULL);
 	LOCALE_PROPITEM* GetLocaleItem(const char* keyidstr){return hashLocaleProp.GetValue(keyidstr);}

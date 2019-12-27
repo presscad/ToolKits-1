@@ -301,6 +301,9 @@ BOLT_INFO::BOLT_INFO()
 	cFaceNo=1;		//工艺构件为板时，默认为单面板
 	feature=0;
 	cFuncType=0;
+	punchForDrillHole = 0;
+	punchForMergeManu = 0;
+	cFlag = 0;
 }
 
 #ifdef __PROPERTYLIST_UI_
@@ -424,6 +427,9 @@ BOOL BOLT_INFO::CloneBolt(BOLT_INFO *pNewBoltInfo)
 	dwRayNo=pNewBoltInfo->dwRayNo;
 	cFuncType=pNewBoltInfo->cFuncType;
 	m_dwFlag=pNewBoltInfo->m_dwFlag;
+	cFlag = pNewBoltInfo->cFlag;
+	punchForMergeManu = pNewBoltInfo->punchForMergeManu;
+	punchForDrillHole = pNewBoltInfo->punchForDrillHole;
 	return true;
 }
 void BOLT_INFO::FromBuffer(CBuffer &buffer,long version,int buf_type)
@@ -2400,6 +2406,8 @@ BOOL CProcessPlate::GetMCS(GECS &mcs)
 	normalize(mcs.axis_x);
 	mcs.axis_y.Set(-mcs.axis_x.y,mcs.axis_x.x);
 	mcs.axis_z=mcs.axis_x^mcs.axis_y;
+	normalize(mcs.axis_y);
+	normalize(mcs.axis_z);
 	//调整坐标系原点
 	SCOPE_STRU scope=GetVertexsScope(&mcs);
 	mcs.origin+=scope.fMinX*mcs.axis_x;
@@ -2415,6 +2423,7 @@ BOOL CProcessPlate::GetMCS(GECS &mcs)
 }
 
 void CProcessPlate::TransPlateToMCS(CProcessPlate *pPlate,GECS &mcs)
+
 {
 	if(pPlate==NULL)
 		return;

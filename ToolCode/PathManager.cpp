@@ -24,7 +24,7 @@ void MakeDirectory(char *path)
 		dir = strtok(NULL, "/\\");
 	}
 }
-BOOL GetCurWorkPath(CString& file_path, BOOL bEscapeChar/*=TRUE*/, const char* subFolderName/*=NULL*/)
+BOOL GetCurWorkPath(CString& file_path, BOOL bEscapeChar/*=TRUE*/, const char* subFolderName/*=NULL*/,BOOL bSingleFolder/*=FALSE*/)
 {
 	AcApDocument* pDoc = acDocManager->curDocument();
 	if (pDoc == NULL)
@@ -37,10 +37,17 @@ BOOL GetCurWorkPath(CString& file_path, BOOL bEscapeChar/*=TRUE*/, const char* s
 	int index = file_path.ReverseFind('\\');	//反向查找'\\'
 	file_path = file_path.Left(index);		//移除文件名
 	//
-	if (subFolderName)
-		sWorkDir.Printf("%s\\%s", file_path, subFolderName);
+	if (bSingleFolder && subFolderName)
+	{
+		sWorkDir.Printf("%s\\%s-%s", file_path, (char*)sName, subFolderName);
+	}
 	else
-		sWorkDir.Printf("%s\\%s", file_path, (char*)sName);
+	{
+		if (subFolderName)
+			sWorkDir.Printf("%s\\%s", file_path, subFolderName);
+		else
+			sWorkDir.Printf("%s\\%s", file_path, (char*)sName);
+	}
 	MakeDirectory(sWorkDir);
 	if (bEscapeChar)
 		sWorkDir.Append("\\");

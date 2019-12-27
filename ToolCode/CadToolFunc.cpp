@@ -633,7 +633,8 @@ double DrawTextLength(const char* dimtext,double height,AcDbObjectId textStyleId
 //////////////////////////////////////////////////////////////////////////
 //添加直线图元
 AcDbObjectId CreateAcadLine(AcDbBlockTableRecord *pBlockTableRecord,
-	f3dPoint start, f3dPoint end,long handle/*=NULL*/,long style/*=0*/)
+	f3dPoint start, f3dPoint end,long handle/*=NULL*/,long style/*=0*/,
+	COLORREF clr /*= -1*/)
 {
 	AcDbObjectId LineId=0;//定义标识符
 	AcGePoint3d acad_start,acad_end;
@@ -643,6 +644,11 @@ AcDbObjectId CreateAcadLine(AcDbBlockTableRecord *pBlockTableRecord,
 	Cpy_Pnt(acad_start,start);
 	Cpy_Pnt(acad_end,end);
 	AcDbLine *pLine=new AcDbLine(acad_start,acad_end);//创建LINE对象
+	if (clr != -1)
+	{	//设置颜色索引
+		int color_index = GetNearestACI(clr);
+		pLine->setColorIndex(color_index);
+	}
 #ifdef __DRAG_ENT_
 	if(DRAGSET.AppendAcDbEntity(pBlockTableRecord,LineId,pLine))	//将实体写入块表记录
 #else
@@ -1129,7 +1135,7 @@ AcDbObjectId
 ////////////////////////////////////////////////////////////////////////////
 //视图区域操作函数
 //////////////////////////////////////////////////////////////////////////
-double TestDrawTextLength(const char* dimtext, double height, AcDbObjectId textStyleId)
+double TestDrawTextLength(const char* dimtext, double height, AcDbObjectId textStyleId, double widthFactor/*=0*/)
 {
 	AcDbMText mtxt;
 #ifdef _ARX_2007
@@ -1140,7 +1146,17 @@ double TestDrawTextLength(const char* dimtext, double height, AcDbObjectId textS
 	mtxt.setWidth(strlen(dimtext)*height);					//每行文字的最大宽度
 	mtxt.setTextHeight(height);
 	mtxt.setTextStyle(textStyleId);		//文字插入点
-	return mtxt.actualWidth();
+	double fWidth = mtxt.actualWidth();
+	AcDbTextStyleTableRecord *pTextStyleRec = NULL;
+	if (widthFactor>0 &&
+		acdbOpenObject(pTextStyleRec, textStyleId, AcDb::kForRead) == Acad::eOk && pTextStyleRec)
+	{
+		double fXScale = pTextStyleRec->xScale();
+		if (fXScale > 0)
+			fWidth = (fWidth / fXScale)*widthFactor;
+		pTextStyleRec->close();
+	}
+	return fWidth;
 }
 int LocalCalArcResolution(double radius, double sector_angle, double scale_of_user2scr, double sample_len, int smoothness/*=36*/)
 {
@@ -1714,6 +1730,7 @@ void MoveEntIds(ARRAY_LIST<AcDbObjectId> &entIdList, GEPOINT &fromPt, GEPOINT &t
 	ptTo[Z] = 0;
 	moveMat.setToTranslation(AcGeVector3d(ptTo[X] - ptFrom[X], ptTo[Y] - ptFrom[Y], ptTo[Z] - ptFrom[Z]));
 	AcDbEntity *pEnt = NULL;
+	CLockDocumentLife lockDocLife;
 	for (AcDbObjectId *pId = entIdList.GetFirst(); pId; pId = entIdList.GetNext())
 	{
 		acdbOpenAcDbEntity(pEnt, *pId, AcDb::kForWrite);

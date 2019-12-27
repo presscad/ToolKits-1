@@ -1608,6 +1608,34 @@ public:
 		return size;
 	}
 #endif
+	//支持翻转链接顺序 wht 19-12-27
+	bool Reverse()
+	{
+		typedef DATA_TYPE* DATA_TYPE_PTR;
+		int count = GetNodeNum();
+		if (count == 0)
+			return false;
+		int i = 0;
+		DATA_TYPE_PTR *dataPtrArr = new DATA_TYPE_PTR[count];
+		DATA_TYPE *temp = NULL;
+		for (temp = head; temp; temp = temp->next)
+		{
+			dataPtrArr[i] = temp;
+			i++;
+		}
+		//
+		DATA_TYPE *temp_head = head, *temp_tail = tail;
+		for (int i = 0; i < count; i++)
+		{
+			temp = dataPtrArr[i]->next;
+			dataPtrArr[i]->next = dataPtrArr[i]->prev;
+			dataPtrArr[i]->prev = temp;
+		}
+		head = temp_tail;
+		tail = temp_head;
+		delete[] dataPtrArr;
+		return true;
+	}
 };
 
 template <class TYPE> void SetHashObjKey(TYPE *pObj,DWORD key){pObj->SetKey(key);}

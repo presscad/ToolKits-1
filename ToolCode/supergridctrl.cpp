@@ -1115,8 +1115,8 @@ void CSuperGridCtrl::OnDblclk(NMHDR* pNMHDR, LRESULT* pResult)
 					if(m_bDblclkDisplayCellCtrl)	//设置双击显示可编辑控件时在此处显示控件 wht 11-04-14
 						DisplayCellCtrl(ht.iItem,ht.iSubItem);
 					BOOL bRedraw=0;
-					if(ItemHasChildren(pSelItem))
-					{
+					if(ItemHasChildren(pSelItem)&&!IsDisplayCellCtrl(ht.iItem,ht.iSubItem))
+					{	//有子项且未显示编辑控件时，才需要进行打开或收起子项内容 wht 19-10-30
 						SetRedraw(0);
 						int nScrollIndex=0;
 						if(pSelItem->m_bHideChildren)

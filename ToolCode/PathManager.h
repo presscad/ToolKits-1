@@ -6,7 +6,7 @@
 
 //Â·¾¶²Ù×÷º¯Êý
 void MakeDirectory(char *path);
-BOOL GetCurWorkPath(CString& file_path, BOOL bEscapeChar = TRUE, const char* subFolderName = NULL);
+BOOL GetCurWorkPath(CString& file_path, BOOL bEscapeChar = TRUE, const char* subFolderName = NULL, BOOL bSingleFolder=FALSE);
 BOOL SetPathToReg(const char* path, char* path_tag);
 BOOL GetPathFromReg(char* path, char* path_tag, BOOL setup0_setting1);
 BOOL GetSysPath(char* sys_path);
