@@ -8,6 +8,33 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 //////////////////////////////////////////////////////////////////////////
+// 关于AttachDispatch()、ReleaseDispatch()、DetachDispatch()用法统一规范说明
+// 以下两种方式均可保证正常释放资源，非特殊情况均采用第一种方式。
+// 方式一：AttachDispatch时支持自动使用，第二个参数为Ture。方法示例如下，
+//  Range excel_range;
+//  LPDISPATCH pRange1,pRange2; 
+//  pRange1 = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
+//  excel_range.AttachDispatch(pRange1);
+//  ...
+//  excel_range.AttachDispatch(pRange2);	//附加下一个对象时会自动释放前一个对象
+//  ...
+//  excel_range.ReleaseDispatch();			//最后需要调用一次释放函数
+//
+// 方式二：AttachDispatch时不支持自动使用，第二个参数为False，需手动释放。方法示例如下，
+//  Range excel_range;
+//  LPDISPATCH pRange1,pRange2; 
+//  pRange1 = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
+//  excel_range.AttachDispatch(pRange1,FALSE);
+//  ...
+//  excel_range.DetachDispatch();			//使用完成之后断开关联
+//  pRange1->Release();						//使用完成之后需手动释放
+//  excel_range.AttachDispatch(pRange2,FALSE);	
+//  ...
+//  excel_range.DetachDispatch();			//使用完成之后断开关联
+//  pRange2->Release();						//使用完成之后需手动释放
+//////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
 //CExcelOperObject
 CExcelOperObject::CExcelOperObject()
 {
@@ -108,7 +135,7 @@ LPDISPATCH CExcelOperObject::ClearContent(int index)
 	if (pWorksheet3)//已存在sheet表，则删除
 	{
 		_Worksheet excel_sheet;
-		excel_sheet.AttachDispatch(pWorksheet3, FALSE);
+		excel_sheet.AttachDispatch(pWorksheet3);
 		excel_sheet.GetRows()->Release();
 		Range excel_range = excel_sheet.GetUsedRange();
 		excel_range.SetRowHeight(COleVariant(15.0));
@@ -143,7 +170,7 @@ LPDISPATCH CExcelOperObject::GetValidWorkSheet(int index)
 		{
 			LPDISPATCH pWorksheet2 = excel_sheets.GetItem(COleVariant((short)(index - 1)));
 			_Worksheet excel_sheet;
-			excel_sheet.AttachDispatch(pWorksheet2, FALSE);
+			excel_sheet.AttachDispatch(pWorksheet2);
 			excel_sheet.Select();
 			excel_sheet.ReleaseDispatch();
 			pWorksheet3 = excel_sheets.Add(vtMissing, _variant_t(pWorksheet2), COleVariant((long)1), vtMissing);
@@ -169,7 +196,7 @@ LPDISPATCH CExcelOperObject::InsertSheetByAfterIndex(int afterIndex)
 	else
 		pWorksheet3 = InsertLastValidWorkSheet();
 	_Worksheet excel_sheet;
-	excel_sheet.AttachDispatch(pWorksheet2, FALSE);
+	excel_sheet.AttachDispatch(pWorksheet2);
 	excel_sheet.Select();
 	excel_sheet.ReleaseDispatch();
 	excel_sheets.ReleaseDispatch();
@@ -229,6 +256,7 @@ CXhChar50 CExcelOper::GetCellName(int iCol)
 		cell.Printf("%c", 'A' + nSubLen);
 	return cell;
 }
+//CreateExcelWorksheets，通过关闭Excel手动释放资源 wht 19-12-31
 LPDISPATCH CExcelOper::CreateExcelWorksheets(int nSheet)
 {	//输出到EXCEL文件
 	LPDISPATCH pDisp;
@@ -278,16 +306,16 @@ void CExcelOper::AddRowToExcelSheet(_Worksheet &excel_sheet, int iRow, CStringAr
 	for (int i = 0; i < str_arr.GetSize(); i++)
 	{
 		pRange = excel_sheet.GetRange(COleVariant(GetCellPos(i, iRow)));
-		excel_range.AttachDispatch(pRange, FALSE);
+		//AttachDispatch时选择自动释放，Attach新对象时会自动释放前一个对象，
+		//在最后调用一次ReleaseDispatch就可以释放资源 wht 19-12-31
+		excel_range.AttachDispatch(pRange);
 		excel_range.SetValue(COleVariant(str_arr[i]));	//,VT_BSTR
 		if (col_arr)
 			excel_range.SetColumnWidth(COleVariant(col_arr[i]));
 		if (bWrapText)
 			excel_range.SetWrapText(COleVariant((BYTE)1));
-		excel_range.DetachDispatch();
-		pRange->Release();
-
 	}
+	excel_range.ReleaseDispatch();
 }
 //设置主标题
 void CExcelOper::SetMainTitle(_Worksheet excel_sheet, char *cell_start, char *cell_end,
@@ -298,7 +326,7 @@ void CExcelOper::SetMainTitle(_Worksheet excel_sheet, char *cell_start, char *ce
 	LPDISPATCH pRange;
 	Range excel_range;
 	pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
-	excel_range.AttachDispatch(pRange, FALSE);
+	excel_range.AttachDispatch(pRange);
 	excel_range.Merge(COleVariant((BYTE)1));
 	excel_range.SetValue2(COleVariant(title));
 	excel_range.SetHorizontalAlignment(COleVariant(horizAlignment));
@@ -308,15 +336,15 @@ void CExcelOper::SetMainTitle(_Worksheet excel_sheet, char *cell_start, char *ce
 	{
 		Borders borders;
 		Border border;
-		borders.AttachDispatch(excel_range.GetBorders(), FALSE);
+		borders.AttachDispatch(excel_range.GetBorders());
 		//borders.SetWeight(COleVariant((short)2));	//xlThin=2;xlThick=4;
-		border.AttachDispatch(borders.GetItem(9), FALSE);//xlBottom = 9
+		border.AttachDispatch(borders.GetItem(9));//xlBottom = 9
 		border.SetLineStyle(COleVariant((short)-4119));	//xlDouble =-4119;
 		border.SetWeight(COleVariant((short)4));		//xlThin=2;xlThick=4;
 		border.ReleaseDispatch();
 		borders.ReleaseDispatch();
 	}
-	font.AttachDispatch(excel_range.GetFont(), FALSE);
+	font.AttachDispatch(excel_range.GetFont());
 	COleVariant covTrue((short)TRUE);
 	font.SetBold(covTrue);
 	font.SetSize(COleVariant(font_size));
@@ -332,8 +360,8 @@ void CExcelOper::SetBoldFont(_Worksheet excel_sheet, char *cell_start, char *cel
 		pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
 	else
 		pRange = excel_sheet.GetRange(COleVariant(cell_start));
-	excel_range.AttachDispatch(pRange, FALSE);
-	font.AttachDispatch(excel_range.GetFont(), FALSE);
+	excel_range.AttachDispatch(pRange);
+	font.AttachDispatch(excel_range.GetFont());
 	COleVariant covTrue((short)TRUE);
 	font.SetBold(covTrue);
 	font.ReleaseDispatch();
@@ -350,8 +378,8 @@ void CExcelOper::SetFontBold(_Worksheet excel_sheet, int iStartCol, int iRow, in
 		CXhChar16 cell_start = GetCellPos(iStartCol, iRow);
 		iStartCol++;
 		pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_start));
-		excel_range.AttachDispatch(pRange, FALSE);
-		font.AttachDispatch(excel_range.GetFont(), FALSE);
+		excel_range.AttachDispatch(pRange);
+		font.AttachDispatch(excel_range.GetFont());
 		COleVariant covTrue((short)TRUE);
 		font.SetBold(covTrue);
 		font.ReleaseDispatch();
@@ -368,8 +396,8 @@ void CExcelOper::SetFontSize(_Worksheet excel_sheet, const char *cell_start, con
 		pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
 	else
 		pRange = excel_sheet.GetRange(COleVariant(cell_start));
-	excel_range.AttachDispatch(pRange, FALSE);
-	font.AttachDispatch(excel_range.GetFont(), FALSE);
+	excel_range.AttachDispatch(pRange);
+	font.AttachDispatch(excel_range.GetFont());
 	font.SetBold(COleVariant((short)bBold));
 	font.SetSize(COleVariant(font_size));
 	font.ReleaseDispatch();
@@ -385,8 +413,8 @@ void CExcelOper::SetFontColor(_Worksheet excel_sheet, char *cell_start, char *ce
 		pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
 	else
 		pRange = excel_sheet.GetRange(COleVariant(cell_start));
-	excel_range.AttachDispatch(pRange, FALSE);
-	font.AttachDispatch(excel_range.GetFont(), FALSE);
+	excel_range.AttachDispatch(pRange);
+	font.AttachDispatch(excel_range.GetFont());
 	font.SetColorIndex(COleVariant(colorId));
 	font.ReleaseDispatch();
 	excel_range.ReleaseDispatch();
@@ -401,10 +429,9 @@ void CExcelOper::SetRangeValue(_Worksheet excel_sheet, char *cell_start, char *c
 		pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
 	else
 		pRange = excel_sheet.GetRange(COleVariant(cell_start));
-	excel_range.AttachDispatch(pRange, FALSE);
+	excel_range.AttachDispatch(pRange);
 	excel_range.SetValue2(var);
-	excel_range.DetachDispatch();
-	pRange->Release();
+	excel_range.ReleaseDispatch();
 }
 //设置指定单元格内容
 void CExcelOper::SetRangeValue(_Worksheet &excel_sheet, int iCol, int iRow, char* sValue)
@@ -412,10 +439,9 @@ void CExcelOper::SetRangeValue(_Worksheet &excel_sheet, int iCol, int iRow, char
 	LPDISPATCH pRange;
 	Range excel_range;
 	pRange = excel_sheet.GetRange(COleVariant(GetCellPos(iCol, iRow)));
-	excel_range.AttachDispatch(pRange, FALSE);
+	excel_range.AttachDispatch(pRange);
 	excel_range.SetValue2(COleVariant(sValue));
-	excel_range.DetachDispatch();
-	pRange->Release();
+	excel_range.ReleaseDispatch();
 }
 //设置指定区域单元格数字格式
 void CExcelOper::SetRangeNumberFormat(_Worksheet excel_sheet, char *cell_start, char *cell_end, VARIANT var)
@@ -426,10 +452,9 @@ void CExcelOper::SetRangeNumberFormat(_Worksheet excel_sheet, char *cell_start, 
 		pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
 	else
 		pRange = excel_sheet.GetRange(COleVariant(cell_start));
-	excel_range.AttachDispatch(pRange, FALSE);
+	excel_range.AttachDispatch(pRange);
 	excel_range.SetNumberFormat(var);
-	excel_range.DetachDispatch();
-	pRange->Release();
+	excel_range.ReleaseDispatch();
 }
 //设置指定区域单元格数字格式
 void CExcelOper::SetRangeNumberFormatLocal(_Worksheet excel_sheet, char *cell_start, char *cell_end, VARIANT var)
@@ -440,11 +465,10 @@ void CExcelOper::SetRangeNumberFormatLocal(_Worksheet excel_sheet, char *cell_st
 		pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
 	else
 		pRange = excel_sheet.GetRange(COleVariant(cell_start));
-	excel_range.AttachDispatch(pRange, FALSE);
+	excel_range.AttachDispatch(pRange);
 	excel_range.SetNumberFormatLocal(var);
 	excel_range.SetHorizontalAlignment(COleVariant((long)4));
-	excel_range.DetachDispatch();
-	pRange->Release();
+	excel_range.ReleaseDispatch();
 }
 //设定指定区域单元水平对齐方式
 //右对齐 COleVariant((long)2)
@@ -463,10 +487,9 @@ void CExcelOper::SetRangeHorizontalAlignment(_Worksheet excel_sheet, char *cell_
 		pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
 	else
 		pRange = excel_sheet.GetRange(COleVariant(cell_start));
-	excel_range.AttachDispatch(pRange, FALSE);
+	excel_range.AttachDispatch(pRange);
 	excel_range.SetHorizontalAlignment(var);
-	excel_range.DetachDispatch();
-	pRange->Release();
+	excel_range.ReleaseDispatch();
 }
 //设定指定区域单元竖直对齐方式
 //居  中 COleVariant((long)-4108)
@@ -479,10 +502,9 @@ void CExcelOper::SetRangeVerticalAlignment(_Worksheet excel_sheet, char *cell_st
 		pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
 	else
 		pRange = excel_sheet.GetRange(COleVariant(cell_start));
-	excel_range.AttachDispatch(pRange, FALSE);
+	excel_range.AttachDispatch(pRange);
 	excel_range.SetVerticalAlignment(var);
-	excel_range.DetachDispatch();
-	pRange->Release();
+	excel_range.ReleaseDispatch();
 }
 //设置文字对齐方式(水平、竖直)
 void CExcelOper::SetRangeOrientation(_Worksheet excel_sheet, const char *cell_start, const char *cell_end, long degree /*= 0*/)
@@ -493,10 +515,9 @@ void CExcelOper::SetRangeOrientation(_Worksheet excel_sheet, const char *cell_st
 		pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
 	else
 		pRange = excel_sheet.GetRange(COleVariant(cell_start));
-	excel_range.AttachDispatch(pRange, FALSE);
+	excel_range.AttachDispatch(pRange);
 	excel_range.SetOrientation(COleVariant(degree));
-	excel_range.DetachDispatch();
-	pRange->Release();
+	excel_range.ReleaseDispatch();
 }
 //设置自动换行
 void CExcelOper::SetRangeWrapText(_Worksheet excel_sheet, char *cell_start, char *cell_end, VARIANT var)
@@ -507,10 +528,9 @@ void CExcelOper::SetRangeWrapText(_Worksheet excel_sheet, char *cell_start, char
 		pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
 	else
 		pRange = excel_sheet.GetRange(COleVariant(cell_start));
-	excel_range.AttachDispatch(pRange, FALSE);
+	excel_range.AttachDispatch(pRange);
 	excel_range.SetWrapText(var);	//自动换行
-	excel_range.DetachDispatch();
-	pRange->Release();
+	excel_range.ReleaseDispatch();
 }
 //设置指定区域的边框
 void CExcelOper::SetRangeBorders(_Worksheet excel_sheet, char *cell_start, char *cell_end, VARIANT fontSize)
@@ -523,12 +543,12 @@ void CExcelOper::SetRangeBorders(_Worksheet excel_sheet, char *cell_start, char 
 		pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
 	else
 		pRange = excel_sheet.GetRange(COleVariant(cell_start));
-	excel_range.AttachDispatch(pRange, FALSE);
-	borders.AttachDispatch(excel_range.GetBorders(), FALSE);
+	excel_range.AttachDispatch(pRange);
+	borders.AttachDispatch(excel_range.GetBorders());
 	borders.SetWeight(COleVariant((short)2));	//xlThin=2;xlThick=4;
 	borders.SetLineStyle(COleVariant((long)1));	//xlSingle
 	borders.ReleaseDispatch();
-	font.AttachDispatch(excel_range.GetFont(), FALSE);
+	font.AttachDispatch(excel_range.GetFont());
 	font.SetSize(fontSize);
 	font.ReleaseDispatch();
 	excel_range.ReleaseDispatch();
@@ -567,15 +587,14 @@ void CExcelOper::SetRangeColWidth(_Worksheet excel_sheet, double width, char *ce
 		pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
 	else
 		pRange = excel_sheet.GetRange(COleVariant(cell_start));
-	excel_range.AttachDispatch(pRange, FALSE);
+	excel_range.AttachDispatch(pRange);
 	excel_range.SetColumnWidth(COleVariant(width));
 	if (bCenter)
 	{
 		excel_range.SetHorizontalAlignment(COleVariant((short)3));
 		excel_range.SetVerticalAlignment(COleVariant((short)2));
 	}
-	excel_range.DetachDispatch();
-	pRange->Release();
+	excel_range.ReleaseDispatch();
 }
 //
 void CExcelOper::SetRangeRowHeight(_Worksheet excel_sheet, double height, char *cell_start,
@@ -587,15 +606,14 @@ void CExcelOper::SetRangeRowHeight(_Worksheet excel_sheet, double height, char *
 		pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
 	else
 		pRange = excel_sheet.GetRange(COleVariant(cell_start));
-	excel_range.AttachDispatch(pRange, FALSE);
+	excel_range.AttachDispatch(pRange);
 	excel_range.SetRowHeight(COleVariant(height));
 	if (bCenter)
 	{
 		excel_range.SetHorizontalAlignment(COleVariant((short)3));
 		excel_range.SetVerticalAlignment(COleVariant((short)2));
 	}
-	excel_range.DetachDispatch();
-	pRange->Release();
+	excel_range.ReleaseDispatch();
 }
 void CExcelOper::SetRangeBackColor(_Worksheet excel_sheet, long colorId, int iRow, int iCol, int nCount)
 {
@@ -605,11 +623,10 @@ void CExcelOper::SetRangeBackColor(_Worksheet excel_sheet, long colorId, int iRo
 		Range excel_range;
 		CXhChar16 sStart = GetCellPos(iCol, iRow);
 		pRange = excel_sheet.GetRange(COleVariant((char*)sStart));
-		excel_range.AttachDispatch(pRange, FALSE);
+		excel_range.AttachDispatch(pRange);
 		FontLegacy interior = excel_range.GetInterior();
 		interior.SetColorIndex(COleVariant(colorId));
-		excel_range.DetachDispatch();
-		pRange->Release();
+		excel_range.ReleaseDispatch();
 		iCol++;
 	}
 }
@@ -622,10 +639,9 @@ void CExcelOper::SetRangeNumberFormatLocal(_Worksheet excel_sheet, const char* s
 		pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
 	else
 		pRange = excel_sheet.GetRange(COleVariant(cell_start));
-	excel_range.AttachDispatch(pRange, FALSE);
+	excel_range.AttachDispatch(pRange);
 	excel_range.SetNumberFormatLocal(COleVariant(sLocal));
-	excel_range.DetachDispatch();
-	pRange->Release();
+	excel_range.ReleaseDispatch();
 }
 //设置单元格背景颜色
 void CExcelOper::SetRangeBackColor(_Worksheet excel_sheet, long colorId, char *cell_start, char *cell_end /*= NULL*/)
@@ -636,11 +652,10 @@ void CExcelOper::SetRangeBackColor(_Worksheet excel_sheet, long colorId, char *c
 		pRange = excel_sheet.GetRange(COleVariant(cell_start), COleVariant(cell_end));
 	else
 		pRange = excel_sheet.GetRange(COleVariant(cell_start));
-	excel_range.AttachDispatch(pRange, FALSE);
+	excel_range.AttachDispatch(pRange);
 	FontLegacy interior = excel_range.GetInterior();
 	interior.SetColorIndex(COleVariant(colorId));
-	excel_range.DetachDispatch();
-	pRange->Release();
+	excel_range.ReleaseDispatch();
 }
 BOOL CExcelOper::GetExcelContentOfSpecifySheet(const char* sExcelFile, CVariant2dArray &sheetContentMap,
 											   int iSheetIndex, int maxColCount /*= -1*/)
@@ -677,31 +692,34 @@ BOOL CExcelOper::GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, 
 		int nRetCode = 0;
 		_Worksheet   excel_sheet;    // 工作表
 		Sheets       excel_sheets;
-		LPDISPATCH   pRange;
 		LPDISPATCH   pWorksheets = pExcelOperObj->GetWorksheets();
 		ASSERT(pWorksheets != NULL);
 		excel_sheets.AttachDispatch(pWorksheets);
 		LPDISPATCH pWorksheet = excel_sheets.GetItem(COleVariant((short)iSheetIndex));
 		excel_sheet.AttachDispatch(pWorksheet);
 		//1.计算Excel的行数，列数
-		Range excel_usedRange, excel_range;
+		Range excel_usedRange, col_range, row_range;
 		excel_usedRange.AttachDispatch(excel_sheet.GetUsedRange());
-		excel_range.AttachDispatch(excel_usedRange.GetRows());
-		long nRowNum = excel_range.GetCount();
-		excel_range.AttachDispatch(excel_usedRange.GetColumns());
-		long nColNum = excel_range.GetCount();
+		row_range.AttachDispatch(excel_usedRange.GetRows());
+		long nRowNum = row_range.GetCount();
+		row_range.ReleaseDispatch();
+		col_range.AttachDispatch(excel_usedRange.GetColumns());
+		long nColNum = col_range.GetCount();
+		col_range.ReleaseDispatch();
+		excel_usedRange.ReleaseDispatch();
+
 		//AfxMessageBox(CXhChar50("Excel program Row Num=%d, Col Num = %d", nRowNum, nColNum));
 		//外部支持最大列数，防止因螺栓过多导致的读取失败 wht 19-12-04
 		if (maxColCount > 0 && nColNum > maxColCount)
 			nColNum = maxColCount;
 		//2.获取Excel指定Sheet内容存储至sheetContentMap中
 		CXhChar50 cell = GetCellPos(nColNum, nRowNum);
-		pRange = excel_sheet.GetRange(COleVariant("A1"), COleVariant(cell));
-		excel_range.AttachDispatch(pRange, FALSE);
-		sheetContentMap.var = excel_range.GetValue();
+		Range excel_content;
+		LPDISPATCH pRange = excel_sheet.GetRange(COleVariant("A1"), COleVariant(cell));
+		excel_content.AttachDispatch(pRange);
+		sheetContentMap.var = excel_content.GetValue();
 		//AfxMessageBox("Excel program 3");
-		excel_range.ReleaseDispatch();
-		excel_usedRange.ReleaseDispatch();
+		excel_content.ReleaseDispatch();
 		excel_sheet.ReleaseDispatch();
 		excel_sheets.ReleaseDispatch();
 		return true;
@@ -792,7 +810,7 @@ BOOL CExcelOper::ExportExcle(CXhTable* pTbl)
 	excel_sheets.AttachDispatch(pWorksheets);
 	LPDISPATCH pWorksheet = excel_sheets.GetItem(COleVariant((short)1));
 	_Worksheet excel_sheet;
-	excel_sheet.AttachDispatch(pWorksheet, FALSE);
+	excel_sheet.AttachDispatch(pWorksheet);
 	excel_sheet.Select();
 	//设置sheet名
 	if (strlen(pTbl->m_sTblName) > 0)
@@ -857,25 +875,24 @@ BOOL CExcelOper::ExportExcle(CXhTable* pTbl)
 			CXhChar50 cell = CExcelOper::GetCellPos(iCol, iRow + 1);
 			LPDISPATCH pRange = excel_sheet.GetRange(COleVariant(cell));
 			Range excel_range;
-			excel_range.AttachDispatch(pRange, FALSE);
+			excel_range.AttachDispatch(pRange);
 			excel_range.SetValue2(COleVariant(pGrid->data.sVal));
 			excel_range.SetVerticalAlignment(varVA);
 			excel_range.SetHorizontalAlignment(varHA);
 			//字体设置
 			double fSize = CXhTable::TransRowHightToXls(pGrid->simfont.sfTextSize);
 			FontLegacy font;
-			font.AttachDispatch(excel_range.GetFont(), FALSE);
+			font.AttachDispatch(excel_range.GetFont());
 			font.SetBold(COleVariant((short)pGrid->simfont.bBold));
 			font.SetSize(COleVariant((float)fSize));
 			font.SetColor(COleVariant((long)pGrid->xFontStyle.crTextColor));
 			font.ReleaseDispatch();
 			//背景设置
 			FontLegacy interior;
-			interior.AttachDispatch(excel_range.GetInterior(), FALSE);
+			interior.AttachDispatch(excel_range.GetInterior());
 			interior.SetColor(COleVariant((long)pGrid->xFontStyle.crBackground));
 			interior.ReleaseDispatch();
 			excel_range.ReleaseDispatch();
-			pRange->Release();
 		}
 	}
 	//处理水平合并，进行合并列
@@ -939,15 +956,18 @@ BOOL CExcelOper::ExportExcle(CXhTable* pTbl)
 	cellE = CExcelOper::GetCellPos(pTbl->nColsCount - 1, pTbl->nRowsCount);
 	LPDISPATCH pRange = excel_sheet.GetRange(COleVariant(cellS), COleVariant(cellE));
 	Range excel_range;
-	excel_range.AttachDispatch(pRange, FALSE);
+	excel_range.AttachDispatch(pRange);
 	excel_range.SetWrapText(COleVariant((short)TRUE));	//自动换行
 	Borders borders;
-	borders.AttachDispatch(excel_range.GetBorders(), FALSE);
+	borders.AttachDispatch(excel_range.GetBorders());
 	borders.SetWeight(COleVariant((short)2));
 	borders.SetLineStyle(COleVariant((long)1));
 	borders.ReleaseDispatch();
 	excel_range.ReleaseDispatch();
-	pRange->Release();
+	
+	//
+	excel_sheet.ReleaseDispatch();
+	excel_sheets.ReleaseDispatch();
 
 	return TRUE;
 }
@@ -1013,7 +1033,7 @@ BOOL CExcelOper::GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, 
 		//2.获取Excel指定Sheet内容存储至pTempTable中
 		CXhChar50 cell = GetCellPos(nColNum, nRowNum);
 		pRange = excel_sheet.GetRange(COleVariant("A1"), COleVariant(cell));
-		excel_range.AttachDispatch(pRange, FALSE);
+		excel_range.AttachDispatch(pRange);
 		Range  oCurCell;
 		for (int i = 0; i < nRowNum; )
 		{
@@ -1028,8 +1048,9 @@ BOOL CExcelOper::GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, 
 				VARIANT varVA = oCurCell.GetVerticalAlignment();
 				VARIANT varHA = oCurCell.GetHorizontalAlignment();
 				FontLegacy font;
-				font.AttachDispatch(oCurCell.GetFont(), FALSE);
+				font.AttachDispatch(oCurCell.GetFont());
 				VARIANT size = font.GetSize();
+				font.ReleaseDispatch();
 				if (pTempTable != NULL)
 				{
 					if (varVA.iVal == (long)-4108 && varHA.iVal == (long)-4152)
@@ -1064,9 +1085,9 @@ BOOL CExcelOper::GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, 
 			i++;
 		}
 		excel_range.ReleaseDispatch();
+		excel_usedRange.ReleaseDispatch();
 		excel_sheet.ReleaseDispatch();
 		excel_sheets.ReleaseDispatch();
-		excel_usedRange.ReleaseDispatch();
 		return true;
 	}
 	catch (CString sError)
