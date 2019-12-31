@@ -24,6 +24,7 @@ public:
 	void ExitApplication();
 	void Save();
 	LPDISPATCH GetWorksheets();
+	int GetWorkSheetCount();
 	LPDISPATCH ClearContent(int index);
 	LPDISPATCH GetValidWorkSheet(int index);
 	//≤Â»Îsheet“≥

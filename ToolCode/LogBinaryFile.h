@@ -145,7 +145,6 @@ public:
 	bool LogDwords(int logId, int para1 = -1, int para2 = -1, int para3 = -1, int para4 = -1, int para5 = -1);
 	bool LogByteArr(int logId, char *byteArr, int count);
 	bool LogByteArr(int logId, BYTE *byteArr, int count);
-	bool LogByteArr(int logId, char *byteArr, int count);
 	virtual bool LogObject(LOG_RECORD* pBinLogObj);
 	bool ClearContents();
 	bool IsHasContents(){return m_bHasContens;}

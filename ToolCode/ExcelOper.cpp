@@ -17,6 +17,9 @@ CExcelOperObject::~CExcelOperObject()
 {
 	if (m_bFileOpened)
 	{
+		COleVariant covOptional((long)DISP_E_PARAMNOTFOUND, VT_ERROR);
+		excel_workbook.Close(covOptional,covOptional,covOptional);
+		excel_workbooks.Close();
 		excel_workbook.ReleaseDispatch();
 		excel_workbooks.ReleaseDispatch();
 		excel.Quit();	//最后两行代码顺序不要反了，否则不能彻底关闭Excel进程 wht 18-07-30
@@ -26,7 +29,6 @@ CExcelOperObject::~CExcelOperObject()
 BOOL CExcelOperObject::OpenExcelFile(const char* sExcelFile)
 {	//打开指定的Excel文件
 	int nRetCode = 0;
-	Sheets       excel_sheets;
 	LPDISPATCH   pDisp;
 	LPUNKNOWN    pUnk;
 	CLSID        clsid;
@@ -63,6 +65,23 @@ LPDISPATCH CExcelOperObject::GetWorksheets()
 	else
 		return NULL;
 }
+int CExcelOperObject::GetWorkSheetCount()
+{
+	int nSheetNum = 0;
+	if (m_bFileOpened)
+	{
+		LPDISPATCH pWorksheets = GetWorksheets();
+		if (pWorksheets)
+		{
+			ASSERT(pWorksheets != NULL);
+			Sheets       excel_sheets;	//工作表集合
+			excel_sheets.AttachDispatch(pWorksheets);
+			nSheetNum = excel_sheets.GetCount();
+			excel_sheets.ReleaseDispatch();
+		}
+	}
+	return nSheetNum;
+}
 void CExcelOperObject::ExitApplication()
 {
 	if (!m_bFileOpened)
@@ -71,6 +90,9 @@ void CExcelOperObject::ExitApplication()
 void CExcelOperObject::Save()
 {
 	excel_workbook.Save();
+	COleVariant covOptional((long)DISP_E_PARAMNOTFOUND, VT_ERROR);
+	excel_workbook.Close(covOptional, covOptional, covOptional);
+	excel_workbooks.Close();
 	excel_workbook.ReleaseDispatch();
 	excel_workbooks.ReleaseDispatch();
 	excel.Quit();
@@ -91,10 +113,16 @@ LPDISPATCH CExcelOperObject::ClearContent(int index)
 		Range excel_range = excel_sheet.GetUsedRange();
 		excel_range.SetRowHeight(COleVariant(15.0));
 		excel_range.UnMerge();
+		excel_sheet.ReleaseDispatch();
+		excel_range.ReleaseDispatch();
+		excel_sheets.ReleaseDispatch();
 		return pWorksheet3;
 	}
 	else
+	{
+		excel_sheets.ReleaseDispatch();
 		return Insert(index);
+	}
 }
 LPDISPATCH CExcelOperObject::GetValidWorkSheet(int index)
 {
@@ -117,12 +145,13 @@ LPDISPATCH CExcelOperObject::GetValidWorkSheet(int index)
 			_Worksheet excel_sheet;
 			excel_sheet.AttachDispatch(pWorksheet2, FALSE);
 			excel_sheet.Select();
+			excel_sheet.ReleaseDispatch();
 			pWorksheet3 = excel_sheets.Add(vtMissing, _variant_t(pWorksheet2), COleVariant((long)1), vtMissing);
 		}
 		else
 			pWorksheet3 = excel_sheets.Add(vtMissing, vtMissing, COleVariant((long)1), vtMissing);
-
 	}
+	excel_sheets.ReleaseDispatch();
 	return pWorksheet3;
 }
 LPDISPATCH CExcelOperObject::InsertSheetByAfterIndex(int afterIndex)
@@ -142,6 +171,8 @@ LPDISPATCH CExcelOperObject::InsertSheetByAfterIndex(int afterIndex)
 	_Worksheet excel_sheet;
 	excel_sheet.AttachDispatch(pWorksheet2, FALSE);
 	excel_sheet.Select();
+	excel_sheet.ReleaseDispatch();
+	excel_sheets.ReleaseDispatch();
 	return pWorksheet3;
 }
 LPDISPATCH CExcelOperObject::InsertLastValidWorkSheet()
@@ -150,8 +181,9 @@ LPDISPATCH CExcelOperObject::InsertLastValidWorkSheet()
 	ASSERT(pWorksheets);
 	Sheets excel_sheets;
 	excel_sheets.AttachDispatch(pWorksheets);
-
-	return Insert(excel_sheets.GetCount() + 1);
+	LPDISPATCH pWorkSheet = Insert(excel_sheets.GetCount() + 1);
+	excel_sheets.ReleaseDispatch();
+	return pWorkSheet;
 }
 bool CExcelOperObject::ExcelCLSIDFromProgID(CLSID &clsid)
 {
@@ -658,6 +690,7 @@ BOOL CExcelOper::GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, 
 		long nRowNum = excel_range.GetCount();
 		excel_range.AttachDispatch(excel_usedRange.GetColumns());
 		long nColNum = excel_range.GetCount();
+		//AfxMessageBox(CXhChar50("Excel program Row Num=%d, Col Num = %d", nRowNum, nColNum));
 		//外部支持最大列数，防止因螺栓过多导致的读取失败 wht 19-12-04
 		if (maxColCount > 0 && nColNum > maxColCount)
 			nColNum = maxColCount;
@@ -666,6 +699,7 @@ BOOL CExcelOper::GetExcelContentOfSpecifySheet(CExcelOperObject* pExcelOperObj, 
 		pRange = excel_sheet.GetRange(COleVariant("A1"), COleVariant(cell));
 		excel_range.AttachDispatch(pRange, FALSE);
 		sheetContentMap.var = excel_range.GetValue();
+		//AfxMessageBox("Excel program 3");
 		excel_range.ReleaseDispatch();
 		excel_usedRange.ReleaseDispatch();
 		excel_sheet.ReleaseDispatch();
