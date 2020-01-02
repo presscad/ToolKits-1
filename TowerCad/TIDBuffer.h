@@ -63,10 +63,14 @@ public:
 	BYTE GetModuleCount();
 	TOWER_MODULE GetModuleAt(int i);
 };
+
 struct WIRE_NODE{
 	WORD wiCode;	//WIREPLACE_CODE
 	GEPOINT position;
+	GEPOINT relaHolePt[2];
 	char name[38];	//¹ÒµãÃû³Æ
+	//
+	WIRE_NODE() { wiCode = 0; strcpy(name, ""); }
 };
 class CWireNodeSection : public CDataSection
 {
