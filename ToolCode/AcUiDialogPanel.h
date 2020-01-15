@@ -42,7 +42,7 @@ public:
 
 	void Init(CRuntimeClass *pClass, UINT idDlg);
 	CDialog *GetDlgPtr(){return m_pDialog;}
-#if defined _ARX_2007_UI_ && !defined _UNICODE
+#if defined (_ARX_2007) && defined (__SUPPORT_DOCK_UI_) && !defined _UNICODE
 	virtual BOOL Create (CWnd *pParent, LPCWSTR lpszTitle, int width = 250);
 #else
 	virtual BOOL Create(CWnd *pParent, LPCSTR lpszTitle, int width = 250);

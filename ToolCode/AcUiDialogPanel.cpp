@@ -124,7 +124,7 @@ BOOL CAcUiDialogPanel::Create(CWnd *pParent, LPCSTR lpszTitle, int width/*=250*/
 //-----------------------------------------------------------------------------
 //----- This member function is called when an application requests the window be 
 //----- created by calling the Create or CreateEx member function
-#if defined _ARX_2007_UI_ && !defined _UNICODE
+#if defined (_ARX_2007) && defined (__SUPPORT_DOCK_UI_) && !defined _UNICODE
 int CAcUiDialogPanel::OnCreate(LPCREATESTRUCTW lpCreateStruct) {
 #else
 int CAcUiDialogPanel::OnCreate(LPCREATESTRUCT lpCreateStruct) {

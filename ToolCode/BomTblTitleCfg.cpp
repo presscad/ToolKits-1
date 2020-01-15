@@ -29,7 +29,7 @@ const char* CBomTblTitleCfg::T_PART_NO		= "编号";
 const char* CBomTblTitleCfg::T_METERIAL		= "材质";
 const char* CBomTblTitleCfg::T_LEN			= "长度";
 const char* CBomTblTitleCfg::T_SPEC			= "规格";
-const char* CBomTblTitleCfg::T_NUM			= "件数";
+const char* CBomTblTitleCfg::T_SING_NUM		= "件数";
 const char* CBomTblTitleCfg::T_SING_WEIGHT	= "单重";
 const char* CBomTblTitleCfg::T_NOTES		= "备注";
 const char* CBomTblTitleCfg::T_WIDE			= "宽度";
@@ -37,6 +37,14 @@ const char* CBomTblTitleCfg::T_PARTTYPE		= "类型";
 const char* CBomTblTitleCfg::T_MANU_NUM		= "加工数";
 const char* CBomTblTitleCfg::T_MANU_WEIGHT	= "加工重量";
 const char* CBomTblTitleCfg::T_REPLACE_SPEC = "代用规格";
+const char* CBomTblTitleCfg::T_WELD			= "焊接";
+const char* CBomTblTitleCfg::T_ZHI_WAN		= "制弯";
+const char* CBomTblTitleCfg::T_CUT_ANGLE	= "切角";
+const char* CBomTblTitleCfg::T_CUT_ROOT		= "刨根";
+const char* CBomTblTitleCfg::T_CUT_BER		= "铲背";
+const char* CBomTblTitleCfg::T_PUSH_FLAT	= "压扁";
+const char* CBomTblTitleCfg::T_KAI_JIAO		= "开角";
+const char* CBomTblTitleCfg::T_HE_JIAO		= "合角";
 CBomTblTitleCfg::CBomTblTitleCfg(const int *colIndexArr,const char *colTitleArr,int colCount,int startRow)
 {
 	Init(colIndexArr,colTitleArr,colCount,startRow);
@@ -123,6 +131,8 @@ bool CBomTblTitleCfg::IsEqual(CBomTblTitleCfg &cfg)
 }
 bool CBomTblTitleCfg::GetHashColIndexByColTitleTbl(CHashStrList<DWORD> &hashColIndexByColTitle)
 {
+	if (m_sColIndexArr.GetLength() <= 0)
+		return false;
 	int colIndexArr[100]={0};
 	int i=0,i2=0,index=0,nColCount=0;
 	CString sColIndex=m_sColIndexArr;
@@ -135,31 +145,54 @@ bool CBomTblTitleCfg::GetHashColIndexByColTitleTbl(CHashStrList<DWORD> &hashColI
 		i=i2+1;
 	}
 	nColCount=index;
-	//colIndexArr[0]=1;	//件号
-	//colIndexArr[1]=3;	//材质
-	//colIndexArr[2]=4;	//长度
-	//colIndexArr[3]=2;	//规格
-	//colIndexArr[4]=5;	//件数
-	//colIndexArr[5]=0;	//单重
-	//colIndexArr[6]=7;	//备注
-	//colIndexArr[7]=0;	//宽度
-	//colIndexArr[8]=0;	//类型
-	CXhChar100 titleArr[T_COL_COUNT]={T_PART_NO,
-									  T_METERIAL,
-									  T_LEN,
-									  T_SPEC,
-									  T_NUM,
-									  T_SING_WEIGHT,
-									  T_NOTES,
-									  T_WIDE,
-									  T_PARTTYPE};
 	hashColIndexByColTitle.Empty();
 	for(int i=0;i<T_COL_COUNT;i++)
 	{
 		if(colIndexArr[i]<=0)
 			continue;
+		CXhChar100 sKey;
+		if (i == INDEX_PART_NO)
+			sKey.Copy(T_PART_NO);
+		else if (i == INDEX_METERIAL)
+			sKey.Copy(T_METERIAL);
+		else if (i == INDEX_SPEC)
+			sKey.Copy(T_SPEC);
+		else if (i == INDEX_LEN)
+			sKey.Copy(T_LEN);
+		else if (i == INDEX_SING_NUM)
+			sKey.Copy(T_SING_NUM);
+		else if (i == INDEX_SING_WEIGHT)
+			sKey.Copy(T_SING_WEIGHT);
+		else if (i == INDEX_NOTES)
+			sKey.Copy(T_NOTES);
+		else if (i == INDEX_WIDE)
+			sKey.Copy(T_WIDE);
+		else if (i == INDEX_PARTTYPE)
+			sKey.Copy(T_PARTTYPE);
+		else if (i == INDEX_MANU_NUM)
+			sKey.Copy(T_MANU_NUM);
+		else if (i == INDEX_MANU_WEIGHT)
+			sKey.Copy(T_MANU_WEIGHT);
+		else if (i == INDEX_REPLACE_SPEC)
+			sKey.Copy(T_REPLACE_SPEC);
+		else if (i == INDEX_WELD)
+			sKey.Copy(T_WELD);
+		else if (i == INDEX_ZHI_WAN)
+			sKey.Copy(T_ZHI_WAN);
+		else if (i == INDEX_CUT_ANGLE)
+			sKey.Copy(T_CUT_ANGLE);
+		else if (i == INDEX_CUT_ROOT)
+			sKey.Copy(T_CUT_ROOT);
+		else if (i == INDEX_CUT_BER)
+			sKey.Copy(T_CUT_BER);
+		else if (i == INDEX_PUSH_FLAT)
+			sKey.Copy(T_PUSH_FLAT);
+		else if (i == INDEX_KAI_JIAO)
+			sKey.Copy(T_KAI_JIAO);
+		else if (i == INDEX_HE_JIAO)
+			sKey.Copy(T_HE_JIAO);
 		int iTitle=(i<nColCount)?(colIndexArr[i]-1):0;
-		hashColIndexByColTitle.SetValue(titleArr[i],iTitle);
+		hashColIndexByColTitle.SetValue(sKey,iTitle);
 	}
 	return (hashColIndexByColTitle.GetNodeNum()>0);
 }
@@ -213,9 +246,9 @@ bool CBomTblTitleCfg::IsMatchTitle(int colIndex,const char* title)
 		else
 			return false;
 	}
-	else if(INDEX_NUM==colIndex)
+	else if(INDEX_SING_NUM==colIndex)
 	{
-		if( sTitle.EqualNoCase(T_NUM)||
+		if( sTitle.EqualNoCase(T_SING_NUM)||
 			sTitle.EqualNoCase("单基")||
 			sTitle.EqualNoCase("单基数量") ||
 			sTitle.EqualNoCase("数量") ||
