@@ -157,7 +157,7 @@ CProjInfoSubSection CProjectInfoSection::GetSubSectionAt(int i)
 	sectbuf.ReadDword(&uidSubSection);
 	sectbuf.ReadDword(&dwSectAddr);
 	sectbuf.ReadDword(&dwSectSize);
-	//TODO:待测试完善
+	//子分区存储段
 	char* pBuff=m_data+AddrGtoL(dwSectAddr);
 	CProjInfoSubSection subsect(dwSectAddr,pBuff,dwSectSize,m_sVersion);
 	subsect.m_uidSubSection=uidSubSection;
