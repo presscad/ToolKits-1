@@ -24,21 +24,23 @@ enum LDSPART_TYPE {
 
 //////////////////////////////////////////////////////////////////////////
 //
+#ifdef _ARX_2007
+void SendCommandToCad(CStringW sCmd)
+#else
 void SendCommandToCad(CString sCmd)
+#endif
 {
-	if (strlen(sCmd) <= 0)
+	if (sCmd.GetLength() <= 0)
 		return;
 	COPYDATASTRUCT cmd_msg;
 	cmd_msg.dwData = (DWORD)1;
-#ifdef _ARX_2007
-	wchar_t *swCharCmd=sCmd.AllocSysString();
-	cmd_msg.cbData = (DWORD)wcslen(swCharCmd) + 1;
-	cmd_msg.lpData = swCharCmd;
-#else
-	cmd_msg.cbData = (DWORD)_tcslen(sCmd) + 1;
+	cmd_msg.cbData = (DWORD)sCmd.GetLength() + 1;
 	cmd_msg.lpData = sCmd.GetBuffer(sCmd.GetLength() + 1);
-#endif
+#ifdef _ARX_2007
+	SendMessageW(adsw_acadMainWnd(), WM_COPYDATA, (WPARAM)adsw_acadMainWnd(), (LPARAM)&cmd_msg);
+#else
 	SendMessage(adsw_acadMainWnd(), WM_COPYDATA, (WPARAM)adsw_acadMainWnd(), (LPARAM)&cmd_msg);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -419,18 +421,18 @@ CShieldCadLayer::CShieldCadLayer(const char* sReservedLayerName/*=NULL*/,BOOL bF
 #ifdef _ARX_2007
 	if (m_bSendCommand)
 	{
-		SendCommandToCad(CString("undo be \n"));
+		SendCommandToCad(CStringW(L"undo be \n"));
 		if (bFreeze)
 		{
-			SendCommandToCad(CString(sCmd1));
-			SendCommandToCad(CString(sCmd2));
+			SendCommandToCad(CStringW(sCmd1));
+			SendCommandToCad(CStringW(sCmd2));
 		}
 		else
 		{
-			SendCommandToCad(CString(sCmd3));
-			SendCommandToCad(CString(sCmd4));
+			SendCommandToCad(CStringW(sCmd3));
+			SendCommandToCad(CStringW(sCmd4));
 		}
-		SendCommandToCad(CString("undo e "));
+		SendCommandToCad(CStringW(L"undo e "));
 	}
 	else
 	{
@@ -485,9 +487,9 @@ CShieldCadLayer::~CShieldCadLayer()
 	if (m_bSendCommand)
 	{	//解冻所有图层
 #ifdef _ARX_2007
-		SendCommandToCad(CString(L"undo be "));
-		SendCommandToCad(CString(L"-layer T *\n "));
-		SendCommandToCad(CString(L"undo e "));
+		SendCommandToCad(CStringW(L"undo be "));
+		SendCommandToCad(CStringW(L"-layer T *\n "));
+		SendCommandToCad(CStringW(L"undo e "));
 #else
 		SendCommandToCad(CString("undo be "));
 		SendCommandToCad(CString("-layer T *\n "));
@@ -634,7 +636,7 @@ double DrawTextLength(const char* dimtext,double height,AcDbObjectId textStyleId
 //添加直线图元
 AcDbObjectId CreateAcadLine(AcDbBlockTableRecord *pBlockTableRecord,
 	f3dPoint start, f3dPoint end,long handle/*=NULL*/,long style/*=0*/,
-	COLORREF clr /*= -1*/)
+	COLORREF clr/*=-1*/)
 {
 	AcDbObjectId LineId=0;//定义标识符
 	AcGePoint3d acad_start,acad_end;
@@ -1051,9 +1053,9 @@ AcDbObjectId CreateAcadEllipseLine(AcDbBlockTableRecord *pBlockTableRecord, f3dP
 	Cpy_Pnt(acad_center, center);
 	AcDbEllipse *pEllipse = new AcDbEllipse(acad_center, acad_normal, acad_majorAxis, radiusRatio, startAngle, endAngle);//创建ARC对象
 #ifdef __DRAG_ENT_	
-	if (DRAGSET.AppendAcDbEntity(pBlockTableRecord, ArcId, pEllipse))//将实体写入块表记录
+		if (DRAGSET.AppendAcDbEntity(pBlockTableRecord, ArcId, pEllipse))//将实体写入块表记录
 #else
-	if (pBlockTableRecord->appendAcDbEntity(ArcId, pEllipse) == Acad::eOk)
+		if (pBlockTableRecord->appendAcDbEntity(ArcId, pEllipse) == Acad::eOk)
 #endif
 	{
 		if (handle != NULL)
@@ -1154,17 +1156,22 @@ double TestDrawTextLength(const char* dimtext, double height, AcDbObjectId textS
 	mtxt.setWidth(strlen(dimtext)*height);					//每行文字的最大宽度
 	mtxt.setTextHeight(height);
 	mtxt.setTextStyle(textStyleId);		//文字插入点
-	double fWidth = mtxt.actualWidth();
-	AcDbTextStyleTableRecord *pTextStyleRec = NULL;
-	if (widthFactor>0 &&
-		acdbOpenObject(pTextStyleRec, textStyleId, AcDb::kForRead) == Acad::eOk && pTextStyleRec)
+	double width = mtxt.actualWidth();
+	if (widthFactor > 0)
 	{
-		double fXScale = pTextStyleRec->xScale();
-		if (fXScale > 0)
-			fWidth = (fWidth / fXScale)*widthFactor;
-		pTextStyleRec->close();
+		double fTextStyleXScale = 0.7;
+		AcDbTextStyleTableRecord *pTextStyleTblRec = NULL;
+		acdbOpenObject(pTextStyleTblRec, textStyleId, AcDb::kForRead);
+		if (pTextStyleTblRec)
+		{
+			fTextStyleXScale=pTextStyleTblRec->xScale();
+			pTextStyleTblRec->close();//关闭字体样式表
+			//根据字体标注样式宽高比与字体宽高比计算真实长度 wht 19-12-09
+			if (fTextStyleXScale > 0)
+				width = (width / fTextStyleXScale)*widthFactor;
+		}
 	}
-	return fWidth;
+	return width;
 }
 int LocalCalArcResolution(double radius, double sector_angle, double scale_of_user2scr, double sample_len, int smoothness/*=36*/)
 {

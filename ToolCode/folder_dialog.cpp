@@ -89,7 +89,7 @@ void CFolderDialog::OnInitDone()
 	pFD->GetDlgItem(lst1)->SetWindowPos(0,0,0,rectList2.Width(), abs(rectList2.top - (rectCancel.top - 4)), SWP_NOMOVE | SWP_NOZORDER);
 	SetControlText(IDOK, _T("选择"));
 	pFD->SetWindowText(_T("选择文件夹"));
-	m_wndProc = (WNDPROC)SetWindowLong(pFD->m_hWnd, -4, (long)WindowProcNew);	//GWL_WNDPROC=-4
+	m_wndProc = (WNDPROC)SetWindowLong(pFD->m_hWnd, GWL_WNDPROC, (long)WindowProcNew);
 }
 
 BOOL IsWindows7OrGreater()
@@ -136,6 +136,8 @@ BOOL InvokeFolderPickerDlg(CString &sWorkFolder)
 #endif
 	{	//Win7之前版本
 		CFolderDialog dlg(&sWorkFolder);
+		//设置初始路径 wht 19-12-31
+		dlg.m_pOFN->lpstrInitialDir = sWorkFolder;
 		if(dlg.DoModal()!=IDOK)
 			return FALSE;
 	}
