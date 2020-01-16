@@ -77,6 +77,7 @@ BOOL CExcelOperObject::OpenExcelFile(const char* sExcelFile)
 		logerr.Log("Œ¥’“µΩExcel≥Ã–Ú£°");
 		return false;
 	}
+	excel.SetDisplayAlerts(FALSE);
 	LPDISPATCH pWorkbooks;
 	VERIFY(pWorkbooks = excel.GetWorkbooks());
 	excel_workbooks.AttachDispatch(pWorkbooks);

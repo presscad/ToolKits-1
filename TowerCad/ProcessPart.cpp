@@ -1032,7 +1032,18 @@ void CProcessPart::RestoreSpec(const char* spec, int *width, int *thick, char *m
 		sscanf(sSpec, "%d%d", width, thick);
 	}
 	else if (strstr(spec, "-"))
-		sscanf(spec, "%c%d", sMat, thick);
+	{
+		if (strstr(spec, "x") || strstr(spec, "X"))
+		{
+			CXhChar16 sSpec(spec);
+			sSpec.Replace("-", "");
+			sSpec.Replace("x", " ");
+			sSpec.Replace("X", " ");
+			sscanf(sSpec, "%d%d", thick, width);
+		}
+		else
+			sscanf(spec, "%c%d", sMat, thick);
+	}
 	//else if(spec,"¦Õ")
 	//sscanf(spec,"%c%d%c%d",sMat,)
 	if (matStr)

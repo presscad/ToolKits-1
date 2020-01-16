@@ -150,47 +150,7 @@ bool CBomTblTitleCfg::GetHashColIndexByColTitleTbl(CHashStrList<DWORD> &hashColI
 	{
 		if(colIndexArr[i]<=0)
 			continue;
-		CXhChar100 sKey;
-		if (i == INDEX_PART_NO)
-			sKey.Copy(T_PART_NO);
-		else if (i == INDEX_METERIAL)
-			sKey.Copy(T_METERIAL);
-		else if (i == INDEX_SPEC)
-			sKey.Copy(T_SPEC);
-		else if (i == INDEX_LEN)
-			sKey.Copy(T_LEN);
-		else if (i == INDEX_SING_NUM)
-			sKey.Copy(T_SING_NUM);
-		else if (i == INDEX_SING_WEIGHT)
-			sKey.Copy(T_SING_WEIGHT);
-		else if (i == INDEX_NOTES)
-			sKey.Copy(T_NOTES);
-		else if (i == INDEX_WIDE)
-			sKey.Copy(T_WIDE);
-		else if (i == INDEX_PARTTYPE)
-			sKey.Copy(T_PARTTYPE);
-		else if (i == INDEX_MANU_NUM)
-			sKey.Copy(T_MANU_NUM);
-		else if (i == INDEX_MANU_WEIGHT)
-			sKey.Copy(T_MANU_WEIGHT);
-		else if (i == INDEX_REPLACE_SPEC)
-			sKey.Copy(T_REPLACE_SPEC);
-		else if (i == INDEX_WELD)
-			sKey.Copy(T_WELD);
-		else if (i == INDEX_ZHI_WAN)
-			sKey.Copy(T_ZHI_WAN);
-		else if (i == INDEX_CUT_ANGLE)
-			sKey.Copy(T_CUT_ANGLE);
-		else if (i == INDEX_CUT_ROOT)
-			sKey.Copy(T_CUT_ROOT);
-		else if (i == INDEX_CUT_BER)
-			sKey.Copy(T_CUT_BER);
-		else if (i == INDEX_PUSH_FLAT)
-			sKey.Copy(T_PUSH_FLAT);
-		else if (i == INDEX_KAI_JIAO)
-			sKey.Copy(T_KAI_JIAO);
-		else if (i == INDEX_HE_JIAO)
-			sKey.Copy(T_HE_JIAO);
+		CXhChar100 sKey(GetColName(i));
 		int iTitle=(i<nColCount)?(colIndexArr[i]-1):0;
 		hashColIndexByColTitle.SetValue(sKey,iTitle);
 	}
@@ -202,6 +162,51 @@ void CBomTblTitleCfg::Clone(CBomTblTitleCfg &srcCfg)
 	m_nColCount=srcCfg.m_nColCount;
 	m_sColTitleArr.Copy(srcCfg.m_sColTitleArr);
 	m_sColIndexArr.Copy(srcCfg.m_sColIndexArr);
+}
+const char* CBomTblTitleCfg::GetColName(int colIndex)
+{
+	if (colIndex == INDEX_PART_NO)
+		return T_PART_NO;
+	else if (colIndex == INDEX_METERIAL)
+		return T_METERIAL;
+	else if (colIndex == INDEX_SPEC)
+		return T_SPEC;
+	else if (colIndex == INDEX_LEN)
+		return T_LEN;
+	else if (colIndex == INDEX_SING_NUM)
+		return T_SING_NUM;
+	else if (colIndex == INDEX_SING_WEIGHT)
+		return T_SING_WEIGHT;
+	else if (colIndex == INDEX_NOTES)
+		return T_NOTES;
+	else if (colIndex == INDEX_WIDE)
+		return T_WIDE;
+	else if (colIndex == INDEX_PARTTYPE)
+		return T_PARTTYPE;
+	else if (colIndex == INDEX_MANU_NUM)
+		return T_MANU_NUM;
+	else if (colIndex == INDEX_MANU_WEIGHT)
+		return T_MANU_WEIGHT;
+	else if (colIndex == INDEX_REPLACE_SPEC)
+		return T_REPLACE_SPEC;
+	else if (colIndex == INDEX_WELD)
+		return T_WELD;
+	else if (colIndex == INDEX_ZHI_WAN)
+		return T_ZHI_WAN;
+	else if (colIndex == INDEX_CUT_ANGLE)
+		return T_CUT_ANGLE;
+	else if (colIndex == INDEX_CUT_ROOT)
+		return T_CUT_ROOT;
+	else if (colIndex == INDEX_CUT_BER)
+		return T_CUT_BER;
+	else if (colIndex == INDEX_PUSH_FLAT)
+		return T_PUSH_FLAT;
+	else if (colIndex == INDEX_KAI_JIAO)
+		return T_KAI_JIAO;
+	else if (colIndex == INDEX_HE_JIAO)
+		return T_HE_JIAO;
+	else
+		return NULL;
 }
 bool CBomTblTitleCfg::IsMatchTitle(int colIndex,const char* title)
 {
