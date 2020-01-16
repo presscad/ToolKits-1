@@ -65,6 +65,7 @@ public:
 	bool GetHashColIndexByColTitleTbl(CHashStrList<DWORD> &hashColIndexByColTitle);
 	void Clone(CBomTblTitleCfg &srcCfg);
 	static bool IsMatchTitle(int colIndex,const char* title);
+	static const char* GetColName(int colIndex);
 	static int DetectTitleRowIndex(CVariant2dArray &sheetContent);
 };
 

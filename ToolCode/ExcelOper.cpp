@@ -77,7 +77,7 @@ BOOL CExcelOperObject::OpenExcelFile(const char* sExcelFile)
 		logerr.Log("未找到Excel程序！");
 		return false;
 	}
-	excel.SetDisplayAlerts(FALSE);	//设置不显示提示对话框 wht 20-01-16
+	excel.SetDisplayAlerts(FALSE);
 	LPDISPATCH pWorkbooks;
 	VERIFY(pWorkbooks = excel.GetWorkbooks());
 	excel_workbooks.AttachDispatch(pWorkbooks);
