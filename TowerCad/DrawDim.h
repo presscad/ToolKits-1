@@ -8,13 +8,15 @@
 #include "ArrayList.h"
 #ifdef __DRAWING_CONTEXT_
 #include "../LDS/MapLds/RxTools.h"
+#else
+#include "DimStyle.h"
 #endif
 
 enum DIMALIGN_TYPE{AlignDefault=1,TopLeft,TopCenter,TopRight,MiddleLeft,MiddleCenter,MiddleRight,BottomLeft,BottomCenter,BottomRight};
 
 class CDimStyle{
 public:
-#ifdef __DRAWING_CONTEXT_
+#if defined(__DRAWING_CONTEXT_) || defined(__CNC_FILE_)
 	TMADRAWING_DIM_STYLE style;
 #else
 	struct DIM_STYLE

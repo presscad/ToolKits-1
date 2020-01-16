@@ -27,11 +27,13 @@ CJgNcDataManager::CJgNcDataManager()
 	strcpy(sRelativePosMark,"");
 	strcpy(sQ235,"A3F");
 	strcpy(sQ345,"16Mn");
+	strcpy(sQ355,"Q355");
 	strcpy(sQ390,"Q390");
 	strcpy(sQ420,"Q420");
 	strcpy(sQ460,"Q460");
 	strcpy(sQ235BriefMark,"A3F");
 	strcpy(sQ345BriefMark,"16Mn");
+	strcpy(sQ355BriefMark,"Q355");
 	strcpy(sQ390BriefMark,"Q390");
 	strcpy(sQ420BriefMark,"Q420");
 	strcpy(sQ460BriefMark,"Q460");
@@ -96,6 +98,14 @@ BOOL CJgNcDataManager::InitJgNcDriver(const char *nc_driver)
 				strncpy(sQ345,szToken,9);
 			else
 				sQ345[0]='\0';
+		}
+		else if (szToken&&_stricmp(szToken, "Q355") == 0)
+		{
+			szToken = strtok(NULL, szTokens);
+			if (szToken != NULL)
+				strncpy(sQ355, szToken, 9);
+			else
+				sQ355[0] = '\0';
 		}
 		else if(szToken&&_stricmp(szToken,"Q390")==0)
 		{
