@@ -1,6 +1,6 @@
 #pragma once
+#include "XhCharString.h"
 #include "AcUiDialogPanel.h"
-#include "resource.h"
 
 /*用法示例
 struct UBOM_DLG_ID { static const int DLG_ID = CRevisionDlg::IDD; };
@@ -14,7 +14,9 @@ template<class TYPE,class TYPE_ID,class TYPE_NAME_ID> class CDlgDockBar
 {
 	int m_idDialog;
 	CXhChar50 m_sPageName;
+#ifdef __SUPPORT_DOCK_UI_
 	CAcUiDialogPanel *m_pDocBar;
+#endif
 	TYPE *m_pDlg;
 public:
 	CDlgDockBar(int DLG_IDD=0, const char* pageName=NULL)
@@ -80,9 +82,9 @@ public:
 		else
 			m_pDocBar->ShowDialog();
 
-		acedGetAcadFrame()->FloatControlBar(m_pDocBar, CPoint(100, 100), CBRS_ALIGN_RIGHT); //初始位置//CBRS_ALIGN_TOP   Orients the control bar vertically.
+		acedGetAcadFrame()->FloatControlBar(m_pDocBar, CPoint(100, 100), CBRS_ALIGN_LEFT); //初始位置//CBRS_ALIGN_TOP   Orients the control bar vertically.
 		acedGetAcadFrame()->DockControlBar(m_pDocBar);
-		acedGetAcadFrame()->ShowControlBar(m_pDocBar, TRUE, FALSE);//void ShowControlBar( CControlBar* pBar, BOOL bShow, BOOL bDelay );
+		acedGetAcadFrame()->ShowControlBar(m_pDocBar, TRUE, TRUE);//void ShowControlBar( CControlBar* pBar, BOOL bShow, BOOL bDelay );
 		acedGetAcadFrame()->RecalcLayout();
 #else
 		if (m_pDlg == NULL)
@@ -105,6 +107,9 @@ public:
 #ifdef __SUPPORT_DOCK_UI_
 		if (m_pDocBar)
 			m_pDocBar->CloseDialog();
+#else
+		if(m_pDlg)
+			m_pDlg->ShowWindow(SW_HIDE);
 #endif
 	}
 
