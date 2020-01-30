@@ -42,7 +42,7 @@ public:
 
 	void Init(CRuntimeClass *pClass, UINT idDlg);
 	CDialog *GetDlgPtr(){return m_pDialog;}
-	virtual BOOL Create (CWnd *pParent, LPCSTR lpszTitle);
+	virtual BOOL Create (CWnd *pParent, LPCSTR lpszTitle, int width=200);
 	int ShowDialog();
 	int CloseDialog();
 	DECLARE_MESSAGE_MAP()

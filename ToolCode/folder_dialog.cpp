@@ -136,6 +136,8 @@ BOOL InvokeFolderPickerDlg(CString &sWorkFolder)
 #endif
 	{	//Win7之前版本
 		CFolderDialog dlg(&sWorkFolder);
+		//设置初始路径 wht 19-12-31
+		dlg.m_pOFN->lpstrInitialDir = sWorkFolder;
 		if(dlg.DoModal()!=IDOK)
 			return FALSE;
 	}

@@ -74,10 +74,10 @@ void CAcUiDialogPanel::Init(CRuntimeClass *pRunClass, UINT idDlg)
 }
 
 //-----------------------------------------------------------------------------
-BOOL CAcUiDialogPanel::Create (CWnd *pParent, LPCSTR lpszTitle) {
+BOOL CAcUiDialogPanel::Create (CWnd *pParent, LPCSTR lpszTitle, int width /*= 200*/) {
 	CString strWndClass ;
 	strWndClass =AfxRegisterWndClass (CS_DBLCLKS, LoadCursor (NULL, IDC_ARROW)) ;
-	CRect rect (0, 0, 250, 200) ;
+	CRect rect (0, 0, width, 200) ;
 	if (!CAcUiDockControlBar::Create(
 		strWndClass, lpszTitle, WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN,
 		rect, pParent, 0

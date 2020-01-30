@@ -24,21 +24,24 @@ enum LDSPART_TYPE {
 
 //////////////////////////////////////////////////////////////////////////
 //
-void SendCommandToCad(CString sCmd)
+#ifdef _ARX_2007
+void SendCommandToCad(ACHAR *sCmd)
+#else
+void SendCommandToCad(ACHAR *sCmd)
+#endif
 {
-	if (strlen(sCmd) <= 0)
+	size_t len = _tcslen(sCmd) + 1;
+	if (len <= 0)
 		return;
 	COPYDATASTRUCT cmd_msg;
 	cmd_msg.dwData = (DWORD)1;
+	cmd_msg.cbData = len * sizeof(ACHAR);
+	cmd_msg.lpData = sCmd;
 #ifdef _ARX_2007
-	wchar_t *swCharCmd=sCmd.AllocSysString();
-	cmd_msg.cbData = (DWORD)wcslen(swCharCmd) + 1;
-	cmd_msg.lpData = swCharCmd;
+	SendMessageW(adsw_acadMainWnd(), WM_COPYDATA, (WPARAM)adsw_acadMainWnd(), (LPARAM)&cmd_msg);
 #else
-	cmd_msg.cbData = (DWORD)_tcslen(sCmd) + 1;
-	cmd_msg.lpData = sCmd.GetBuffer(sCmd.GetLength() + 1);
-#endif
 	SendMessage(adsw_acadMainWnd(), WM_COPYDATA, (WPARAM)adsw_acadMainWnd(), (LPARAM)&cmd_msg);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -419,18 +422,18 @@ CShieldCadLayer::CShieldCadLayer(const char* sReservedLayerName/*=NULL*/,BOOL bF
 #ifdef _ARX_2007
 	if (m_bSendCommand)
 	{
-		SendCommandToCad(CString("undo be \n"));
+		SendCommandToCad(L"undo be \n");
 		if (bFreeze)
 		{
-			SendCommandToCad(CString(sCmd1));
-			SendCommandToCad(CString(sCmd2));
+			SendCommandToCad((ACHAR*)_bstr_t(sCmd1));
+			SendCommandToCad((ACHAR*)_bstr_t(sCmd2));
 		}
 		else
 		{
-			SendCommandToCad(CString(sCmd3));
-			SendCommandToCad(CString(sCmd4));
+			SendCommandToCad((ACHAR*)_bstr_t(sCmd3));
+			SendCommandToCad((ACHAR*)_bstr_t(sCmd4));
 		}
-		SendCommandToCad(CString("undo e "));
+		SendCommandToCad(L"undo e ");
 	}
 	else
 	{
@@ -450,18 +453,18 @@ CShieldCadLayer::CShieldCadLayer(const char* sReservedLayerName/*=NULL*/,BOOL bF
 #else
 	if (bSendCommand)
 	{
-		SendCommandToCad(CString("undo be "));
+		SendCommandToCad("undo be ");
 		if (bFreeze)
 		{
-			SendCommandToCad(CString(sCmd1));
-			SendCommandToCad(CString(sCmd2));
+			SendCommandToCad(sCmd1);
+			SendCommandToCad(sCmd2);
 		}
 		else
 		{
-			SendCommandToCad(CString(sCmd3));
-			SendCommandToCad(CString(sCmd4));
+			SendCommandToCad(sCmd3);
+			SendCommandToCad(sCmd4);
 		}
-		SendCommandToCad(CString("undo e "));
+		SendCommandToCad("undo e ");
 	}
 	else
 	{
@@ -485,13 +488,13 @@ CShieldCadLayer::~CShieldCadLayer()
 	if (m_bSendCommand)
 	{	//解冻所有图层
 #ifdef _ARX_2007
-		SendCommandToCad(CString(L"undo be "));
-		SendCommandToCad(CString(L"-layer T *\n "));
-		SendCommandToCad(CString(L"undo e "));
+		SendCommandToCad(L"undo be ");
+		SendCommandToCad(L"-layer T *\n ");
+		SendCommandToCad(L"undo e ");
 #else
-		SendCommandToCad(CString("undo be "));
-		SendCommandToCad(CString("-layer T *\n "));
-		SendCommandToCad(CString("undo e "));
+		SendCommandToCad("undo be ");
+		SendCommandToCad("-layer T *\n ");
+		SendCommandToCad("undo e ");
 #endif
 	}
 	else
@@ -633,7 +636,8 @@ double DrawTextLength(const char* dimtext,double height,AcDbObjectId textStyleId
 //////////////////////////////////////////////////////////////////////////
 //添加直线图元
 AcDbObjectId CreateAcadLine(AcDbBlockTableRecord *pBlockTableRecord,
-	f3dPoint start, f3dPoint end,long handle/*=NULL*/,long style/*=0*/)
+	f3dPoint start, f3dPoint end,long handle/*=NULL*/,long style/*=0*/,
+	COLORREF clr/*=-1*/)
 {
 	AcDbObjectId LineId=0;//定义标识符
 	AcGePoint3d acad_start,acad_end;
@@ -643,6 +647,11 @@ AcDbObjectId CreateAcadLine(AcDbBlockTableRecord *pBlockTableRecord,
 	Cpy_Pnt(acad_start,start);
 	Cpy_Pnt(acad_end,end);
 	AcDbLine *pLine=new AcDbLine(acad_start,acad_end);//创建LINE对象
+	if (clr != -1)
+	{	//设置颜色索引
+		int color_index = GetNearestACI(clr);
+		pLine->setColorIndex(color_index);
+	}
 #ifdef __DRAG_ENT_
 	if(DRAGSET.AppendAcDbEntity(pBlockTableRecord,LineId,pLine))	//将实体写入块表记录
 #else
@@ -1129,7 +1138,7 @@ AcDbObjectId
 ////////////////////////////////////////////////////////////////////////////
 //视图区域操作函数
 //////////////////////////////////////////////////////////////////////////
-double TestDrawTextLength(const char* dimtext, double height, AcDbObjectId textStyleId)
+double TestDrawTextLength(const char* dimtext, double height, AcDbObjectId textStyleId, double widthFactor/*=0*/)
 {
 	AcDbMText mtxt;
 #ifdef _ARX_2007
@@ -1140,7 +1149,22 @@ double TestDrawTextLength(const char* dimtext, double height, AcDbObjectId textS
 	mtxt.setWidth(strlen(dimtext)*height);					//每行文字的最大宽度
 	mtxt.setTextHeight(height);
 	mtxt.setTextStyle(textStyleId);		//文字插入点
-	return mtxt.actualWidth();
+	double width = mtxt.actualWidth();
+	if (widthFactor > 0)
+	{
+		double fTextStyleXScale = 0.7;
+		AcDbTextStyleTableRecord *pTextStyleTblRec = NULL;
+		acdbOpenObject(pTextStyleTblRec, textStyleId, AcDb::kForRead);
+		if (pTextStyleTblRec)
+		{
+			fTextStyleXScale=pTextStyleTblRec->xScale();
+			pTextStyleTblRec->close();//关闭字体样式表
+			//根据字体标注样式宽高比与字体宽高比计算真实长度 wht 19-12-09
+			if (fTextStyleXScale > 0)
+				width = (width / fTextStyleXScale)*widthFactor;
+		}
+	}
+	return width;
 }
 int LocalCalArcResolution(double radius, double sector_angle, double scale_of_user2scr, double sample_len, int smoothness/*=36*/)
 {
@@ -1417,6 +1441,13 @@ BOOL VerifyVertexByCADEnt(SCOPE_STRU &scope, AcDbEntity *pEnt)
 		scope.VerifyVertex(f3dPoint(point.x,point.y,0));
 	}
 	return TRUE;
+}
+f2dRect GetCadEntRect(ARRAY_LIST<ULONG> &idList, double extendLen/*=0*/)
+{
+	ARRAY_LIST<AcDbObjectId> entIdList;
+	for (ULONG *pId = idList.GetFirst(); pId; pId = idList.GetNext())
+		entIdList.append(AcDbObjectId((AcDbStub*)*pId));
+	return GetCadEntRect(entIdList, extendLen);
 }
 f2dRect GetCadEntRect(ARRAY_LIST<AcDbObjectId> &entIdList, double extendLen/*=0*/)
 {
@@ -1714,6 +1745,7 @@ void MoveEntIds(ARRAY_LIST<AcDbObjectId> &entIdList, GEPOINT &fromPt, GEPOINT &t
 	ptTo[Z] = 0;
 	moveMat.setToTranslation(AcGeVector3d(ptTo[X] - ptFrom[X], ptTo[Y] - ptFrom[Y], ptTo[Z] - ptFrom[Z]));
 	AcDbEntity *pEnt = NULL;
+	CLockDocumentLife lockDocLife;
 	for (AcDbObjectId *pId = entIdList.GetFirst(); pId; pId = entIdList.GetNext())
 	{
 		acdbOpenAcDbEntity(pEnt, *pId, AcDb::kForWrite);

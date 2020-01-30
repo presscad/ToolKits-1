@@ -28,8 +28,8 @@ class CJgNcDataManager
 public:
 	char extension[4];
 	char sAbsolutePosMark[10],sRelativePosMark[10];
-	char sQ235[10],sQ345[10],sQ390[10],sQ420[10],sQ460[10];
-	char sQ235BriefMark[10],sQ345BriefMark[10],sQ390BriefMark[10],sQ420BriefMark[10],sQ460BriefMark[10];
+	char sQ235[10],sQ345[10],sQ355[10],sQ390[10],sQ420[10],sQ460[10];
+	char sQ235BriefMark[10],sQ345BriefMark[10],sQ355BriefMark[10],sQ390BriefMark[10],sQ420BriefMark[10],sQ460BriefMark[10];
 	BOOL m_bPrintByASCII;
 	int STAMP_MAX_LEN;		//最长钢印(字模)长度,mm
 	int STAMP_START_LENPOS;	//钢印(字模)起始搜索位置,mm

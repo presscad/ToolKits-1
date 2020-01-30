@@ -108,6 +108,8 @@ public:
 			_bolt_d = (int)value;
 	}
 	float hole_d_increment;		//螺栓孔直径增量
+	float punchForDrillHole;	//特殊孔或需钻孔的标准孔，需要使用低一级别的冲头	wht 19-11-17
+	float punchForMergeManu;	//合并后使用的冲头（因孔冲头>2时，合并加工先冲后扩）wht 19-11-17 
 	short waistLen;				// 腰圆孔腰长
 	GEPOINT waistVec;			// 腰圆孔方向
 	float posX;					//
@@ -116,6 +118,8 @@ public:
 	BITFLAG m_dwFlag;			// 有特殊要求的标识位，如ANTITHEFT_BOLT(1),ANTILOOSE_BOLT(2),FOOTNAIL_BOLT(4)
 	long feature;
 	BYTE cFuncType;				//螺栓孔类型
+	const static BYTE PUNCH_HOLE = 0;
+	const static BYTE DRILL_HOLE = 1;
 	BYTE cFlag;					//螺栓孔加工工艺类型  0.冲孔  1.钻孔
 	BOLT_INFO();
 	void SetKey(DWORD key){keyId=key;hiberId.SetHiberarchy(0,0,2,keyId);}
@@ -126,6 +130,7 @@ public:
 	BOOL CloneBolt(BOLT_INFO *pNewBoltInfo);
 	void ToBuffer(CBuffer &buffer,long version,int buf_type);
 	void FromBuffer(CBuffer &buffer,long version,int buf_type);
+	BOOL IsDrill() { return (cFlag == 1); }
 #ifdef __PROPERTYLIST_UI_
 	DECLARE_PROP_FUNC(BOLT_INFO);
 	int GetPropValueStr(long id, char *valueStr,UINT nMaxStrBufLen=100);	//通过属性Id获取属性值

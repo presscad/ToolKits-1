@@ -63,6 +63,8 @@ bool CreateNewLayer(char *newlayer, char* line_type, AcDb::LineWeight line_thick
 	AcDbLayerTable *pLayerTable;
 	AcDbLayerTableRecord *pLayerTableRecord;
 	acdbHostApplicationServices()->workingDatabase()->getLayerTable(pLayerTable, AcDb::kForWrite);
+	if (pLayerTable == NULL)
+		return false;
 #ifdef _ARX_2007
 	if (pLayerTable->getAt((ACHAR*)_bstr_t(layer), layerId) == Acad::eOk)
 #else

@@ -24,7 +24,7 @@ void MakeDirectory(char *path)
 		dir = strtok(NULL, "/\\");
 	}
 }
-BOOL GetCurWorkPath(CString& file_path, BOOL bEscapeChar/*=TRUE*/, const char* subFolderName/*=NULL*/)
+BOOL GetCurWorkPath(CString& file_path, BOOL bEscapeChar/*=TRUE*/, const char* subFolderName/*=NULL*/,BOOL subFolderAsSuffix/*=FALSE*/)
 {
 	AcApDocument* pDoc = acDocManager->curDocument();
 	if (pDoc == NULL)
@@ -37,7 +37,9 @@ BOOL GetCurWorkPath(CString& file_path, BOOL bEscapeChar/*=TRUE*/, const char* s
 	int index = file_path.ReverseFind('\\');	//反向查找'\\'
 	file_path = file_path.Left(index);		//移除文件名
 	//
-	if (subFolderName)
+	if (subFolderAsSuffix && subFolderName)
+		sWorkDir.Printf("%s\\%s-%s", file_path, (char*)sName, subFolderName);
+	else if (subFolderName)
 		sWorkDir.Printf("%s\\%s", file_path, subFolderName);
 	else
 		sWorkDir.Printf("%s\\%s", file_path, (char*)sName);
@@ -52,8 +54,10 @@ BOOL SetPathToReg(const char* path, char* path_tag)
 	char sSubKey[MAX_PATH] = "";
 #ifdef __CNC_
 	strcpy(sSubKey, "Software\\Xerofox\\CNC\\Settings");
-#elif __PNC_
+#elif __NCS_
 	strcpy(sSubKey, "Software\\Xerofox\\PNC\\Settings");
+#elif __NCSHARP_
+	strcpy(sSubKey, "Software\\Xerofox\\NCSharp\\Settings");
 #else
 	strcpy(sSubKey, "Software\\Xerofox\\TMA\\Settings");
 #endif
@@ -76,11 +80,16 @@ BOOL GetPathFromReg(char* path, char* path_tag, BOOL setup0_setting1)
 		strcpy(sSubKey, "Software\\Xerofox\\CNC\\SETUP");
 	else
 		strcpy(sSubKey, "Software\\Xerofox\\CNC\\Settings");
-#elif __PNC_
+#elif __NCS_
 	if (setup0_setting1 == 0)
 		strcpy(sSubKey, "Software\\Xerofox\\PNC\\SETUP");
 	else
 		strcpy(sSubKey, "Software\\Xerofox\\PNC\\Settings");
+#elif __NCSHARP_
+	if (setup0_setting1 == 0)
+		strcpy(sSubKey, "Software\\Xerofox\\NCSharp\\SETUP");
+	else
+		strcpy(sSubKey, "Software\\Xerofox\\NCSharp\\Settings");
 #else
 	if (setup0_setting1 == 0)
 		strcpy(sSubKey, "Software\\Xerofox\\TMA\\SETUP");
