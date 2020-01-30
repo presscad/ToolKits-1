@@ -53,7 +53,7 @@ BOOL CNcJg::InitProcessAngle(CProcessAngle *pAngle)
 	wing_thick= pAngle->m_fThick;
 	length = pAngle->m_wLength;
 	strcpy(sPartNo,pAngle->GetPartNo());
-	cMaterial = pAngle->cMaterial;
+	cMaterial = toupper(pAngle->cMaterial);
 
 	f3dCircle cir;
 	BOLT_INFO *pBoltInfo=NULL;

@@ -1,6 +1,6 @@
 #pragma once
-#include "DrawDim.h"
 #include "IXeroCad.h"
+#include "DrawDim.h"
 
 class CLDSPart;
 class CLDSLineTube;

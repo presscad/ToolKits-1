@@ -166,6 +166,7 @@ void CColorSelectComboBox::InitBox(COLORREF crColor)
 	AddColor (RGB(255,255,255),"°×");
 	AddColor (RGB(0,0,0),"ºÚ");
 #endif
+	AddColor (0xDFFFFFFF, "Í¸Ã÷");
 	AddColor (0XFFFFFFFF,"....");
 	AddColor (0XEFFFFFFF,"Ê°È¡ÑÕÉ«");
 	int iCur = IsHaveThisColor(crColor);

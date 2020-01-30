@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 TMADRAWING_TEXT_STYLE TextStyleTable::hzfs;
+#if defined(__DRAWING_CONTEXT_) || defined(__CAD_CONTEXT_)
 void TextStyle(AcDbTextStyleTableRecord *pTextStyleTblRec, char *style_name)
 {
 #ifdef _ARX_2007
@@ -101,6 +102,7 @@ void TextStyleTable::InitTextStyleTable()
 	TextStyleTable::hzfs.textStyleName.Copy("standard");
 	GetTextStyleId(TextStyleTable::hzfs.textStyleId, "standard", true);	//初始化文本样式
 }
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -123,6 +125,7 @@ TMADRAWING_DIM_STYLE::TMADRAWING_DIM_STYLE()
 }
 void TMADRAWING_DIM_STYLE::InitDimStyle(double text_height/*=0*/, double arrow_size/*=0*/, double text_gap/*=0*/)
 {
+#if defined(__DRAWING_CONTEXT_) || defined(__CAD_CONTEXT_)
 	//以写方式打开尺寸样式表
 	AcDbDimStyleTableRecord *pDimStyleTblRec = NULL;
 	acdbOpenObject(pDimStyleTblRec, dimStyleId, AcDb::kForWrite);
@@ -145,6 +148,7 @@ void TMADRAWING_DIM_STYLE::InitDimStyle(double text_height/*=0*/, double arrow_s
 		pDimStyleTblRec->setDimgap(gap);	//标注线与文字间距应为0.5尺寸线延伸量	wht 10-01-10
 		pDimStyleTblRec->close();
 	}
+#endif
 }
 double TMADRAWING_DIM_STYLE::get_Gap() { return gap; }
 double TMADRAWING_DIM_STYLE::set_Gap(double dimgap) { return gap = dimgap; }
@@ -155,6 +159,7 @@ double TMADRAWING_DIM_STYLE::CalGap(double text_height)
 
 //////////////////////////////////////////////////////////////////////////
 //
+#if defined(__DRAWING_CONTEXT_) || defined(__CAD_CONTEXT_)
 void DimStyleTable::InitDimStyle()
 {
 	DimStyleTable::dimStyle = DimStyleTable::GetDimStyle("standard", TMADRAWING_DIM_STYLE::s_fDimTextSize);			//默认标注样式将标注尺寸放置在尺寸线之间
@@ -434,3 +439,4 @@ TMADRAWING_DIM_STYLE DimStyleTable::GetDimRadiusStyle(char *dimstyle/*=NULL*/, d
 	pDimStyleTblRec->close();
 	return dimStyle;
 }
+#endif

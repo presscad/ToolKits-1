@@ -453,7 +453,11 @@ public://公用属性
 public:
 	CProcessPart();
 	~CProcessPart();
-	static void QuerySteelMatMark(char cMat,char* sMatMark);
+	//
+	static CXhChar16 QuerySteelMatMark(char cMat, char* matStr = NULL);
+	static char QueryBriefMatMark(const char* sMatMark);
+	static char QueryBriefQuality(const char* sMatMark);
+	static void RestoreSpec(const char* spec, int *width, int *thick, char *matStr = NULL);
 	//根据m_dwInheritPropFlag整合ppibufFromPart*来自CLDSPart::ToPPIBuffer) wjh-2017.1.18
 	virtual bool MergeToSelfWithModel(CBuffer& bufFromModelPart);
 	virtual bool MergeToSelfWithPPE(CBuffer& bufFromPpePart);

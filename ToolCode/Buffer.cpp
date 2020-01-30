@@ -250,8 +250,9 @@ DWORD CBuffer::GetOverflowBuffFileLength()
 //清除缓存，释放内存，再需要时需要重新分配
 void CBuffer::ClearBuffer()
 {
-	if(buffer)
+	if(buffer&&!m_bExternalBuf)
 		delete []buffer;
+	m_bExternalBuf=false;
 	buffer = NULL;
 	buffer_len = file_len = 0;
 	log_mem_position = mem_cursor = 0;

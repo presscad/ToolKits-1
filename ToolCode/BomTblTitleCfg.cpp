@@ -29,7 +29,7 @@ const char* CBomTblTitleCfg::T_PART_NO		= "编号";
 const char* CBomTblTitleCfg::T_METERIAL		= "材质";
 const char* CBomTblTitleCfg::T_LEN			= "长度";
 const char* CBomTblTitleCfg::T_SPEC			= "规格";
-const char* CBomTblTitleCfg::T_NUM			= "件数";
+const char* CBomTblTitleCfg::T_SING_NUM		= "件数";
 const char* CBomTblTitleCfg::T_SING_WEIGHT	= "单重";
 const char* CBomTblTitleCfg::T_NOTES		= "备注";
 const char* CBomTblTitleCfg::T_WIDE			= "宽度";
@@ -37,6 +37,14 @@ const char* CBomTblTitleCfg::T_PARTTYPE		= "类型";
 const char* CBomTblTitleCfg::T_MANU_NUM		= "加工数";
 const char* CBomTblTitleCfg::T_MANU_WEIGHT	= "加工重量";
 const char* CBomTblTitleCfg::T_REPLACE_SPEC = "代用规格";
+const char* CBomTblTitleCfg::T_WELD			= "焊接";
+const char* CBomTblTitleCfg::T_ZHI_WAN		= "制弯";
+const char* CBomTblTitleCfg::T_CUT_ANGLE	= "切角";
+const char* CBomTblTitleCfg::T_CUT_ROOT		= "刨根";
+const char* CBomTblTitleCfg::T_CUT_BER		= "铲背";
+const char* CBomTblTitleCfg::T_PUSH_FLAT	= "压扁";
+const char* CBomTblTitleCfg::T_KAI_JIAO		= "开角";
+const char* CBomTblTitleCfg::T_HE_JIAO		= "合角";
 CBomTblTitleCfg::CBomTblTitleCfg(const int *colIndexArr,const char *colTitleArr,int colCount,int startRow)
 {
 	Init(colIndexArr,colTitleArr,colCount,startRow);
@@ -123,6 +131,8 @@ bool CBomTblTitleCfg::IsEqual(CBomTblTitleCfg &cfg)
 }
 bool CBomTblTitleCfg::GetHashColIndexByColTitleTbl(CHashStrList<DWORD> &hashColIndexByColTitle)
 {
+	if (m_sColIndexArr.GetLength() <= 0)
+		return false;
 	int colIndexArr[100]={0};
 	int i=0,i2=0,index=0,nColCount=0;
 	CString sColIndex=m_sColIndexArr;
@@ -135,31 +145,14 @@ bool CBomTblTitleCfg::GetHashColIndexByColTitleTbl(CHashStrList<DWORD> &hashColI
 		i=i2+1;
 	}
 	nColCount=index;
-	//colIndexArr[0]=1;	//件号
-	//colIndexArr[1]=3;	//材质
-	//colIndexArr[2]=4;	//长度
-	//colIndexArr[3]=2;	//规格
-	//colIndexArr[4]=5;	//件数
-	//colIndexArr[5]=0;	//单重
-	//colIndexArr[6]=7;	//备注
-	//colIndexArr[7]=0;	//宽度
-	//colIndexArr[8]=0;	//类型
-	CXhChar100 titleArr[T_COL_COUNT]={T_PART_NO,
-									  T_METERIAL,
-									  T_LEN,
-									  T_SPEC,
-									  T_NUM,
-									  T_SING_WEIGHT,
-									  T_NOTES,
-									  T_WIDE,
-									  T_PARTTYPE};
 	hashColIndexByColTitle.Empty();
 	for(int i=0;i<T_COL_COUNT;i++)
 	{
 		if(colIndexArr[i]<=0)
 			continue;
+		CXhChar100 sKey(GetColName(i));
 		int iTitle=(i<nColCount)?(colIndexArr[i]-1):0;
-		hashColIndexByColTitle.SetValue(titleArr[i],iTitle);
+		hashColIndexByColTitle.SetValue(sKey,iTitle);
 	}
 	return (hashColIndexByColTitle.GetNodeNum()>0);
 }
@@ -169,6 +162,51 @@ void CBomTblTitleCfg::Clone(CBomTblTitleCfg &srcCfg)
 	m_nColCount=srcCfg.m_nColCount;
 	m_sColTitleArr.Copy(srcCfg.m_sColTitleArr);
 	m_sColIndexArr.Copy(srcCfg.m_sColIndexArr);
+}
+const char* CBomTblTitleCfg::GetColName(int colIndex)
+{
+	if (colIndex == INDEX_PART_NO)
+		return T_PART_NO;
+	else if (colIndex == INDEX_METERIAL)
+		return T_METERIAL;
+	else if (colIndex == INDEX_SPEC)
+		return T_SPEC;
+	else if (colIndex == INDEX_LEN)
+		return T_LEN;
+	else if (colIndex == INDEX_SING_NUM)
+		return T_SING_NUM;
+	else if (colIndex == INDEX_SING_WEIGHT)
+		return T_SING_WEIGHT;
+	else if (colIndex == INDEX_NOTES)
+		return T_NOTES;
+	else if (colIndex == INDEX_WIDE)
+		return T_WIDE;
+	else if (colIndex == INDEX_PARTTYPE)
+		return T_PARTTYPE;
+	else if (colIndex == INDEX_MANU_NUM)
+		return T_MANU_NUM;
+	else if (colIndex == INDEX_MANU_WEIGHT)
+		return T_MANU_WEIGHT;
+	else if (colIndex == INDEX_REPLACE_SPEC)
+		return T_REPLACE_SPEC;
+	else if (colIndex == INDEX_WELD)
+		return T_WELD;
+	else if (colIndex == INDEX_ZHI_WAN)
+		return T_ZHI_WAN;
+	else if (colIndex == INDEX_CUT_ANGLE)
+		return T_CUT_ANGLE;
+	else if (colIndex == INDEX_CUT_ROOT)
+		return T_CUT_ROOT;
+	else if (colIndex == INDEX_CUT_BER)
+		return T_CUT_BER;
+	else if (colIndex == INDEX_PUSH_FLAT)
+		return T_PUSH_FLAT;
+	else if (colIndex == INDEX_KAI_JIAO)
+		return T_KAI_JIAO;
+	else if (colIndex == INDEX_HE_JIAO)
+		return T_HE_JIAO;
+	else
+		return NULL;
 }
 bool CBomTblTitleCfg::IsMatchTitle(int colIndex,const char* title)
 {
@@ -213,9 +251,9 @@ bool CBomTblTitleCfg::IsMatchTitle(int colIndex,const char* title)
 		else
 			return false;
 	}
-	else if(INDEX_NUM==colIndex)
+	else if(INDEX_SING_NUM==colIndex)
 	{
-		if( sTitle.EqualNoCase(T_NUM)||
+		if( sTitle.EqualNoCase(T_SING_NUM)||
 			sTitle.EqualNoCase("单基")||
 			sTitle.EqualNoCase("单基数量") ||
 			sTitle.EqualNoCase("数量") ||

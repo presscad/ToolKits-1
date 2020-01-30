@@ -1,10 +1,17 @@
 #include "stdafx.h"
 #include "f_alg_fun.h"
 #ifdef __DRAWING_CONTEXT_
+//#include "..\LDS\RxTools.h"
 #include "..\LDS\MapLds\SysPara.h"
 #endif
-#include "DrawDim.h"
 #include "PartLib.h"
+#include "DrawDim.h"
+
+#ifdef _DEBUG
+#undef THIS_FILE
+static char THIS_FILE[]=__FILE__;
+#define new DEBUG_NEW
+#endif
 
 const double halfPi=Pi/2;
 double SAFE_TEXTSIZE::minFontSize=1;	//文字最小高度

@@ -181,6 +181,7 @@ private:
 
 //4.公有成员函数定义
 public:
+	//在节点链表的末尾添加节点
     TYPE* append()//在节点链表的末尾添加节点
 	{
 		if(m_nSize>=m_nMaxSize)
@@ -205,6 +206,12 @@ public:
 		TYPE *pAtom = append();
 		*pAtom = atom;
 		return pAtom;
+	}
+	TYPE* Append() {
+		return append();
+	}
+	TYPE* Append(const TYPE &atom) {
+		return append(atom);
 	}
 	//ii==-1时，在当前节点的前面添加节点；否则在index所指向节点前添加
     TYPE* insert(const TYPE &atom, long ii=-1)
@@ -629,7 +636,7 @@ public:
 	{
 		if (Count > objarr.Count)
 			Clear();
-		for (int i = 0; i < Count; i++)
+		for (UINT i = 0; i < objarr.Count; i++)
 			Set(i, objarr.At(i), true);
 	}
 public:
@@ -872,7 +879,7 @@ public:
 	{
 		if (Count > objarr.Count)
 			Clear();
-		for (UINT i = 0; i < Count; i++)
+		for (UINT i = 0; i < objarr.Count; i++)
 			Set(i, objarr.At(i), true);
 	}
 };

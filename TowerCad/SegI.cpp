@@ -62,18 +62,23 @@ bool ParsePartNo(const char* sPartNo,SEGI* pSegI,char* sSerialNo,char* materialP
 		else
 			memcpy(segStr,sPartNo,separator);
 		*pSegI=SEGI(segStr);
-		if(sSerialNo)
+		
+		if (separator + 1 < str_len)
 		{
-			if(separator+1<str_len)
+			if (sSerialNo)
 			{
-				memcpy(sSerialNo,&sPartNo[separator+1],str_len-separator);
-				sSerialNo[str_len-separator]=0;
-				int len=strlen(sSerialNo);
-				if(len>1&&IsCharInStr(sSerialNo[len-1],materialPrefix))
-					sSerialNo[len-1]=0;
+				memcpy(sSerialNo, &sPartNo[separator + 1], str_len - separator);
+				sSerialNo[str_len - separator] = 0;
+				int len = strlen(sSerialNo);
+				if (len > 1 && IsCharInStr(sSerialNo[len - 1], materialPrefix))
+					sSerialNo[len - 1] = 0;
 			}
-			else
-				return false;
+			return true;
+		}
+		else
+		{	//分隔符后无字符时，段号输出0 wht 19-12-05
+			*pSegI = SEGI();
+			return false;
 		}
 	}
 	else

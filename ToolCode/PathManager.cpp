@@ -54,8 +54,12 @@ BOOL SetPathToReg(const char* path, char* path_tag)
 	char sSubKey[MAX_PATH] = "";
 #ifdef __CNC_
 	strcpy(sSubKey, "Software\\Xerofox\\CNC\\Settings");
-#elif __NCS_
+#elif __PNC_
+#ifdef __UBOM_ONLY_
+	strcpy(sSubKey, "Software\\Xerofox\\UBOM\\Settings");
+#else
 	strcpy(sSubKey, "Software\\Xerofox\\PNC\\Settings");
+#endif
 #elif __NCSHARP_
 	strcpy(sSubKey, "Software\\Xerofox\\NCSharp\\Settings");
 #else
@@ -80,11 +84,18 @@ BOOL GetPathFromReg(char* path, char* path_tag, BOOL setup0_setting1)
 		strcpy(sSubKey, "Software\\Xerofox\\CNC\\SETUP");
 	else
 		strcpy(sSubKey, "Software\\Xerofox\\CNC\\Settings");
-#elif __NCS_
+#elif __PNC_
+#ifdef __UBOM_ONLY_
+	if (setup0_setting1 == 0)
+		strcpy(sSubKey, "Software\\Xerofox\\UBOM\\SETUP");
+	else
+		strcpy(sSubKey, "Software\\Xerofox\\UBOM\\Settings");
+#else
 	if (setup0_setting1 == 0)
 		strcpy(sSubKey, "Software\\Xerofox\\PNC\\SETUP");
 	else
 		strcpy(sSubKey, "Software\\Xerofox\\PNC\\Settings");
+#endif
 #elif __NCSHARP_
 	if (setup0_setting1 == 0)
 		strcpy(sSubKey, "Software\\Xerofox\\NCSharp\\SETUP");

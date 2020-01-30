@@ -42,14 +42,22 @@ public:
 
 	void Init(CRuntimeClass *pClass, UINT idDlg);
 	CDialog *GetDlgPtr(){return m_pDialog;}
-	virtual BOOL Create (CWnd *pParent, LPCSTR lpszTitle, int width=200);
+#if defined (_ARX_2007) && defined (__SUPPORT_DOCK_UI_) && !defined _UNICODE
+	virtual BOOL Create (CWnd *pParent, LPCWSTR lpszTitle, int width = 250);
+#else
+	virtual BOOL Create(CWnd *pParent, LPCSTR lpszTitle, int width = 250);
+#endif
 	int ShowDialog();
 	int CloseDialog();
 	DECLARE_MESSAGE_MAP()
 protected:
 	virtual void SizeChanged (CRect *lpRect, BOOL bFloating, int flags) ;
 	virtual bool OnClosing ();
-	afx_msg int OnCreate (LPCREATESTRUCT lpCreateStruct) ;
+#if defined (_ARX_2007) && defined (__SUPPORT_DOCK_UI_) && !defined _UNICODE
+	afx_msg int OnCreate (LPCREATESTRUCTW lpCreateStruct) ;
+#else
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+#endif
 public:
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);

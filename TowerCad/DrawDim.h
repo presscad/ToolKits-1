@@ -1,23 +1,41 @@
 #pragma once
 //#include "stdafx.h"
-#ifdef  __DRAWING_CONTEXT_
-#include "..\LDS\MapLds\RxTools.h"
-#else
-#include "DimStyle.h"
-#endif
 #include "f_ent.h"
 #include "f_ent_list.h"
 #include "f_alg_fun.h"
 #include "XhCharString.h"
 #include "HashTable.h"
 #include "ArrayList.h"
+#ifdef __DRAWING_CONTEXT_
+#include "../LDS/MapLds/RxTools.h"
+#else
+#include "DimStyle.h"
+#endif
 
 enum DIMALIGN_TYPE{AlignDefault=1,TopLeft,TopCenter,TopRight,MiddleLeft,MiddleCenter,MiddleRight,BottomLeft,BottomCenter,BottomRight};
 
 class CDimStyle{
 public:
-#if defined  (__DRAWING_CONTEXT_) || defined(__CNC_FILE_)
+#if defined(__DRAWING_CONTEXT_) || defined(__CNC_FILE_)
 	TMADRAWING_DIM_STYLE style;
+#else
+	struct DIM_STYLE
+	{
+	protected:
+		double gap;				//文字与基准线间隙
+		double m_fInnerSetTextSize;
+	public:
+		CXhChar16 dimStyleName;	//文字样式名称
+		double arrowSize;		//箭头大小
+		//AcDbObjectId dimStyleId;	//文字样式
+	public:
+		DIM_STYLE(){m_fInnerSetTextSize=arrowSize=gap=0;}
+		void InitDimStyle(double textHeight=0,double arrowSize=0,double gap=0);
+		double get_Gap(){return gap;}
+		double set_Gap(double dimgap){return gap=dimgap;}
+		__declspec(property(get=get_Gap,put=set_Gap)) double Gap;
+		//static double CalGap(double text_height);
+	} style;
 #endif
 	double textHeight;
 	CDimStyle(){textHeight=2.0;}
@@ -264,6 +282,3 @@ CXhChar16 GetPartNoIncMat(const char* sPartNo,char cMat);
 #else
 CXhChar16 GetPartNoIncMat(const char* sPartNo,char cMat,int iMatCharPosType=0,char cMatSeparator=0);
 #endif
-
-
-

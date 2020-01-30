@@ -967,19 +967,89 @@ CProcessPart::~CProcessPart()
 	acsPosList.Empty();
 #endif
 }
-void CProcessPart::QuerySteelMatMark(char cMat,char* sMatMark)
+
+CXhChar16 CProcessPart::QuerySteelMatMark(char cMat, char* matStr/*=NULL*/)
 {
-	if(cMat=='H')
-		strcpy(sMatMark,"Q345");
-	else if(cMat=='G')
-		strcpy(sMatMark,"Q390");
-	else if(cMat=='P')
-		strcpy(sMatMark,"Q420");
-	else if(cMat=='T')
-		strcpy(sMatMark,"Q460");
-	else
-		strcpy(sMatMark,"Q235");
+	CXhChar16 sMatMark;
+	if ('H' == cMat)
+		sMatMark.Copy("Q345");
+	else if ('h' == cMat)	//用小写h表示Q355,输出简化材质字符时需要转大写 wht 19-11-05
+		sMatMark.Copy("Q355");
+	else if ('G' == cMat)
+		sMatMark.Copy("Q390");
+	else if ('P' == cMat)
+		sMatMark.Copy("Q420");
+	else if ('T' == cMat)
+		sMatMark.Copy("Q460");
+	else if ('S' == cMat || 0 == cMat)
+		sMatMark.Copy("Q235");
+	else if (matStr)
+		sMatMark.Copy(matStr);
+	return sMatMark;
 }
+char CProcessPart::QueryBriefMatMark(const char* sMatMark)
+{
+	char cMat = 'A';
+	if (strstr(sMatMark, "Q235") || strlen(sMatMark) == 0)
+		cMat = 'S';
+	else if (strstr(sMatMark, "Q345"))
+		cMat = 'H';
+	else if (strstr(sMatMark, "Q355"))
+		cMat = 'h';	//用小写h表示Q355,输出简化材质字符时需要转大写 wht 19-11-05
+	else if (strstr(sMatMark, "Q390"))
+		cMat = 'G';
+	else if (strstr(sMatMark, "Q420"))
+		cMat = 'P';
+	else if (strstr(sMatMark, "Q460"))
+		cMat = 'T';
+	return cMat;
+}
+char CProcessPart::QueryBriefQuality(const char* sMatMark)
+{
+	char cQuality = 0;
+	CXhChar16 sMaterial(sMatMark);
+	if(sMaterial.GetLength() ==5)
+		cQuality = toupper(sMaterial.At(4));
+	return cQuality;
+}
+//解析规格
+void CProcessPart::RestoreSpec(const char* spec, int *width, int *thick, char *matStr/*=NULL*/)
+{
+	char sMat[16] = "", cMark1 = ' ', cMark2 = ' ';
+	if (strstr(spec, "Q") == (char*)spec)
+	{
+		if (strstr(spec, "L"))
+			sscanf(spec, "%[^L]%c%d%c%d", sMat, &cMark1, width, &cMark2, thick);
+		else if (strstr(spec, "-"))
+			sscanf(spec, "%[^-]%c%d", sMat, &cMark1, thick);
+	}
+	else if (strstr(spec, "L"))
+	{
+		CXhChar16 sSpec(spec);
+		sSpec.Replace("L", "");
+		sSpec.Replace("*", " ");
+		sSpec.Replace("X", " ");
+		sscanf(sSpec, "%d%d", width, thick);
+	}
+	else if (strstr(spec, "-"))
+	{
+		if (strstr(spec, "x") || strstr(spec, "X"))
+		{
+			CXhChar16 sSpec(spec);
+			sSpec.Replace("-", "");
+			sSpec.Replace("x", " ");
+			sSpec.Replace("X", " ");
+			sscanf(sSpec, "%d%d", thick, width);
+		}
+		else
+			sscanf(spec, "%c%d", sMat, thick);
+	}
+	//else if(spec,"φ")
+	//sscanf(spec,"%c%d%c%d",sMat,)
+	if (matStr)
+		strcpy(matStr, sMat);
+}
+
 #ifdef __PROPERTYLIST_UI_
 PROPLIST_TYPE CProcessPart::propSync;
 void CProcessPart::InitSyncProp()
