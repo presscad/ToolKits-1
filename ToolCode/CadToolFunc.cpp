@@ -29,7 +29,6 @@ void SendCommandToCad(ACHAR *sCmd)
 #else
 void SendCommandToCad(ACHAR *sCmd)
 #endif
-#endif
 {
 	size_t len = _tcslen(sCmd) + 1;
 	if (len <= 0)
@@ -313,6 +312,8 @@ static ACAD_RGB AcadRGB[256]=
 //从RGB得到cad颜色索引值 
 int GetNearestACI(COLORREF color)
 {
+	if (color == 0xCFFFFFFF)
+		return 0;	//未设置颜色 wht 20-02-11
 	long min_dist = 2147483647L;
 	long dist = 0;
 	int min_index = 0;
@@ -358,7 +359,9 @@ COLORREF GetColorFromIndex(int color_index)
 	B = LOBYTE(HIG);
 #endif
 	return RGB(R,G,B);*/
-	if(color_index<1||color_index>255)
+	if (color_index == 0)
+		return 0xCFFFFFFF;	//0xCFFFFFFF表示无颜色 wht 20-02-11
+	else if(color_index<1||color_index>255)
 		return RGB(255,0,0);
 	else
 		return RGB(AcadRGB[color_index].R,AcadRGB[color_index].G,AcadRGB[color_index].B);

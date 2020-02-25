@@ -402,7 +402,8 @@ void CSuperGridCtrl::InitListCtrl(long* col_wide_arr,BOOL bSingleSel/*=TRUE*/,lo
 	{
 		CFont *pFont=GetFont();
 		LOGFONT logFont;
-		pFont->GetLogFont(&logFont);
+		if(pFont)
+			pFont->GetLogFont(&logFont);
 		m_SSerif8Font.CreateFontIndirect(&logFont);
 	}
 }
@@ -412,6 +413,8 @@ void CSuperGridCtrl::RefreshListViewHeader(long* col_wide_arr,long* col_fmt_arr/
 	LV_COLUMN lvc;
 	int i, NUM_COLUMNS, nColumnCount;
 	CHeaderCtrl *pHeader = GetHeaderCtrl();
+	if (pHeader == NULL)
+		return;
 	nColumnCount = pHeader->GetItemCount();
 	
 	// Delete all of the columns.

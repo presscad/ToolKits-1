@@ -72,8 +72,10 @@ void CColorSelectComboBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	colorRect.right=colorRect.left+COLOR_RECT_WIDTH;
 	colorRect.bottom=itemRect.bottom - COLOR_RECT_BORDER;
 	//画出颜色区域
-	if(itemColor!=0xFFFFFFFF&&itemColor!=0xEFFFFFFF)
+	if(itemColor!=0xFFFFFFFF&&itemColor!=0xEFFFFFFF&&itemColor!=0xCFFFFFFF)
 	{
+		if (itemColor == 0xDFFFFFFF)
+			itemColor = 0x00FFFFFF;
 		CBrush	brush(itemColor);
 		CBrush	*oldbrush=pDC->SelectObject (&brush);
 		pDC->Rectangle (&colorRect);
@@ -167,6 +169,7 @@ void CColorSelectComboBox::InitBox(COLORREF crColor)
 	AddColor (RGB(0,0,0),"黑");
 #endif
 	AddColor (0xDFFFFFFF, "透明");
+	AddColor (0xCFFFFFFF, "无");	//支持不设置颜色 wht 20-02-11
 	AddColor (0XFFFFFFFF,"....");
 	AddColor (0XEFFFFFFF,"拾取颜色");
 	int iCur = IsHaveThisColor(crColor);
