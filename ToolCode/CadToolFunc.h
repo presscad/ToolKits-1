@@ -26,9 +26,9 @@ public:
 	}
 };
 #ifdef _ARX_2007
-void SendCommandToCad(CStringW sCmd);
+void SendCommandToCad(ACHAR* sCmd);
 #else
-void SendCommandToCad(CString sCmd);
+void SendCommandToCad(ACHAR* sCmd);
 #endif
 //////////////////////////////////////////////////////////////////////////
 //CAD的实体声明周期控制
@@ -156,6 +156,7 @@ BOOL GetAcDbTextRect(AcDbText *pText, f3dPoint rgnVertArr[4]);
 BOOL GetCadTextEntPos(AcDbText *pText, GEPOINT &pos, bool bCorrectPos = false);
 BOOL VerifyVertexByCADEnt(SCOPE_STRU &scope, AcDbEntity *pEnt);
 BOOL VerifyVertexByCADEntId(SCOPE_STRU &scope, AcDbObjectId entId);
+f2dRect GetCadEntRect(ARRAY_LIST<ULONG> &idList, double extendLen = 0);
 f2dRect GetCadEntRect(ARRAY_LIST<AcDbObjectId> &entIdList, double extendLen = 0);
 f2dRect GetCadEntRect(CHashSet<AcDbObjectId> &screenEntSet, double extendLen = 0);
 extern int ZOOM_LEFT_FIXED_WIDTH;	//缩放时左侧预留的固定值，以模态对话框形式显示，需预留宽度 wht 19-06-28

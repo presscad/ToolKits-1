@@ -2574,7 +2574,7 @@ void CProcessPlate::ToTAPBuffer(CBuffer &buffer,bool bIncSolidData/*=true*/)
 #endif
 void CProcessPlate::InitCutPt(bool bFarOrg)
 {
-#ifdef __PNC_
+#if defined (__NCS_) || defined(__NCSHARP_)
 	if(!IsInitedMCS())
 		InitMCS();
 	//

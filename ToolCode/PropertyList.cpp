@@ -287,12 +287,48 @@ void CPropertyList::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 				colorRect.top=rectRight.top+2;
 				colorRect.right=rectRight.right-27;
 				colorRect.bottom=rectRight.bottom - 2;
-				//画出颜色
-				CBrush	brush(itemColor);
-				CBrush	*oldbrush=dc.SelectObject (&brush);
-				dc.Rectangle (&colorRect);
-				dc.SelectObject (oldbrush);
-				brush.DeleteObject();
+				//0xFFFFFFFF：自定义颜色
+				//0xEFFFFFFF：拾取颜色
+				//0xDFFFFFFF：透明色
+				//0xCFFFFFFF：无	wht 20-02-11
+				int rectHalfWidth = (int)(colorRect.Width()*0.5);
+				if (rectHalfWidth > COLOR_RECT_WIDTH)
+					rectHalfWidth = COLOR_RECT_WIDTH;
+				if (itemColor == 0xCFFFFFFF || itemColor == 0xDFFFFFFF)
+				{	//无色、透明色
+					if (itemColor == 0xDFFFFFFF)
+						itemColor = 0x00FFFFFF;
+					colorRect.right = colorRect.left + rectHalfWidth;
+				}
+				if (itemColor == 0xFFFFFFFF || itemColor == 0xEFFFFFFF || itemColor == 0xCFFFFFFF)
+				{	
+					CBrush* oldbrush = (CBrush*)dc.SelectStockObject(HOLLOW_BRUSH);
+					dc.Rectangle(&colorRect);
+					dc.MoveTo(colorRect.left, colorRect.top);
+					dc.LineTo(colorRect.right, colorRect.bottom);
+					dc.MoveTo(colorRect.left, colorRect.bottom);
+					dc.LineTo(colorRect.right, colorRect.top);
+					dc.SelectObject(oldbrush);
+				}
+				else
+				{	//画出颜色
+					CBrush	brush(itemColor);
+					CBrush	*oldbrush=dc.SelectObject (&brush);
+					dc.Rectangle (&colorRect);
+					dc.SelectObject (oldbrush);
+					brush.DeleteObject();
+				}
+				//得到并画出文字
+				if (itemColor == 0xCFFFFFFF || itemColor == 0xDFFFFFFF || itemColor == 0x00FFFFFF)
+				{
+					colorRect.OffsetRect(2 * COLOR_RECT_BORDER + rectHalfWidth + 5, 0);
+					dc.SetBkMode(TRANSPARENT);//设置文字输出模式为透明背景
+					dc.SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
+					if(itemColor== 0xCFFFFFFF)
+						DrawText(dc.GetSafeHdc(), "无色", -1, &colorRect, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+					else //if(itemColor == 0xDFFFFFFF || itemColor == 0x00FFFFFF)
+						DrawText(dc.GetSafeHdc(), "透明", -1, &colorRect, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+				}
 			}
 			else
 				dc.DrawText(pItem->m_lpNodeInfo->m_strPropValue,CRect(rectRight.left+3,rectRight.top+3,

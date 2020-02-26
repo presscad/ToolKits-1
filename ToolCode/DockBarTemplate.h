@@ -9,7 +9,6 @@ typedef CDlgDockBar<CRevisionDlg, UBOM_DLG_ID, UBOM_NAME_ID> CUBomDockBar;
 
 extern CUBomDockBar g_ubomDocBar;
 */
-
 template<class TYPE,class TYPE_ID,class TYPE_NAME_ID> class CDlgDockBar
 {
 	int m_idDialog;

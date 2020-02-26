@@ -25,17 +25,18 @@ enum LDSPART_TYPE {
 //////////////////////////////////////////////////////////////////////////
 //
 #ifdef _ARX_2007
-void SendCommandToCad(CStringW sCmd)
+void SendCommandToCad(ACHAR *sCmd)
 #else
-void SendCommandToCad(CString sCmd)
+void SendCommandToCad(ACHAR *sCmd)
 #endif
 {
-	if (sCmd.GetLength() <= 0)
+	size_t len = _tcslen(sCmd) + 1;
+	if (len <= 0)
 		return;
 	COPYDATASTRUCT cmd_msg;
 	cmd_msg.dwData = (DWORD)1;
-	cmd_msg.cbData = (DWORD)sCmd.GetLength() + 1;
-	cmd_msg.lpData = sCmd.GetBuffer(sCmd.GetLength() + 1);
+	cmd_msg.cbData = len * sizeof(ACHAR);
+	cmd_msg.lpData = sCmd;
 #ifdef _ARX_2007
 	SendMessageW(adsw_acadMainWnd(), WM_COPYDATA, (WPARAM)adsw_acadMainWnd(), (LPARAM)&cmd_msg);
 #else
@@ -311,6 +312,8 @@ static ACAD_RGB AcadRGB[256]=
 //从RGB得到cad颜色索引值 
 int GetNearestACI(COLORREF color)
 {
+	if (color == 0xCFFFFFFF)
+		return 0;	//未设置颜色 wht 20-02-11
 	long min_dist = 2147483647L;
 	long dist = 0;
 	int min_index = 0;
@@ -356,7 +359,9 @@ COLORREF GetColorFromIndex(int color_index)
 	B = LOBYTE(HIG);
 #endif
 	return RGB(R,G,B);*/
-	if(color_index<1||color_index>255)
+	if (color_index == 0)
+		return 0xCFFFFFFF;	//0xCFFFFFFF表示无颜色 wht 20-02-11
+	else if(color_index<1||color_index>255)
 		return RGB(255,0,0);
 	else
 		return RGB(AcadRGB[color_index].R,AcadRGB[color_index].G,AcadRGB[color_index].B);
@@ -421,18 +426,18 @@ CShieldCadLayer::CShieldCadLayer(const char* sReservedLayerName/*=NULL*/,BOOL bF
 #ifdef _ARX_2007
 	if (m_bSendCommand)
 	{
-		SendCommandToCad(CStringW(L"undo be \n"));
+		SendCommandToCad(L"undo be \n");
 		if (bFreeze)
 		{
-			SendCommandToCad(CStringW(sCmd1));
-			SendCommandToCad(CStringW(sCmd2));
+			SendCommandToCad((ACHAR*)_bstr_t(sCmd1));
+			SendCommandToCad((ACHAR*)_bstr_t(sCmd2));
 		}
 		else
 		{
-			SendCommandToCad(CStringW(sCmd3));
-			SendCommandToCad(CStringW(sCmd4));
+			SendCommandToCad((ACHAR*)_bstr_t(sCmd3));
+			SendCommandToCad((ACHAR*)_bstr_t(sCmd4));
 		}
-		SendCommandToCad(CStringW(L"undo e "));
+		SendCommandToCad(L"undo e ");
 	}
 	else
 	{
@@ -452,18 +457,18 @@ CShieldCadLayer::CShieldCadLayer(const char* sReservedLayerName/*=NULL*/,BOOL bF
 #else
 	if (bSendCommand)
 	{
-		SendCommandToCad(CString("undo be "));
+		SendCommandToCad("undo be ");
 		if (bFreeze)
 		{
-			SendCommandToCad(CString(sCmd1));
-			SendCommandToCad(CString(sCmd2));
+			SendCommandToCad(sCmd1);
+			SendCommandToCad(sCmd2);
 		}
 		else
 		{
-			SendCommandToCad(CString(sCmd3));
-			SendCommandToCad(CString(sCmd4));
+			SendCommandToCad(sCmd3);
+			SendCommandToCad(sCmd4);
 		}
-		SendCommandToCad(CString("undo e "));
+		SendCommandToCad("undo e ");
 	}
 	else
 	{
@@ -487,13 +492,13 @@ CShieldCadLayer::~CShieldCadLayer()
 	if (m_bSendCommand)
 	{	//解冻所有图层
 #ifdef _ARX_2007
-		SendCommandToCad(CStringW(L"undo be "));
-		SendCommandToCad(CStringW(L"-layer T *\n "));
-		SendCommandToCad(CStringW(L"undo e "));
+		SendCommandToCad(L"undo be ");
+		SendCommandToCad(L"-layer T *\n ");
+		SendCommandToCad(L"undo e ");
 #else
-		SendCommandToCad(CString("undo be "));
-		SendCommandToCad(CString("-layer T *\n "));
-		SendCommandToCad(CString("undo e "));
+		SendCommandToCad("undo be ");
+		SendCommandToCad("-layer T *\n ");
+		SendCommandToCad("undo e ");
 #endif
 	}
 	else
@@ -1448,6 +1453,13 @@ BOOL VerifyVertexByCADEnt(SCOPE_STRU &scope, AcDbEntity *pEnt)
 		scope.VerifyVertex(f3dPoint(point.x,point.y,0));
 	}
 	return TRUE;
+}
+f2dRect GetCadEntRect(ARRAY_LIST<ULONG> &idList, double extendLen/*=0*/)
+{
+	ARRAY_LIST<AcDbObjectId> entIdList;
+	for (ULONG *pId = idList.GetFirst(); pId; pId = idList.GetNext())
+		entIdList.append(AcDbObjectId((AcDbStub*)*pId));
+	return GetCadEntRect(entIdList, extendLen);
 }
 f2dRect GetCadEntRect(ARRAY_LIST<AcDbObjectId> &entIdList, double extendLen/*=0*/)
 {
