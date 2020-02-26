@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef __LICENSE_MANAGER_H_
+#define __LICENSE_MANAGER_H_
+
 #include "XhCharString.h"
 #include "Buffer.h"
 #include "HashTable.h"
@@ -7,7 +10,6 @@
 #include "list.h"
 #include "MemberProperty.h"
 #include "Markup.h"
-
 
 class CEndUser : public CServerObject
 {
@@ -83,3 +85,58 @@ public:
 	virtual void FromBuffer(CBuffer &buffer,bool bIncludeId=true,DWORD dwSerialzeFlag=0);
 };
 
+struct VersionRevision
+{
+	unsigned int Id;
+	unsigned int productId;
+	char revisionType;
+	unsigned char important;
+	bool readed;
+	char title[500];
+	char contents[1000];
+	VersionRevision() {
+		Id = 0;
+		productId = 0;
+		revisionType = 0;
+		important = 0;
+		readed = false;
+		strcpy(title, "");
+		strcpy(contents, "");
+	}
+};
+
+class CObjectPtrArrLife
+{
+	void *m_pObjArr;
+public:
+	CObjectPtrArrLife(void *pObjArr)
+	{
+		m_pObjArr = pObjArr;
+	}
+	~CObjectPtrArrLife()
+	{
+		if (m_pObjArr)
+			delete m_pObjArr;
+		m_pObjArr = NULL;
+	}
+};
+
+struct ProductVersion
+{
+	unsigned int productId;
+	unsigned int version;
+	char releaseDate[100];
+
+	void SetReleaseData(time_t t)
+	{
+		CTime time(t);
+		strcpy(releaseDate,time.Format("%Y-%m-%d %H%M%S"));
+	}
+	ProductVersion() {
+		productId = 0;
+		version = 0;
+		strcpy(releaseDate, "");
+	}
+};
+
+#endif

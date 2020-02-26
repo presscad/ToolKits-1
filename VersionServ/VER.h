@@ -6,6 +6,7 @@
 #include "XhCharString.h"
 #include "list.h"
 #include "HashTable.h"
+#include "LicenseManager.h"
 
 class CVersionServer
 {
@@ -25,6 +26,12 @@ public:
 	int  SaveOrUpdateObject(const char* clsName,void* pLocalObject,DWORD serialize=0,BYTE fromClientTMA0TAP1=0);	//serialize=0表示取默认值
 	bool SaveOrUpdateObjects(const char* clsName,void* ppLocalObjArr,int countOfObj=1,DWORD serialize=0,BYTE fromClientTMA0TAP1=0);
 	bool SaveOrUpdateObjects(const char* clsName,IXhEnumerator* pIter,DWORD serialize=0,BYTE fromClientTMA0TAP1=0);
+	bool CompareVersion(int userId, UINT productId, UINT curVersion, UINT updateVersion, bool loadOnHasNew, VersionRevision **ppCompVersionResultArr,int *pResultCount);
+	bool GetVersionReleaseNotes(UINT product_id, UINT uCurVersion, VersionRevision **ppCompVersionResultArr, int *pResultCount);
+	bool SetRevisionReadFlag(int userId, int* revisionIdArr, int count);
+	bool GetUpdateVerByCurVer(UINT userId, UINT product_id, UINT uCurVersion, ProductVersion **ppProductVersionArr, int *pResultCount);
+
+
 public:
 	void SetServerUrl(const char* url);
 	int LoginUser(void* pEndUser);

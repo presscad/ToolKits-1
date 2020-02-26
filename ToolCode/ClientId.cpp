@@ -36,6 +36,8 @@ CXhChar50 GetClientNameById(int clientId,char separator/*=0*/)
 		szName.Copy("西南电力设计院");
 	else if (clientId == XHCID::CID_AnHuiYuanPower)
 		szName.Copy("安徽省电力设计院");
+	else if (clientId == XHCID::CID_ZheJiangShengDa)
+		szName.Copy("浙江盛达铁塔厂");
 	if(szName.GetLength()>0&&separator!=0)
 		szName.Append(separator);
 	return szName;

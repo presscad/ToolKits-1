@@ -34,6 +34,45 @@ void CVersionServer::SetServerUrl(const char* url)
 		m_pServer=NULL;
 	}
 }
+
+static BOOL IsWindows7OrGreater()
+{
+	//2000	0X0500   
+	//XP	0X0501
+	//2003	0X0502
+	//VISTA 0X0600
+	//Win7	0X0601
+#ifdef _WIN64
+	OSVERSIONINFO osVer;
+	osVer.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	if (!::GetVersionEx(&osVer))
+	{
+		return FALSE;
+	}
+	if (osVer.dwMajorVersion > 6 || ((osVer.dwMajorVersion == 6) && osVer.dwMinorVersion >= 1))
+		return TRUE;
+	else
+		return FALSE;
+#else
+	int i = 0, j = 0;
+	_asm
+	{
+		pushad
+		mov ebx, fs:[0x18]; get self pointer from TEB
+		mov eax, fs:[0x30]; get pointer to PEB / database
+		mov ebx, [eax + 0A8h]; get OSMinorVersion
+		mov eax, [eax + 0A4h]; get OSMajorVersion
+		mov j, ebx
+		mov i, eax
+		popad
+	}
+	if (i > 6 || ((i == 6) && j >= 1))
+		return TRUE;
+	else
+		return FALSE;
+#endif
+}
+
 VersionServiceSoapProxy* CVersionServer::GetValidServer()
 {
 	if(m_pServer!=NULL)
@@ -42,6 +81,12 @@ VersionServiceSoapProxy* CVersionServer::GetValidServer()
 		strcpy(g_sServerURL,"http://www.xerofox.com/VersionService/VersionService.asmx");
 		//strcpy(g_sServerURL,"http://192.168.2.6/VersionService/VersionService.asmx");	//www.xerofox.com
 	m_pServer=new VersionServiceSoapProxy(g_sServerURL);
+	//设置本地编码格式 wht 19-08-17
+	if(IsWindows7OrGreater())
+		setlocale(LC_ALL, "Chinese");
+	else
+		setlocale(LC_ALL, "chs");
+	soap_set_mode(m_pServer, SOAP_C_MBSTRING);
 	return m_pServer;
 }
 #ifdef _SOAP_DEBUG_LOG_FILE_
@@ -322,6 +367,159 @@ bool CVersionServer::QueryValidRentalOrder(int sessionId,int productId,void *pOr
 			}
 		}
 		return false;
+	}
+	else
+		return false;
+}
+
+bool CVersionServer::CompareVersion(int userId, UINT productId, UINT curVersion, UINT updateVersion, bool loadOnHasNew, VersionRevision **ppCompVersionResultArr, int *pResultCount)
+{
+	m_pServer = GetValidServer();
+	if (m_pServer == NULL || ppCompVersionResultArr==NULL || pResultCount==NULL)
+		return false;
+	_ns1__CompareVersion inputPara;
+	inputPara.userId = userId;
+	inputPara.product_USCOREid = productId;
+	inputPara.uCurVersion = curVersion;
+	inputPara.uUpdateVersion = updateVersion;
+	inputPara.bLoadOnHasNew = loadOnHasNew;
+	_ns1__CompareVersionResponse response;
+	if (m_pServer->CompareVersion(&inputPara, response) != SOAP_OK)
+		return false;
+	typedef VersionRevision* RevisionPtr;
+	if (response.CompareVersionResult != NULL &&
+		response.CompareVersionResult->__sizeVersionRevision > 0 &&
+		response.CompareVersionResult->VersionRevision != NULL)
+	{
+		int n = response.CompareVersionResult->__sizeVersionRevision;
+		ns1__VersionRevision **versionRevisionArr = response.CompareVersionResult->VersionRevision;
+		*ppCompVersionResultArr = new VersionRevision[n];
+		for (int i = 0; i < n; i++)
+		{
+			(*ppCompVersionResultArr)[i].Id = versionRevisionArr[i]->Id;
+			(*ppCompVersionResultArr)[i].important = versionRevisionArr[i]->important;
+			(*ppCompVersionResultArr)[i].productId = versionRevisionArr[i]->productId;
+			(*ppCompVersionResultArr)[i].readed = versionRevisionArr[i]->readed;
+			(*ppCompVersionResultArr)[i].revisionType = versionRevisionArr[i]->revisionType;
+			if (versionRevisionArr[i]->title != NULL)
+			{
+				strcpy((*ppCompVersionResultArr)[i].title, versionRevisionArr[i]->title);
+				//UTF2Gb2312((*ppCompVersionResultArr)[i].title, (*ppCompVersionResultArr)[i].title);
+			}
+			if (versionRevisionArr[i]->contents != NULL)
+			{
+				strcpy((*ppCompVersionResultArr)[i].contents, versionRevisionArr[i]->contents);
+				//UTF2Gb2312((*ppCompVersionResultArr)[i].contents, (*ppCompVersionResultArr)[i].contents);
+			}
+		}
+		if (pResultCount)
+			*pResultCount = n;
+		return true;
+	}
+	else
+		return false;
+}
+
+bool CVersionServer::GetVersionReleaseNotes(UINT product_id, UINT uCurVersion, VersionRevision **ppCompVersionResultArr, int *pResultCount)
+{
+	m_pServer = GetValidServer();
+	if (m_pServer == NULL)
+		return false;
+	if (ppCompVersionResultArr == NULL || pResultCount == NULL)
+		return false;
+	_ns1__GetVersionReleaseNotes inputPara;
+	inputPara.product_USCOREid = product_id;
+	inputPara.uCurVersion = uCurVersion;
+	_ns1__GetVersionReleaseNotesResponse response;
+	if (m_pServer->GetVersionReleaseNotes(&inputPara, response) != SOAP_OK)
+		return false;
+
+	typedef VersionRevision* RevisionPtr;
+	if (response.GetVersionReleaseNotesResult != NULL &&
+		response.GetVersionReleaseNotesResult->VersionRevision != NULL &&
+		response.GetVersionReleaseNotesResult->__sizeVersionRevision > 0)
+	{
+		int n = response.GetVersionReleaseNotesResult->__sizeVersionRevision;
+		ns1__VersionRevision **versionRevisionArr = response.GetVersionReleaseNotesResult->VersionRevision;
+		*ppCompVersionResultArr = new VersionRevision[n];
+		for (int i = 0; i < n; i++)
+		{
+			(*ppCompVersionResultArr)[i].Id = versionRevisionArr[i]->Id;
+			(*ppCompVersionResultArr)[i].important = versionRevisionArr[i]->important;
+			(*ppCompVersionResultArr)[i].productId = versionRevisionArr[i]->productId;
+			(*ppCompVersionResultArr)[i].readed = versionRevisionArr[i]->readed;
+			(*ppCompVersionResultArr)[i].revisionType = versionRevisionArr[i]->revisionType;
+			if (versionRevisionArr[i]->title != NULL)
+			{
+				strcpy((*ppCompVersionResultArr)[i].title, versionRevisionArr[i]->title);
+				//UTF2Gb2312((*ppCompVersionResultArr)[i].title, (*ppCompVersionResultArr)[i].title);
+			}
+			if (versionRevisionArr[i]->contents != NULL)
+			{
+				strcpy((*ppCompVersionResultArr)[i].contents, versionRevisionArr[i]->contents);
+				//UTF2Gb2312((*ppCompVersionResultArr)[i].contents, (*ppCompVersionResultArr)[i].contents);
+			}
+		}
+		if (pResultCount)
+			*pResultCount = n;
+		return true;
+	}
+	else
+		return false;
+}
+
+bool CVersionServer::SetRevisionReadFlag(int userId, int* revisionIdArr,int count)
+{
+	m_pServer = GetValidServer();
+	if (m_pServer == NULL)
+		return false;
+	if (userId == 0 || revisionIdArr == NULL || count == 0)
+		return false;
+	_ns1__SetRevisionReadFlag inputPara;
+	inputPara.userId = userId;
+	inputPara.revisionIdArr->__sizeint_ = count;
+	inputPara.revisionIdArr->int_ = new int[count];
+	for (int i = 0; i < count; i++)
+		inputPara.revisionIdArr->int_[i] = revisionIdArr[i];
+	_ns1__SetRevisionReadFlagResponse response;
+	bool bRetCode = false;
+	if (m_pServer->SetRevisionReadFlag(&inputPara, response) == SOAP_OK)
+		bRetCode = true;
+	if (inputPara.revisionIdArr != NULL)
+		delete inputPara.revisionIdArr;
+	return bRetCode;
+}
+bool CVersionServer::GetUpdateVerByCurVer(UINT userId, UINT product_id, UINT uCurVersion, ProductVersion **ppProductVersionArr, int *pResultCount)
+{
+	m_pServer = GetValidServer();
+	if (m_pServer == NULL)
+		return false;
+	if (ppProductVersionArr == NULL || pResultCount == NULL)
+		return false;
+	_ns1__GetUpdateVerByCurVer inputPara;
+	inputPara.userId = userId;
+	inputPara.product_USCOREid = product_id;
+	inputPara.uCurVersion = uCurVersion;
+	_ns1__GetUpdateVerByCurVerResponse response;
+	if (m_pServer->GetUpdateVerByCurVer(&inputPara, response) != SOAP_OK)
+		return false;
+	typedef ProductVersion* VersionPtr;
+	if (response.GetUpdateVerByCurVerResult != NULL &&
+		response.GetUpdateVerByCurVerResult->ProductVersion != NULL &&
+		response.GetUpdateVerByCurVerResult->__sizeProductVersion > 0)
+	{
+		int n = response.GetUpdateVerByCurVerResult->__sizeProductVersion;
+		ns1__ProductVersion **ProductVersionArr = response.GetUpdateVerByCurVerResult->ProductVersion;
+		*ppProductVersionArr = new ProductVersion[n];
+		for (int i = 0; i < n; i++)
+		{
+			(*ppProductVersionArr)[i].productId = ProductVersionArr[i]->productId;
+			(*ppProductVersionArr)[i].version = ProductVersionArr[i]->version;
+			(*ppProductVersionArr)[i].SetReleaseData(ProductVersionArr[i]->releaseDate);
+		}
+		if (pResultCount)
+			*pResultCount = n;
+		return true;
 	}
 	else
 		return false;

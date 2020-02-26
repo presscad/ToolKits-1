@@ -18,17 +18,12 @@ static char THIS_FILE[]=__FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CHoleMaker::CHoleMaker()
-{
-
-}
-
 CHoleMaker::~CHoleMaker()
 {
 
 }
 // 生成普通圆孔(waist_len=0)或腰圆孔(waist_len>0)
-BOOL CHoleMaker::Create(UCS_STRU &hole_ucs,double d,double waist_len,
+BOOL CHoleMaker::Create(GECS &hole_ucs,double d,double waist_len,
 						f3dPolyFace *pUpFace, f3dPolyFace *pDownFace,
 						fBody *pBody,COLORREF crLsHole,int slices/*=12*/)
 {

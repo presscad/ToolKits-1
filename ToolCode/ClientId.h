@@ -38,6 +38,7 @@ struct XHCID{
 	static const BYTE CID_YunNan_ZhanYe			=15;//id=15.云南展业
 	static const BYTE CID_XiNanYuanPower		=16;//id=16.西南电力设计院
 	static const BYTE CID_AnHuiYuanPower		=17;//id=17.安徽省电力设计院
+	static const BYTE CID_ZheJiangShengDa		=18;//id=18.浙江盛达铁塔厂
 	CXhChar50 GetClientName(int clientId,char separator=0);
 };
 CXhChar50 GetClientNameById(int clientId,char separator=0);

@@ -104,8 +104,8 @@ int CHttpClient::ExecuteRequest(int strMethod, LPCTSTR strUrl, LPCTSTR strPostDa
 			{	
 				Clear();
 				dwErrorCode = GetLastError();
-				printf("dwError = %d", dwErrorCode, 0);
-				strResponse = L"CInternetException\n";
+				//printf("dwError = %d", dwErrorCode, 0);
+				strResponse.Format("CInternetException Return Code: %d %d \n",e->m_dwError, dwErrorCode);
 
 				if (ERROR_INTERNET_TIMEOUT == dwErrorCode)
 					return OUTTIME;
@@ -160,8 +160,9 @@ int CHttpClient::ExecuteRequest(int strMethod, LPCTSTR strUrl, LPCTSTR strPostDa
 		//
 		Clear();
 		dwError = GetLastError();
-		printf("dwError = %d", dwError, 0);
-		strResponse = L"CInternetException\n";
+		//printf("dwError = %d", dwError, 0);
+		//strResponse = L"CInternetException\n";
+		strResponse.Format("CInternetException Return Code: %d %d\n", dwErrorCode,dwError);
 
 		if (ERROR_INTERNET_TIMEOUT == dwErrorCode)
 		{
