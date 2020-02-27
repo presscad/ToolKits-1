@@ -1,8 +1,22 @@
-#ifndef __XHRPTTBL_H
-#define __XHRPTTBL_H
+// 下列 ifdef 块是创建使从 DLL 导出更简单的
+//宏的标准方法。此 DLL 中的所有文件都是用命令行上定义的 XEROCAD_EXPORTS
+// 符号编译的。在使用此 DLL 的
+//任何其他项目上不应定义此符号。这样，源文件中包含此文件的任何其他项目都会将 
+// XEROCAD_API 函数视为是从此 DLL 导入的，而此 DLL 则将用此宏定义的
+// 符号视为是被导出的。
+#pragma once
+#ifdef _XERORPTTBL_EMBEDDED_
+	#define XERORPTTBL_API	//内嵌时XERORPTTBL_API什么都不代表
+#else
+	#ifdef XERORPTTBL_EXPORTS
+		#define XERORPTTBL_API __declspec(dllexport)
+	#else
+		#define XERORPTTBL_API __declspec(dllimport)
+	#endif
+#endif
 
-#include "f_ent.h"
 #include "Buffer.h"
+#include "f_ent.h"
 #include "XhCharString.h"
 
 struct XHTBLDEF {
@@ -33,9 +47,24 @@ struct XHTBLDEF {
 	static const BYTE GRID_VT_POINTER = 8;	// 指针
 	static const BYTE GRID_VT_BOOL	= 9;	// 布尔数; TRUE=1, FALSE=0
 	static const BYTE GRID_VT_NSTR	=10;	// 固定长度字符串
-};
-class XHVAR{
 public:
+	struct XERORPTTBL_API COORD2D {
+		double x,y;
+		COORD2D(double _x=0,double _y=0) {
+			this->x=_x;
+			this->y=_y; 
+		};
+		COORD2D(const double* coord2d) {
+			this->x=coord2d[0];
+			this->y=coord2d[1]; 
+		};
+		void Set(double X, double Y){x=X;y=Y;}
+		operator double*(){return &x;}
+	};
+};
+class XERORPTTBL_API XHVAR{
+public:
+	BYTE ciType;
 	union{
 		BOOL		bVal;		// GRID_VT_BOOL
 		__int16		iVal;		// GRID_VT_I2
@@ -47,7 +76,6 @@ public:
 		char*		sVal;		// GRID_VT_STRING
 		void*		pVal;		// GRID_VT_POINTER
 	};
-	BYTE ciType;
 public:
 	XHVAR();
 	XHVAR(const XHVAR& srcObj);
@@ -58,13 +86,13 @@ public:
 	void Import(FILE* fp);
 	void Export(FILE* fp);
 };
-class CXhGrid
+class XERORPTTBL_API XHGRID
 {
 	static float PREFER_TEXT_SIZE;
 	bool m_bSelectStatus;	//如果仅用于描述数据的话，此属性很可能无用 wjh-2019.10.10
 public:
 	//表格单元格类声明
-	struct FONTSTYLE{
+	struct XERORPTTBL_API FONTSTYLE{
 	public:
 		//字体格式
 		long lfHeight; 
@@ -121,9 +149,9 @@ public:
 	DWORD uiTagFeature;	//定义表格的一些特征(由用户定)
 	UINT uidCellValSource;	//用于可以柔性设定表格数据内容的单元格内容填充类型Id
 public:
-	CXhGrid();
-	CXhGrid(const CXhGrid& grid);
-	~CXhGrid();
+	XHGRID();
+	XHGRID(const XHGRID& grid);
+	~XHGRID();
 	//
 	bool get_blStateSelected();
 	bool set_blStateSelected(bool blSelected);
@@ -133,12 +161,12 @@ public:
 	bool WriteGridToStream(BUFFER_IO* pIO);
 	void Import(FILE* fp);
 	void Export(FILE* fp);
-	void Copy(const CXhGrid& grid);
+	void Copy(const XHGRID& grid);
 };
 
-class CXhGridMap
+class XERORPTTBL_API CXhGridMap
 {
-	CXhGrid *grid_map;		//表格存储区
+	XHGRID *grid_map;		//表格存储区
 	int m_nRow,m_nColumn;	//行总数与列总数
 public:
 	CXhGridMap();
@@ -152,20 +180,20 @@ public:
 	BOOL DelRow(int iRow);
 	BOOL InsertColumn(int iColumn);
 	BOOL DelColumn(int iColumn);
-	CXhGrid* GetGridAt(int iRow,int iColumn);					//根据行列号获得指定单元格指针
-	BOOL SetGrid(int iRow, int iColumn,const CXhGrid &grid);	//填充单元格内容
+	XHGRID* GetGridAt(int iRow,int iColumn);					//根据行列号获得指定单元格指针
+	BOOL SetGrid(int iRow, int iColumn,const XHGRID &grid);	//填充单元格内容
 };
 //CXhTable
-class CXhTable
+class XERORPTTBL_API CXhTable
 {
 	long m_iSerial;
 	BYTE ciLocaStyle;			//TBL_LOCATE_STYLE类型, 左上角;左下角;右下角;右上角
-	COORD3D xLocation;			//基(定位)点坐标
+	XHTBLDEF::COORD2D xLocation;	//基(定位)点二维坐标
 	double *rows_arr_high;		//行高列表
 	double *columns_arr_wide;	//列宽列表
 	CXhGridMap grid_map;		//表格存储区
 public:
-	CXhChar50 m_sTblName;		//表格名称
+	CXhChar50 m_sTblName;		//表格名称(sheet名)
 	//
 	int get_ID() const { return m_iSerial; }
 	__declspec(property(get = get_ID)) int ID;					//序号
@@ -208,7 +236,7 @@ public:
 	BOOL GetColLineStart(int iCol, double* pStartPos2d);	//获得指定列线的起始位置
 	BOOL GetColLineEnd(int iCol, double* pEndPos2d);		//获得指定列线的终止位置
 	//单元格操作
-	CXhGrid* GetGridAt(int iRow, int iCol);					//根据行列号获得指定单元格指针
+	XHGRID* GetGridAt(int iRow, int iCol);					//根据行列号获得指定单元格指针
 	BOOL CleanGrid(int iRowS, int iRowE);
 	BOOL IsValidGrid(int iRow = 1, int iCol = 1);		//行列索引号标识有效性判断
 	BOOL SetGrid(int iRow, int iCol, char *string, BOOL bForceToString = TRUE);	//填充单元格内容
@@ -222,8 +250,8 @@ public:
 	int ReleaseSnapStatus();
 	int GetSelectedCounts(); 
 	BOOL SnapGridPos(double x, double y, double *pSnapPos2d, double scope = 1.0);
-	CXhGrid * SnapGrid(double x,double y,int *iRow=NULL,int *iCol=NULL);
-	CXhGrid *GetFirstSelectedGrid(CXhTable **pXhRptTbl = NULL, int *pos_i = NULL, int *pos_j = NULL); 
+	XHGRID * SnapGrid(double x,double y,int *iRow=NULL,int *iCol=NULL);
+	XHGRID *GetFirstSelectedGrid(CXhTable **pXhRptTbl = NULL, int *pos_i = NULL, int *pos_j = NULL); 
 	//单位转换
 	static double TransRowHightToCad(double fRowHight);
 	static double TransRowHightToXls(double fRowHight);
@@ -237,4 +265,13 @@ public:	//表格数据导入导出
 	BOOL ImportTxt(FILE *fp);					//从文本文件导入格式表
 	BOOL ExportTxt(FILE *fp);					//向文本文件导出格式表
 };
-#endif
+//CBasicTblLibaray
+class XERORPTTBL_API CBasicTblLibaray
+{
+public:
+	static CXhTable* AddBasicTable();
+	static CXhTable* BasicTblFromSerial(long serial);
+	static bool Destroy(long serial);
+};
+
+

@@ -8,7 +8,6 @@
 #include <objbase.h>
 #include "XhRptTbl.h"
 #include "HashTable.h"
-#include "ExcelOper.h"
 /////////////////////////////////////////////////////////////////////////////////
 //XHVAR
 XHVAR::XHVAR()
@@ -19,7 +18,7 @@ XHVAR::XHVAR()
 XHVAR::XHVAR(const XHVAR& srcObj)
 {
 	*this = srcObj;
-	if (ciType==XHTBLDEF::GRID_VT_VARSTR&&sVal)
+	if (ciType== XHTBLDEF::GRID_VT_VARSTR&&sVal)
 	{
 		sVal=new char[strlen(srcObj.sVal)+1];
 		strcpy(sVal,srcObj.sVal);
@@ -33,7 +32,7 @@ XHVAR::~XHVAR()
 void XHVAR::ClearVariant()	//清空异构变量所控内存并清零存储区
 {
 	BYTE old_type = ciType;
-	if(ciType==XHTBLDEF::GRID_VT_VARSTR&&sVal)
+	if(ciType== XHTBLDEF::GRID_VT_VARSTR&&sVal)
 		free(sVal);		//清空字符串空间
 	memset(this,0,sizeof(XHVAR));	//清零存储区
 	ciType = old_type;	//恢得原数据类型
@@ -41,9 +40,9 @@ void XHVAR::ClearVariant()	//清空异构变量所控内存并清零存储区
 
 bool XHVAR::SetGridString(const char *string, BOOL bForceToString/*=TRUE*/)
 {
-	if(ciType!=XHTBLDEF::GRID_VT_VARSTR&&!bForceToString||string==NULL)
+	if(ciType!= XHTBLDEF::GRID_VT_VARSTR&&!bForceToString||string==NULL)
 		return false;	//类型不匹配
-	else if(ciType!=XHTBLDEF::GRID_VT_VARSTR)
+	else if(ciType!= XHTBLDEF::GRID_VT_VARSTR)
 	{
 		ClearVariant();
 		ciType = XHTBLDEF::GRID_VT_VARSTR;
@@ -182,14 +181,14 @@ void XHVAR::Import(FILE *fp)
 	}
 }
 /////////////////////////////////////////////////////////////////////////////////
-CXhGrid::FONTSTYLE::operator LOGFONT()const
+XHGRID::FONTSTYLE::operator LOGFONT()const
 {
 	LOGFONT logfont;
 	CopyToLOGFONT(logfont);
 	return logfont;
 }
 
-CXhGrid::FONTSTYLE::FONTSTYLE()
+XHGRID::FONTSTYLE::FONTSTYLE()
 {
 	lfHeight		=-13;
 	lfWidth			= 0; 
@@ -213,23 +212,23 @@ CXhGrid::FONTSTYLE::FONTSTYLE()
 	m_fLeftDist=m_fRightDist=1;		//左右内边距----mm为单位
 	m_fTopDist=m_fBottomDist=0.5;	//上下内边距----mm为单位
 }
-CXhGrid::FONTSTYLE::FONTSTYLE(const CXhGrid::FONTSTYLE& fontstyle)
+XHGRID::FONTSTYLE::FONTSTYLE(const XHGRID::FONTSTYLE& fontstyle)
 {
 	CoTaskMemFree(lfFaceName);	//清除以前的字样名称空间
 	memcpy(this,&fontstyle,sizeof(FONTSTYLE));
 	lfFaceName=NULL;	//赋为空指针
 	SetFaceName(fontstyle.lfFaceName);
 }
-CXhGrid::FONTSTYLE::FONTSTYLE(const LOGFONT& fontstyle)
+XHGRID::FONTSTYLE::FONTSTYLE(const LOGFONT& fontstyle)
 {
 	CopyFromLOGFONT(fontstyle);
 }
-CXhGrid::FONTSTYLE::~FONTSTYLE()
+XHGRID::FONTSTYLE::~FONTSTYLE()
 {
 	if(lfFaceName)
 		CoTaskMemFree(lfFaceName);
 }
-int CXhGrid::FONTSTYLE::SetFaceName(const TCHAR *face_name)
+int XHGRID::FONTSTYLE::SetFaceName(const TCHAR *face_name)
 {
 	if(face_name==NULL)
 		return 0;
@@ -257,7 +256,7 @@ int CXhGrid::FONTSTYLE::SetFaceName(const TCHAR *face_name)
 	}
 	return n;
 }
-void CXhGrid::FONTSTYLE::CopyFromLOGFONT(const LOGFONT &logfont)
+void XHGRID::FONTSTYLE::CopyFromLOGFONT(const LOGFONT &logfont)
 {
   lfHeight			=logfont.lfHeight;
   lfWidth			=logfont.lfWidth;
@@ -275,7 +274,7 @@ void CXhGrid::FONTSTYLE::CopyFromLOGFONT(const LOGFONT &logfont)
   SetFaceName(logfont.lfFaceName); 
 }
 
-void CXhGrid::FONTSTYLE::CopyToLOGFONT(LOGFONT &logfont)const
+void XHGRID::FONTSTYLE::CopyToLOGFONT(LOGFONT &logfont)const
 {
 	logfont.lfHeight		=lfHeight;
 	logfont.lfWidth			=lfWidth;
@@ -295,14 +294,14 @@ void CXhGrid::FONTSTYLE::CopyToLOGFONT(LOGFONT &logfont)const
 	else
 		strcpy(logfont.lfFaceName, lfFaceName); 
 }
-/*BOOL CXhGrid::FONTSTYLE::operator ==(const FONTSTYLE& fontstyle)const
+/*BOOL XHGRID::FONTSTYLE::operator ==(const FONTSTYLE& fontstyle)const
 {
 	if(*this!=fontstyle)
 		return FALSE;
 	else
 		return TRUE;
 }
-BOOL CXhGrid::FONTSTYLE::operator !=(const FONTSTYLE& fontstyle)const
+BOOL XHGRID::FONTSTYLE::operator !=(const FONTSTYLE& fontstyle)const
 {
 	if(lfHeight!=fontstyle.lfHeight)
 		return TRUE;
@@ -345,7 +344,7 @@ BOOL CXhGrid::FONTSTYLE::operator !=(const FONTSTYLE& fontstyle)const
 		return FALSE;
 }*/
 
-void CXhGrid::FONTSTYLE::Import(FILE* fp)
+void XHGRID::FONTSTYLE::Import(FILE* fp)
 {
 	char sLineText[200],*sToken=NULL,separator[]=" =,\r\n";
 	while(feof(fp)==0)
@@ -483,7 +482,7 @@ void CXhGrid::FONTSTYLE::Import(FILE* fp)
 	}
 }
 
-void CXhGrid::FONTSTYLE::Export(FILE* fp)
+void XHGRID::FONTSTYLE::Export(FILE* fp)
 {
 	fprintf(fp,"TextColor=%ld\n",crTextColor);
 	fprintf(fp,"CharSet=%d\n",lfCharSet);
@@ -515,8 +514,8 @@ void CXhGrid::FONTSTYLE::Export(FILE* fp)
 	fprintf(fp,"--FontStyleEnd\n\n");
 }
 /////////////////////////////////////////////////////////////////////////////////
-float CXhGrid::PREFER_TEXT_SIZE = 2.0f;
-CXhGrid::CXhGrid()
+float XHGRID::PREFER_TEXT_SIZE = 2.0f;
+XHGRID::XHGRID()
 {
 	grid_mode = XHTBLDEF::STRING_GRID;
 	uiTagFeature = iRow = iColumn = 0;
@@ -532,23 +531,23 @@ CXhGrid::CXhGrid()
 	uidCellValSource=0;
 }
 
-CXhGrid::~CXhGrid()
+XHGRID::~XHGRID()
 {
 }
-CXhGrid::CXhGrid(const CXhGrid& grid)
+XHGRID::XHGRID(const XHGRID& grid)
 {
 	Copy(grid);
 }
-bool CXhGrid::get_blStateSelected()
+bool XHGRID::get_blStateSelected()
 {
 	return this->m_bSelectStatus;
 }
-bool CXhGrid::set_blStateSelected(bool blSelected)
+bool XHGRID::set_blStateSelected(bool blSelected)
 {
 	return m_bSelectStatus=blSelected;
 }
 
-void CXhGrid::Copy(const CXhGrid &grid)
+void XHGRID::Copy(const XHGRID &grid)
 {
 	m_bHGridVirtual = grid.m_bHGridVirtual;
 	m_bVGridVirtual = grid.m_bVGridVirtual;
@@ -562,7 +561,7 @@ void CXhGrid::Copy(const CXhGrid &grid)
 	iColumn = grid.iColumn;
 }
 
-void CXhGrid::Export(FILE *fp)
+void XHGRID::Export(FILE *fp)
 {
 	fprintf(fp,"GridMode=%d\n",grid_mode);
 	fprintf(fp,"HorizonVirtual=%d\n",m_bHGridVirtual);
@@ -584,7 +583,7 @@ void CXhGrid::Export(FILE *fp)
 	fprintf(fp,"--NewGridEnd\n");
 }
 
-void CXhGrid::Import(FILE *fp)
+void XHGRID::Import(FILE *fp)
 {
 	char sLineText[200],*sToken=NULL,separator[]=" =,\r\n";
 	while(feof(fp)==0)
@@ -669,7 +668,7 @@ void CXhGrid::Import(FILE *fp)
 			break;
 	}
 }
-bool CXhGrid::WriteGridToStream(BUFFER_IO *pIO)
+bool XHGRID::WriteGridToStream(BUFFER_IO *pIO)
 {
 	pIO->WriteByte(grid_mode);
 	pIO->WriteBooleanThin(m_bHGridVirtual);
@@ -696,7 +695,7 @@ bool CXhGrid::WriteGridToStream(BUFFER_IO *pIO)
 	return S_OK;
 }
 
-bool CXhGrid::ReadGridFromStream(BUFFER_IO *pIO)
+bool XHGRID::ReadGridFromStream(BUFFER_IO *pIO)
 {
 	pIO->ReadByte(&grid_mode);
 	pIO->ReadBooleanThin(&m_bHGridVirtual);
@@ -745,7 +744,7 @@ void CXhGridMap::Destroy()
 BOOL CXhGridMap::Create(int nRow,int nColumn)
 {
 	if(grid_map==NULL)
-		grid_map = new CXhGrid[nRow*nColumn];
+		grid_map = new XHGRID[nRow*nColumn];
 	else
 		return FALSE;
 	for(int i=0;i<nRow;i++)
@@ -768,7 +767,7 @@ BOOL CXhGridMap::InsertRow(int iRow)
 		return FALSE;
 	else
 	{
-		CXhGrid *new_map = new CXhGrid[m_nRow*m_nColumn+m_nColumn];
+		XHGRID *new_map = new XHGRID[m_nRow*m_nColumn+m_nColumn];
 		for(i=0;i<m_nRow;i++)
 		{
 			for(j=0;j<m_nColumn;j++)
@@ -800,7 +799,7 @@ BOOL CXhGridMap::DelRow(int iRow)
 		return FALSE;
 	else
 	{
-		CXhGrid *new_map = new CXhGrid[m_nRow*m_nColumn-m_nColumn];
+		XHGRID *new_map = new XHGRID[m_nRow*m_nColumn-m_nColumn];
 		for(i=0;i<m_nRow;i++)
 		{
 			for(j=0;j<m_nColumn;j++)
@@ -834,7 +833,7 @@ BOOL CXhGridMap::InsertColumn(int iColumn)
 		return FALSE;
 	else
 	{
-		CXhGrid *new_map = new CXhGrid[m_nRow*(m_nColumn+1)];
+		XHGRID *new_map = new XHGRID[m_nRow*(m_nColumn+1)];
 		for(i=0;i<m_nRow;i++)
 		{
 			for(j=0;j<m_nColumn;j++)
@@ -868,7 +867,7 @@ BOOL CXhGridMap::DelColumn(int iColumn)
 		return FALSE;
 	else
 	{
-		CXhGrid *new_map = new CXhGrid[m_nRow*(m_nColumn-1)];
+		XHGRID *new_map = new XHGRID[m_nRow*(m_nColumn-1)];
 		for(i=0;i<m_nRow;i++)
 		{
 			for(j=0;j<m_nColumn;j++)
@@ -896,7 +895,7 @@ BOOL CXhGridMap::DelColumn(int iColumn)
 	return TRUE;
 }
 	//根据行列号获得指定单元格指针
-CXhGrid* CXhGridMap::GetGridAt(int iRow,int iColumn)
+XHGRID* CXhGridMap::GetGridAt(int iRow,int iColumn)
 {
 	int i = iRow*(m_nColumn)+iColumn;
 	if(i<0||i>=m_nRow*m_nColumn)
@@ -905,11 +904,11 @@ CXhGrid* CXhGridMap::GetGridAt(int iRow,int iColumn)
 		return &grid_map[iRow*(m_nColumn)+iColumn];
 }
 	//填充单元格内容
-BOOL CXhGridMap::SetGrid(int iRow, int iColumn,const CXhGrid &grid)
+BOOL CXhGridMap::SetGrid(int iRow, int iColumn,const XHGRID &grid)
 {
 	if(iRow*m_nColumn+iColumn<0||iRow*m_nColumn+iColumn>=m_nRow*m_nColumn)
 		return FALSE;
-	CXhGrid *pGrid = GetGridAt(iRow,iColumn);
+	XHGRID *pGrid = GetGridAt(iRow,iColumn);
 	if(pGrid)
 	{
 		pGrid->Copy(grid);	//全部赋值给指定单元格
@@ -1008,8 +1007,7 @@ void CXhTable::GetBasePos(double* pos2d)
 }
 void CXhTable::SetBasePos(const double* pos2d)
 {
-	xLocation.x = pos2d[0];
-	xLocation.y = pos2d[1];
+	xLocation = pos2d;
 }
 void CXhTable::SetLocateStyle(BYTE ciStyle)
 {
@@ -1020,7 +1018,7 @@ BOOL CXhTable::GetGridString(int iRow, int iColumn,char *string)
 {
 	if(!IsValidGrid(iRow,iColumn))
 		return FALSE;
-	CXhGrid *pGrid = grid_map.GetGridAt(iRow,iColumn);
+	XHGRID *pGrid = grid_map.GetGridAt(iRow,iColumn);
 	if(pGrid==NULL||pGrid->data.sVal==NULL||pGrid->data.ciType!=XHTBLDEF::GRID_VT_VARSTR)
 		return FALSE;
 	else 
@@ -1063,7 +1061,7 @@ BOOL CXhTable::GetRowLineStart(int iRow,double* pStartPos2d)
 {
 	if(iRow<0||iRow>grid_map.GetRowsCount())
 		return FALSE;
-	GEPOINT2D start;
+	XHTBLDEF::COORD2D start;
 	switch(ciLocaStyle)
 	{
 	case XHTBLDEF::TOP_LEFT:		//左上角为二维表基点
@@ -1096,7 +1094,7 @@ BOOL CXhTable::GetRowLineEnd(int iRow,double* pEndPos2d)
 {
 	if(iRow<0||iRow>grid_map.GetRowsCount())
 		return FALSE;
-	GEPOINT2D end;
+	XHTBLDEF::COORD2D end;
 	switch(ciLocaStyle)
 	{
 	case XHTBLDEF::TOP_LEFT:
@@ -1129,7 +1127,7 @@ BOOL CXhTable::GetColLineStart(int iColumn,double* pStartPos2d)
 {
 	if(iColumn<0||iColumn>grid_map.GetColumnsCount())
 		return FALSE;
-	GEPOINT2D start;
+	XHTBLDEF::COORD2D start;
 	switch(ciLocaStyle)
 	{
 	case XHTBLDEF::TOP_LEFT:
@@ -1162,7 +1160,7 @@ BOOL CXhTable::GetColLineEnd(int iColumn,double* pEndPos2d)
 {
 	if(iColumn<0||iColumn>grid_map.GetColumnsCount())
 		return FALSE;
-	GEPOINT2D end;
+	XHTBLDEF::COORD2D end;
 	switch(ciLocaStyle)
 	{
 	case XHTBLDEF::TOP_LEFT:
@@ -1227,7 +1225,7 @@ BOOL CXhTable::GetGridRange(int &start_i,int &start_j,int *end_i, int *end_j)
 	//判断索引号是否合法
 	if(!IsValidGrid(start_i,start_j))
 		return FALSE;
-	CXhGrid *pGrid = grid_map.GetGridAt(start_i,start_j);
+	XHGRID *pGrid = grid_map.GetGridAt(start_i,start_j);
 	//判断指定表格单元是否为虚单元(不画出)
 	if(pGrid->m_bVGridVirtual||pGrid->m_bHGridVirtual)
 		return FALSE;
@@ -1268,7 +1266,7 @@ BOOL CXhTable::GetGridRect(int iRow, int iColumn, f2dRect &rect)
 	//判断索引号是否合法
 	if(!IsValidGrid(iRow,iColumn))
 		return FALSE;
-	CXhGrid *pGrid = grid_map.GetGridAt(iRow,iColumn);
+	XHGRID *pGrid = grid_map.GetGridAt(iRow,iColumn);
 	//判断指定表格单元是否为虚单元(不画出)
 	if(pGrid->m_bVGridVirtual||pGrid->m_bHGridVirtual)
 		return FALSE;
@@ -1307,7 +1305,7 @@ BOOL CXhTable::GetGridSize(int iRow,int iColumn,
 }
 
 //表格单元索引号以0为起始值
-CXhGrid* CXhTable::GetGridAt(int iRow, int iColumn)
+XHGRID* CXhTable::GetGridAt(int iRow, int iColumn)
 {
 	return grid_map.GetGridAt(iRow,iColumn);
 }
@@ -1598,7 +1596,7 @@ int CXhTable::ReleaseSnapStatus()
 	{
 		for(int j=0;j<nColumns;j++)
 		{
-			CXhGrid *pGrid = grid_map.GetGridAt(i,j);
+			XHGRID *pGrid = grid_map.GetGridAt(i,j);
 			if(pGrid->blStateSelected)
 			{
 				nHits++;
@@ -1618,7 +1616,7 @@ int CXhTable::GetSelectedCounts()
 	{
 		for(int j=0;j<nColumns;j++)
 		{
-			CXhGrid *pGrid = grid_map.GetGridAt(i,j);
+			XHGRID *pGrid = grid_map.GetGridAt(i,j);
 			if(pGrid->blStateSelected)
 			{
 				nHits++;
@@ -1627,7 +1625,7 @@ int CXhTable::GetSelectedCounts()
 	}
 	return nHits;
 }
-CXhGrid *CXhTable::GetFirstSelectedGrid(CXhTable **pFormatTbl/*=NULL*/,int *pos_i/*=NULL*/,int *pos_j/*=NULL*/)
+XHGRID *CXhTable::GetFirstSelectedGrid(CXhTable **pFormatTbl/*=NULL*/,int *pos_i/*=NULL*/,int *pos_j/*=NULL*/)
 {
 	long nRows = grid_map.GetRowsCount();
 	long nColumns = grid_map.GetColumnsCount();
@@ -1635,7 +1633,7 @@ CXhGrid *CXhTable::GetFirstSelectedGrid(CXhTable **pFormatTbl/*=NULL*/,int *pos_
 	{
 		for(int j=0;j<nColumns;j++)
 		{
-			CXhGrid *pGrid = grid_map.GetGridAt(i,j);
+			XHGRID *pGrid = grid_map.GetGridAt(i,j);
 			if(pGrid->blStateSelected)
 			{
 				if(pFormatTbl)
@@ -1660,7 +1658,7 @@ void CXhTable::SelectAll()
 			grid_map.GetGridAt(i,j)->blStateSelected=TRUE;
 }
 
-CXhGrid * CXhTable::SnapGrid(double x, double y, int *iRow, int *iCol)
+XHGRID * CXhTable::SnapGrid(double x, double y, int *iRow, int *iCol)
 {
 	f2dRect rect;
 	for(int i=0;i< nRowsCount;i++)
@@ -1725,7 +1723,7 @@ BOOL CXhTable::MergeGrid(int iCellStartRow,int iCellStartCol,int iCellEndRow,int
 		rowI=iCellStartRow;
 		for (colJ=iCellStartCol+1;colJ<=iCellEndCol;colJ++)
 		{
-			CXhGrid* pGrid=this->GetGridAt(rowI,colJ);
+			XHGRID* pGrid=this->GetGridAt(rowI,colJ);
 			pGrid->m_bVGridVirtual=true;
 		}
 	}
@@ -1734,7 +1732,7 @@ BOOL CXhTable::MergeGrid(int iCellStartRow,int iCellStartCol,int iCellEndRow,int
 		colJ=iCellStartCol;
 		for (rowI=iCellStartRow+1;rowI<=iCellEndRow;rowI++)
 		{
-			CXhGrid* pGrid=this->GetGridAt(rowI,colJ);
+			XHGRID* pGrid=this->GetGridAt(rowI,colJ);
 			pGrid->m_bHGridVirtual=true;
 		}
 	}
@@ -1746,7 +1744,7 @@ BOOL CXhTable::MergeGrid(int iCellStartRow,int iCellStartCol,int iCellEndRow,int
 		{
 			for (colJ=iCellStartCol;colJ<=iCellEndCol;colJ++)
 			{
-				CXhGrid* pGrid=this->GetGridAt(rowI,colJ);
+				XHGRID* pGrid=this->GetGridAt(rowI,colJ);
 				pGrid->m_bHGridVirtual=blMergeHori&&(colJ>iCellStartCol);
 				pGrid->m_bVGridVirtual=blMergeVert&&(rowI>iCellStartRow);
 			}
@@ -1760,7 +1758,8 @@ BOOL CXhTable::SnapGridPos(double x, double y, double *pSnapPos2d,double scope/*
 	f2dPoint start,tem_snap_pos;
 	BOOL bSnaped = FALSE;
 	double dist = scope;
-	GEPOINT2D snappoint(x,y);
+	XHTBLDEF::COORD2D snappoint;
+	snappoint.Set(x,y);
 	for(int i=0;i<= nRowsCount;i++)
 	{
 		GetRowLineStart(i,start);
@@ -1811,7 +1810,7 @@ void CXhTable::CopyFrom(CXhTable *pFormatTbl)
 	{
 		for(int j=0;j< pFormatTbl->nColsCount;j++)
 		{
-			CXhGrid *pGrid = pFormatTbl->GetGridAt(i,j);
+			XHGRID *pGrid = pFormatTbl->GetGridAt(i,j);
 			GetGridAt(i,j)->Copy(*pGrid);
 		}
 	}
@@ -1853,7 +1852,7 @@ void CXhTable::CopyFrom(CXhTable *pFormatTbl,int iRemoveStart,int iRemoveEnd)
 			continue;	//跳过指定行
 		for(int j=0;j< pFormatTbl->nColsCount;j++)
 		{
-			CXhGrid *pGrid = pFormatTbl->GetGridAt(i,j);
+			XHGRID *pGrid = pFormatTbl->GetGridAt(i,j);
 			GetGridAt(iRowIndex,j)->Copy(*pGrid);
 		}
 		iRowIndex++;
@@ -1916,4 +1915,38 @@ double CXhTable::TransColWidthToCad(double fColWidth)
 double CXhTable::TransColWidthToXls(double fColWidth)
 {	//1毫米＝0.4374个单位；
 	return fColWidth * 0.4374;
+}
+//////////////////////////////////////////////////////////////////////////
+//
+static CHashPtrList<CXhTable> localHashTables;
+class CBaicTablesLife {
+public:
+	~CBaicTablesLife() { localHashTables.Empty(); }
+};
+CBaicTablesLife gBasicTablesLife;
+//
+CXhTable* CBasicTblLibaray::AddBasicTable()
+{
+	int iNo = 1;
+	do {
+		if (localHashTables.GetValue(iNo) != NULL)
+			iNo++;
+		else	//找到一个空号
+			break;
+	} while (true);
+	CXhTable* pTable = localHashTables.Add(iNo);
+	return pTable;
+}
+CXhTable* CBasicTblLibaray::BasicTblFromSerial(long serial)
+{
+	return localHashTables.GetValue(serial);
+}
+bool CBasicTblLibaray::Destroy(long serial)
+{
+	for (CXhTable *pTable = localHashTables.GetFirst(); pTable; pTable = localHashTables.GetNext())
+	{
+		if (pTable->ID == serial)
+			return localHashTables.DeleteCursor(TRUE) == TRUE;
+	}
+	return false;
 }
