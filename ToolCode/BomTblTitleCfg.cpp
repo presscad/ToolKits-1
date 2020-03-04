@@ -218,6 +218,7 @@ bool CBomTblTitleCfg::IsMatchTitle(int colIndex,const char* title)
 			sTitle.EqualNoCase("零件编号")||
 			sTitle.EqualNoCase("图纸号码") ||
 			sTitle.EqualNoCase("部件名") ||
+			sTitle.EqualNoCase("部件号") ||
 			sTitle.EqualNoCase("件号") ||
 			strstr(sTitle,"编号")!=0)
 			return true;
